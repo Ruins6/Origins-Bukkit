@@ -1,0 +1,11 @@
+name: Origins-Bukkit
+version: '${project.version}'
+main: me.swagpancakes.originsbukkit.Main
+api-version: 1.17
+load: STARTUP
+authors: [ SwagPannekaker ]
+description: Origins for Bukkit and forks of Bukkit.
+commands:
+  origins:
+    description: Origins main command.
+    usage: /<command>
