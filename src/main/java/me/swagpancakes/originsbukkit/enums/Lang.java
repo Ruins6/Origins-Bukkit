@@ -324,12 +324,12 @@ public enum Lang {
 
     private static YamlConfiguration LANG;
 
-    Lang(String Path, Object defaultValue) {
+    Lang(final String Path, final Object defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;
     }
 
-    Lang(String Path, String... defaultValue) {
+    Lang(final String Path, final String... defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;
     }

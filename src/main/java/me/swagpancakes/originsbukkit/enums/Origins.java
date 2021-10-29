@@ -45,10 +45,10 @@ public enum Origins {
      */
     FELINE("Feline");
 
-    private final String name;
+    private final Object value;
 
-    Origins(final String name) {
-        this.name = name;
+    Origins(final Object value) {
+        this.value = value;
     }
 
     /**
@@ -58,6 +58,15 @@ public enum Origins {
      */
     @Override
     public String toString() {
-        return name;
+        return (String) this.value;
+    }
+
+    /**
+     * Gets value.
+     *
+     * @return the value
+     */
+    public Object getValue() {
+        return this.value;
     }
 }

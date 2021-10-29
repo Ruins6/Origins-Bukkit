@@ -49,12 +49,12 @@ public enum Config {
 
     private static YamlConfiguration CONFIG;
 
-    Config(String Path, Object defaultValue) {
+    Config(final String Path, final Object defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;
     }
 
-    Config(String Path, String... defaultValue) {
+    Config(final String Path, final String... defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;
     }
