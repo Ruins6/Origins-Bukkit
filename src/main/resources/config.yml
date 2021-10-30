@@ -1,0 +1,15 @@
+##
+# Origins-Bukkit by SwagPancakes/SwagPannekaker
+# Config File (config.yml)
+##
+title-name: '&4[&fAWSMPLUGIN&4]:'
+player-is-cool: '&f%p is cool.'
+invalid-args: '&cInvalid args!'
+player-only: Sorry but that can only be run by a player!
+must-be-number: '&cYou need to specify a number, not a word.'
+test: test
+no-permissions: '&cYou don''''t have permission for that!'
+test2: true
+test3: |-
+  a
+  a
