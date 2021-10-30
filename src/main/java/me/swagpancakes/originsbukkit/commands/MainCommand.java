@@ -48,13 +48,13 @@ public class MainCommand implements CommandExecutor {
                     switch (args[0].toUpperCase()) {
                         case "RELOAD":
                             try {
-                                plugin.configHandler.setup();
-                                ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Reloading the config...");
+                                plugin.configHandler.reloadFiles();
+                                ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Reloading the config files...");
                             } catch (Exception event) {
                                 event.printStackTrace();
-                                ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] There was an error reloading the config. Please check console.");
+                                ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] There was an error reloading the config files. Please check console.");
                             }
-                            ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config.");
+                            ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config files.");
                             break;
                         case "TEST":
                             player.getInventory().addItem(ItemManager.abilitySceptre);
@@ -72,13 +72,13 @@ public class MainCommand implements CommandExecutor {
                 switch (args[0].toUpperCase()) {
                     case "RELOAD":
                         try {
-                            plugin.configHandler.setup();
-                            ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Reloading the config...");
+                            plugin.configHandler.reloadFiles();
+                            ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Reloading the config files...");
                         } catch (Exception event) {
                             event.printStackTrace();
-                            ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] There was an error reloading the config. Please check console.");
+                            ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] There was an error reloading the config files. Please check console.");
                         }
-                        ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config.");
+                        ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config files.");
                         break;
                     case "TEST":
                         ChatUtils.sendCommandSenderMessage(sender, "HI :D");
