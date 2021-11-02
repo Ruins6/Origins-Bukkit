@@ -17,7 +17,18 @@ import java.util.UUID;
  */
 public class StorageUtils {
 
-    private static ArrayList<OriginsPlayerData> originsPlayerData = new ArrayList<>();
+    private final Main plugin;
+
+    /**
+     * Instantiates a new Storage utils.
+     *
+     * @param plugin the plugin
+     */
+    public StorageUtils(Main plugin) {
+        this.plugin = plugin;
+    }
+
+    private ArrayList<OriginsPlayerData> originsPlayerData = new ArrayList<>();
 
     /**
      * Create origins player data.
@@ -26,11 +37,11 @@ public class StorageUtils {
      * @param player     the player
      * @param origin     the origin
      */
-    public static void createOriginsPlayerData(UUID playerUUID, Player player, Origins origin) {
+    public void createOriginsPlayerData(UUID playerUUID, Player player, Origins origin) {
         String playerName = player.getName();
 
         OriginsPlayerData originsPlayerData = new OriginsPlayerData(playerUUID, playerName, origin);
-        StorageUtils.originsPlayerData.add(originsPlayerData);
+        this.originsPlayerData.add(originsPlayerData);
         try {
             saveOriginsPlayerData();
         } catch (IOException event) {
@@ -44,8 +55,8 @@ public class StorageUtils {
      * @param playerUUID the player uuid
      * @return the origins player data
      */
-    public static OriginsPlayerData findOriginsPlayerData(UUID playerUUID) {
-        for (OriginsPlayerData originsPlayerData : StorageUtils.originsPlayerData) {
+    public OriginsPlayerData findOriginsPlayerData(UUID playerUUID) {
+        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
             if (originsPlayerData.getUuid().equals(playerUUID)) {
                 return originsPlayerData;
             }
@@ -59,8 +70,8 @@ public class StorageUtils {
      * @param playerUUID the player uuid
      * @return the player origin
      */
-    public static Origins getPlayerOrigin(UUID playerUUID) {
-        for (OriginsPlayerData originsPlayerData : StorageUtils.originsPlayerData) {
+    public Origins getPlayerOrigin(UUID playerUUID) {
+        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
             if (originsPlayerData.getUuid().equals(playerUUID)) {
                 return originsPlayerData.getOrigin();
             }
@@ -73,10 +84,10 @@ public class StorageUtils {
      *
      * @param playerUUID the player uuid
      */
-    public static void deleteOriginsPlayerData(UUID playerUUID) {
-        for (OriginsPlayerData originsPlayerData : StorageUtils.originsPlayerData) {
+    public void deleteOriginsPlayerData(UUID playerUUID) {
+        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
             if (originsPlayerData.getUuid().equals(playerUUID)) {
-                StorageUtils.originsPlayerData.remove(originsPlayerData);
+                this.originsPlayerData.remove(originsPlayerData);
                 break;
             }
         }
@@ -93,8 +104,8 @@ public class StorageUtils {
      * @param playerUUID           the player uuid
      * @param newOriginsPlayerData the new origins player data
      */
-    public static void updateOriginsPlayerData(UUID playerUUID, OriginsPlayerData newOriginsPlayerData) {
-        for (OriginsPlayerData originsPlayerData : StorageUtils.originsPlayerData) {
+    public void updateOriginsPlayerData(UUID playerUUID, OriginsPlayerData newOriginsPlayerData) {
+        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
             if (originsPlayerData.getUuid().equals(playerUUID)) {
                 originsPlayerData.setPlayerName(newOriginsPlayerData.getPlayerName());
                 originsPlayerData.setOrigin(newOriginsPlayerData.getOrigin());
@@ -112,8 +123,8 @@ public class StorageUtils {
      *
      * @return the list
      */
-    public static List<OriginsPlayerData> findAllOriginPlayerData() {
-        return originsPlayerData;
+    public List<OriginsPlayerData> findAllOriginPlayerData() {
+        return this.originsPlayerData;
     }
 
     /**
@@ -121,12 +132,12 @@ public class StorageUtils {
      *
      * @throws IOException the io exception
      */
-    public static void saveOriginsPlayerData() throws IOException {
+    public void saveOriginsPlayerData() throws IOException {
         Gson gson = new Gson();
-        File file = new File(Main.getPlugin().getDataFolder().getAbsolutePath() + "/playerdata.json");
+        File file = new File(plugin.getPlugin().getDataFolder().getAbsolutePath() + "/playerdata.json");
         Writer writer = new FileWriter(file, false);
 
-        gson.toJson(originsPlayerData, writer);
+        gson.toJson(this.originsPlayerData, writer);
         writer.flush();
         writer.close();
     }
@@ -136,14 +147,14 @@ public class StorageUtils {
      *
      * @throws IOException the io exception
      */
-    public static void loadOriginsPlayerData() throws IOException {
+    public void loadOriginsPlayerData() throws IOException {
         Gson gson = new Gson();
-        File file = new File(Main.getPlugin().getDataFolder().getAbsolutePath() + "/playerdata.json");
+        File file = new File(plugin.getPlugin().getDataFolder().getAbsolutePath() + "/playerdata.json");
 
         if (file.exists()) {
             Reader reader = new FileReader(file);
             OriginsPlayerData[] n = gson.fromJson(reader, OriginsPlayerData[].class);
-            originsPlayerData = new ArrayList<>(Arrays.asList(n));
+            this.originsPlayerData = new ArrayList<>(Arrays.asList(n));
             ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Player data loaded.");
         }
     }

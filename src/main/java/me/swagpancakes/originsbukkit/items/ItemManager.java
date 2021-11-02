@@ -1,5 +1,6 @@
 package me.swagpancakes.originsbukkit.items;
 
+import me.swagpancakes.originsbukkit.Main;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -17,27 +18,38 @@ import java.util.List;
  */
 public class ItemManager {
 
-    /**
-     * The constant abilitySceptre.
-     */
-    public static ItemStack abilitySceptre;
+    private final Main plugin;
 
     /**
-     * The constant abilitySceptreRecipe.
+     * Instantiates a new Item manager.
+     *
+     * @param plugin the plugin
      */
-    public static ShapedRecipe abilitySceptreRecipe;
+    public ItemManager(Main plugin) {
+        this.plugin = plugin;
+    }
+
+    /**
+     * The Ability sceptre.
+     */
+    public ItemStack abilitySceptre;
+
+    /**
+     * The Ability sceptre recipe.
+     */
+    public ShapedRecipe abilitySceptreRecipe;
 
     /**
      * Init.
      */
-    public static void init() {
+    public void init() {
         createAbilitySceptre();
     }
 
     /**
      * Create ability sceptre.
      */
-    public static void createAbilitySceptre() {
+    public void createAbilitySceptre() {
         ItemStack itemStack = new ItemStack(Material.STICK, 1);
         ItemMeta itemMeta = itemStack.getItemMeta();
         assert itemMeta != null;

@@ -1,7 +1,6 @@
 package me.swagpancakes.originsbukkit.listeners;
 
 import me.swagpancakes.originsbukkit.Main;
-import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -56,12 +55,12 @@ public class NoOriginPlayerRestrict implements Listener {
     }
 
     /**
-     * On player damage.
+     * On no origin player damage.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerDamage(EntityDamageEvent event) {
+    public void onNoOriginPlayerDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
@@ -69,7 +68,7 @@ public class NoOriginPlayerRestrict implements Listener {
             assert player != null;
             UUID playerUUID = player.getUniqueId();
 
-            if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+            if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
                 event.setCancelled(true);
             }
         }
@@ -77,44 +76,44 @@ public class NoOriginPlayerRestrict implements Listener {
     }
 
     /**
-     * On player death.
+     * On no origin player death.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent event) {
+    public void onNoOriginPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity().getPlayer();
         assert player != null;
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             player.spigot().respawn();
         }
     }
 
     /**
-     * On player respawn.
+     * On no origin player respawn.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
+    public void onNoOriginPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
-            PlayerOriginChecker.openOriginPickerGui(player);
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+            plugin.playerOriginChecker.openOriginPickerGui(player);
             NoOriginPlayerRestrict.restrictPlayerMovement(player);
         }
     }
 
     /**
-     * On player item pickup.
+     * On no origin player item pickup.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerItemPickup(EntityPickupItemEvent event) {
+    public void onNoOriginPlayerItemPickup(EntityPickupItemEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof  Player) {
@@ -122,83 +121,83 @@ public class NoOriginPlayerRestrict implements Listener {
             assert player != null;
             UUID playerUUID = player.getUniqueId();
 
-            if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+            if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
                 event.setCancelled(true);
             }
         }
     }
 
     /**
-     * On player block break.
+     * On no origin player block break.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerBlockBreak(BlockBreakEvent event) {
+    public void onNoOriginPlayerBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
 
     /**
-     * On player block place.
+     * On no origin player block place.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerBlockPlace(BlockPlaceEvent event) {
+    public void onNoOriginPlayerBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
 
     /**
-     * On player interact.
+     * On no origin player interact.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
+    public void onNoOriginPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
 
     /**
-     * On player interact at entity.
+     * On no origin player interact at entity.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+    public void onNoOriginPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
 
     /**
-     * On player interact entity.
+     * On no origin player interact entity.
      *
      * @param event the event
      */
     @EventHandler
-    public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+    public void onNoOriginPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (StorageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }

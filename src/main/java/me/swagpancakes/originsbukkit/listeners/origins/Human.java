@@ -1,14 +1,19 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Origins;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * The type Human.
  */
 public class Human implements Listener {
 
-    private static Main plugin;
+    private final Main plugin;
 
     /**
      * Instantiates a new Human.
@@ -17,6 +22,19 @@ public class Human implements Listener {
      */
     public Human(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        Human.plugin = plugin;
+        this.plugin = plugin;
+    }
+
+    /**
+     * Human join.
+     *
+     * @param player the player
+     */
+    public void humanJoin(Player player) {
+        UUID playerUUID = player.getUniqueId();
+
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.HUMAN)) {
+            player.setHealthScale((10)*2);
+        }
     }
 }

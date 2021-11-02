@@ -317,7 +317,15 @@ public enum Lang {
      * The Player origin ability cooldown.
      */
     PLAYER_ORIGIN_ABILITY_COOLDOWN("Lang.Player.Messages.Error.Player-Origin-Ability-Cooldown",
-            "&cThis ability is on cool-down (%seconds_left% seconds).");
+            "&cThis ability is on cool-down (%seconds_left% seconds)."),
+    /**
+     * The Merling bossbar air breathing timer title.
+     */
+    MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE("Lang.Origins.Merling.Bossbar.Air-Breathing-Timer-Title", "Air Breathing - %time-left%"),
+    /**
+     * The Merling bossbar drowning title.
+     */
+    MERLING_BOSSBAR_DROWNING_TITLE("Lang.Origins.Merling.Bossbar.Drowning-Title", "&cWarning: You're Drowning!");
 
     private final String Path;
     private final Object defaultValue;
@@ -360,6 +368,42 @@ public enum Lang {
      */
     public String[] toStringList() {
         return ChatUtils.formatList(LANG.getStringList(this.Path).toArray(new String[0]));
+    }
+
+    /**
+     * To boolean boolean.
+     *
+     * @return the boolean
+     */
+    public boolean toBoolean() {
+        return LANG.getBoolean(this.Path);
+    }
+
+    /**
+     * To long long.
+     *
+     * @return the long
+     */
+    public long toLong() {
+        return LANG.getLong(this.Path);
+    }
+
+    /**
+     * To double double.
+     *
+     * @return the double
+     */
+    public double toDouble() {
+        return LANG.getDouble(this.Path);
+    }
+
+    /**
+     * To int int.
+     *
+     * @return the int
+     */
+    public int toInt() {
+        return LANG.getInt(this.Path);
     }
 
     /**

@@ -1,14 +1,13 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Config;
+import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.util.ChatUtils;
-import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
@@ -26,7 +25,7 @@ import java.util.UUID;
  */
 public class Merling implements Listener {
 
-    private static Main plugin;
+    private final Main plugin;
 
     /**
      * Instantiates a new Merling.
@@ -35,7 +34,7 @@ public class Merling implements Listener {
      */
     public Merling(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        Merling.plugin = plugin;
+        this.plugin = plugin;
     }
 
     /**
@@ -43,8 +42,13 @@ public class Merling implements Listener {
      *
      * @param player the player
      */
-    public static void merlingJoin(Player player) {
-        merlingWaterBreathing(player);
+    public void merlingJoin(Player player) {
+        UUID playerUUID = player.getUniqueId();
+
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
+            player.setHealthScale(Config.ORIGINS_MERLING_MAX_HEALTH.toDouble());
+            merlingWaterBreathing(player);
+        }
     }
 
     /**
@@ -60,7 +64,7 @@ public class Merling implements Listener {
             Player player = (Player) event.getEntity();
             UUID playerUUID = player.getUniqueId();
 
-            if (Objects.equals(StorageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
                 event.setCancelled(true);
             }
         }
@@ -71,11 +75,11 @@ public class Merling implements Listener {
      *
      * @param player the player
      */
-    public static void merlingAirBreathingTimer(Player player) {
+    public void merlingAirBreathingTimer(Player player) {
 
         new BukkitRunnable() {
-            final BossBar bossBar = Bukkit.createBossBar("Air Breathing", BarColor.BLUE, BarStyle.SOLID);
-            int merlingAirBreathingTime = 10;
+            final BossBar bossBar = Bukkit.createBossBar("Air Breathing", Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor(), BarStyle.SOLID);
+            int merlingAirBreathingTime = Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt();
 
             @Override
             public void run() {
@@ -84,8 +88,11 @@ public class Merling implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(StorageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
-                    bossBar.setProgress(merlingAirBreathingTime / 10D);
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
+                    bossBar.setTitle(Lang.MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE
+                            .toString()
+                            .replace("%time-left%", String.valueOf(merlingAirBreathingTime)));
+                    bossBar.setProgress(merlingAirBreathingTime / Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toDouble());
                     if (merlingAirBreathingTime <= 0) {
                         if (!player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -116,8 +123,8 @@ public class Merling implements Listener {
                     } else {
                         if (!player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                if (merlingAirBreathingTime <= 10 - 1) {
-                                    bossBar.setColor(BarColor.GREEN);
+                                if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                    bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -127,12 +134,12 @@ public class Merling implements Listener {
                                     this.cancel();
                                 }
                             } else {
-                                bossBar.setColor(BarColor.BLUE);
+                                bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
                             }
                         } else {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                if (merlingAirBreathingTime <= 10 - 1) {
-                                    bossBar.setColor(BarColor.GREEN);
+                                if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                    bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -142,10 +149,10 @@ public class Merling implements Listener {
                                     this.cancel();
                                 }
                             } else {
-                                bossBar.setColor(BarColor.BLUE);
+                                bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
                                 if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                    if (merlingAirBreathingTime <= 10 - 1) {
-                                        bossBar.setColor(BarColor.GREEN);
+                                    if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                        bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                         merlingAirBreathingTime++;
                                         merlingAirBreathingTime++;
                                     } else {
@@ -179,10 +186,10 @@ public class Merling implements Listener {
      *
      * @param player the player
      */
-    public static void merlingAirBreathingTimerZero(Player player) {
+    public void merlingAirBreathingTimerZero(Player player) {
 
         new BukkitRunnable() {
-            final BossBar bossBar = Bukkit.createBossBar("Air Breathing", BarColor.BLUE, BarStyle.SOLID);
+            final BossBar bossBar = Bukkit.createBossBar("Air Breathing", Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor(), BarStyle.SOLID);
             int merlingAirBreathingTime = 1;
 
             @Override
@@ -192,8 +199,11 @@ public class Merling implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(StorageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
-                    bossBar.setProgress(merlingAirBreathingTime / 10D);
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
+                    bossBar.setTitle(Lang.MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE
+                            .toString()
+                            .replace("%time-left%", String.valueOf(merlingAirBreathingTime)));
+                    bossBar.setProgress(merlingAirBreathingTime / Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toDouble());
                     if (merlingAirBreathingTime <= 0) {
                         if (!player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -224,8 +234,8 @@ public class Merling implements Listener {
                     } else {
                         if (!player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                if (merlingAirBreathingTime <= 10 - 1) {
-                                    bossBar.setColor(BarColor.GREEN);
+                                if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                    bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -235,12 +245,12 @@ public class Merling implements Listener {
                                     this.cancel();
                                 }
                             } else {
-                                bossBar.setColor(BarColor.BLUE);
+                                bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
                             }
                         } else {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                if (merlingAirBreathingTime <= 10 - 1) {
-                                    bossBar.setColor(BarColor.GREEN);
+                                if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                    bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -250,10 +260,10 @@ public class Merling implements Listener {
                                     this.cancel();
                                 }
                             } else {
-                                bossBar.setColor(BarColor.BLUE);
+                                bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
                                 if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                    if (merlingAirBreathingTime <= 10 - 1) {
-                                        bossBar.setColor(BarColor.GREEN);
+                                    if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                        bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                         merlingAirBreathingTime++;
                                         merlingAirBreathingTime++;
                                     } else {
@@ -287,7 +297,7 @@ public class Merling implements Listener {
      *
      * @param player the player
      */
-    public static void merlingWaterBreathing(Player player) {
+    public void merlingWaterBreathing(Player player) {
 
         new BukkitRunnable() {
 
@@ -298,7 +308,7 @@ public class Merling implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(StorageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
                     if (!player.getWorld().hasStorm()) {
                         if (!(player.isInWater() || material == Material.WATER_CAULDRON)) {
                             merlingAirBreathingTimer(player);
@@ -324,10 +334,10 @@ public class Merling implements Listener {
      *
      * @param player the player
      */
-    public static void merlingAirDamage(Player player) {
+    public void merlingAirDamage(Player player) {
 
         new BukkitRunnable() {
-            final BossBar bossBar = Bukkit.createBossBar(ChatUtils.format("&cWarning: You're Drowning!"), BarColor.RED, BarStyle.SOLID);
+            final BossBar bossBar = Bukkit.createBossBar(Lang.MERLING_BOSSBAR_DROWNING_TITLE.toString(), Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING.toBarColor(), BarStyle.SOLID);
 
             @Override
             public void run() {
@@ -336,7 +346,7 @@ public class Merling implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(StorageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
                     bossBar.setProgress(0);
                     if (!player.getWorld().hasStorm()) {
                         if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -344,7 +354,7 @@ public class Merling implements Listener {
                             bossBar.removePlayer(player);
                             this.cancel();
                         } else {
-                            player.damage(1);
+                            player.damage(Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
                             bossBar.addPlayer(player);
                         }
                     } else {
@@ -354,7 +364,7 @@ public class Merling implements Listener {
                             this.cancel();
                         } else {
                             if (!(location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY())) {
-                                player.damage(1);
+                                player.damage(Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
                                 bossBar.addPlayer(player);
                             } else {
                                 merlingAirBreathingTimerZero(player);
@@ -371,6 +381,6 @@ public class Merling implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 5L);
+        }.runTaskTimer(plugin, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_DELAY.toLong(), Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY.toLong());
     }
 }

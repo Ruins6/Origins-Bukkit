@@ -1,10 +1,7 @@
 package me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager;
 
 import me.swagpancakes.originsbukkit.Main;
-import me.swagpancakes.originsbukkit.items.ItemManager;
-import me.swagpancakes.originsbukkit.listeners.origins.Enderian;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
-import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +16,7 @@ import java.util.UUID;
  */
 public class AbilitySceptre implements Listener {
 
-    private static Main plugin;
+    private final Main plugin;
 
     /**
      * Instantiates a new Ability sceptre.
@@ -28,7 +25,8 @@ public class AbilitySceptre implements Listener {
      */
     public AbilitySceptre(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        AbilitySceptre.plugin = plugin;
+
+        this.plugin = plugin;
     }
 
     /**
@@ -43,13 +41,13 @@ public class AbilitySceptre implements Listener {
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (event.getItem() != null) {
-                if (Objects.equals(event.getItem().getItemMeta(), ItemManager.abilitySceptre.getItemMeta())) {
-                    switch (Objects.requireNonNull(StorageUtils.getPlayerOrigin(playerUUID))) {
+                if (Objects.equals(event.getItem().getItemMeta(), plugin.itemManager.abilitySceptre.getItemMeta())) {
+                    switch (Objects.requireNonNull(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
                         case HUMAN:
                             ChatUtils.sendPlayerMessage(player, "&bHuman :D");
                             break;
                         case ENDERIAN:
-                            Enderian.enderianEnderPearlThrow(player);
+                            plugin.enderian.enderianEnderPearlThrow(player);
                             break;
                         case MERLING:
                             break;

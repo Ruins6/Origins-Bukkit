@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
  */
 public class ConfigHandler {
 
-    private static Main plugin;
+    private final Main plugin;
 
     /**
      * Instantiates a new Config handler.

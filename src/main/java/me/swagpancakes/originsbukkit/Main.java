@@ -21,14 +21,14 @@ import java.io.IOException;
  */
 public final class Main extends JavaPlugin {
 
-    private static Main plugin;
+    private Main plugin;
 
     /**
      * Gets plugin.
      *
      * @return the plugin
      */
-    public static Main getPlugin() {
+    public Main getPlugin() {
         return plugin;
     }
 
@@ -36,6 +36,61 @@ public final class Main extends JavaPlugin {
      * The Config handler.
      */
     public ConfigHandler configHandler = new ConfigHandler(this);
+
+    /**
+     * The Item manager.
+     */
+    public ItemManager itemManager = new ItemManager(this);
+
+    /**
+     * The Storage utils.
+     */
+    public StorageUtils storageUtils = new StorageUtils(this);
+
+    /**
+     * The Arachnid.
+     */
+    public Arachnid arachnid;
+    /**
+     * The Avian.
+     */
+    public Avian avian;
+    /**
+     * The Blazeborn.
+     */
+    public Blazeborn blazeborn;
+    /**
+     * The Elytrian.
+     */
+    public Elytrian elytrian;
+    /**
+     * The Enderian.
+     */
+    public Enderian enderian;
+    /**
+     * The Feline.
+     */
+    public Feline feline;
+    /**
+     * The Human.
+     */
+    public Human human;
+    /**
+     * The Merling.
+     */
+    public Merling merling;
+    /**
+     * The Phantom.
+     */
+    public Phantom phantom;
+    /**
+     * The Shulk.
+     */
+    public Shulk shulk;
+    /**
+     * The Player origin checker.
+     */
+    public PlayerOriginChecker playerOriginChecker;
 
     /**
      * On enable.
@@ -72,7 +127,7 @@ public final class Main extends JavaPlugin {
     public void loadFiles() {
         configHandler.setup();
         try {
-            StorageUtils.loadOriginsPlayerData();
+            storageUtils.loadOriginsPlayerData();
         } catch (IOException event) {
             event.printStackTrace();
         }
@@ -89,17 +144,17 @@ public final class Main extends JavaPlugin {
      * Register listeners.
      */
     public void registerListeners() {
-        new Human(this);
-        new Arachnid(this);
-        new Avian(this);
-        new Blazeborn(this);
-        new Elytrian(this);
-        new Enderian(this);
-        new Feline(this);
-        new Merling(this);
-        new Phantom(this);
-        new Shulk(this);
-        new PlayerOriginChecker(this);
+        human = new Human(this);
+        arachnid = new Arachnid(this);
+        avian = new Avian(this);
+        blazeborn = new Blazeborn(this);
+        elytrian = new Elytrian(this);
+        enderian = new Enderian(this);
+        feline = new Feline(this);
+        merling = new Merling(this);
+        phantom = new Phantom(this);
+        shulk = new Shulk(this);
+        playerOriginChecker = new PlayerOriginChecker(this);
         new NoOriginPlayerRestrict(this);
         new AbilitySceptre(this);
     }
@@ -108,7 +163,7 @@ public final class Main extends JavaPlugin {
      * Register items.
      */
     public void registerItems() {
-        ItemManager.init();
+        itemManager.init();
 
         ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all items.");
     }
@@ -131,7 +186,7 @@ public final class Main extends JavaPlugin {
      * Register recipes.
      */
     public void registerRecipes() {
-        Bukkit.getServer().addRecipe(ItemManager.abilitySceptreRecipe);
+        Bukkit.getServer().addRecipe(itemManager.abilitySceptreRecipe);
 
         ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all item recipes.");
     }
@@ -149,7 +204,7 @@ public final class Main extends JavaPlugin {
      * Close all player inventory.
      */
     public void closeAllPlayerInventory() {
-        PlayerOriginChecker.closeAllOriginPickerGui();
+        playerOriginChecker.closeAllOriginPickerGui();
     }
 
     /**

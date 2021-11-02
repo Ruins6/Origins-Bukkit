@@ -2,8 +2,6 @@ package me.swagpancakes.originsbukkit.commands;
 
 import me.swagpancakes.originsbukkit.Main;
 import me.swagpancakes.originsbukkit.enums.Lang;
-import me.swagpancakes.originsbukkit.items.ItemManager;
-import me.swagpancakes.originsbukkit.listeners.PlayerOriginChecker;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -57,13 +55,15 @@ public class MainCommand implements CommandExecutor {
                             ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config files.");
                             break;
                         case "TEST":
-                            player.getInventory().addItem(ItemManager.abilitySceptre);
+                            player.getInventory().addItem(plugin.itemManager.abilitySceptre);
                             break;
                         case "TEST2":
-                            PlayerOriginChecker.openOriginPickerGui(player);
+                            plugin.playerOriginChecker.openOriginPickerGui(player);
                             break;
                         case "TEST3":
                             player.sendMessage(Lang.HUMAN_DESCRIPTION.toString());
+                        case "TEST4":
+                            plugin.human.humanJoin(player);
                     }
                 }
             }
