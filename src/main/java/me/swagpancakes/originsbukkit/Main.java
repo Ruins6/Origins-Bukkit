@@ -91,6 +91,10 @@ public final class Main extends JavaPlugin {
      * The Player origin checker.
      */
     public PlayerOriginChecker playerOriginChecker;
+    /**
+     * The No origin player restrict.
+     */
+    public NoOriginPlayerRestrict noOriginPlayerRestrict;
 
     /**
      * On enable.
@@ -155,7 +159,7 @@ public final class Main extends JavaPlugin {
         phantom = new Phantom(this);
         shulk = new Shulk(this);
         playerOriginChecker = new PlayerOriginChecker(this);
-        new NoOriginPlayerRestrict(this);
+        noOriginPlayerRestrict = new NoOriginPlayerRestrict(this);
         new AbilitySceptre(this);
     }
 

@@ -41,7 +41,7 @@ public class NoOriginPlayerRestrict implements Listener {
      *
      * @param player the player
      */
-    public static void restrictPlayerMovement(Player player) {
+    public void restrictPlayerMovement(Player player) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 255, false, false));
     }
 
@@ -50,7 +50,7 @@ public class NoOriginPlayerRestrict implements Listener {
      *
      * @param player the player
      */
-    public static void unrestrictPlayerMovement(Player player) {
+    public void unrestrictPlayerMovement(Player player) {
         player.removePotionEffect(PotionEffectType.SLOW);
     }
 
@@ -103,7 +103,7 @@ public class NoOriginPlayerRestrict implements Listener {
 
         if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             plugin.playerOriginChecker.openOriginPickerGui(player);
-            NoOriginPlayerRestrict.restrictPlayerMovement(player);
+            restrictPlayerMovement(player);
         }
     }
 

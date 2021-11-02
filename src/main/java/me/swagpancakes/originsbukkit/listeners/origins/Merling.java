@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -78,8 +77,13 @@ public class Merling implements Listener {
     public void merlingAirBreathingTimer(Player player) {
 
         new BukkitRunnable() {
-            final BossBar bossBar = Bukkit.createBossBar("Air Breathing", Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor(), BarStyle.SOLID);
             int merlingAirBreathingTime = Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt();
+            final BossBar bossBar = Bukkit.createBossBar(
+                    Lang.MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE
+                            .toString()
+                            .replace("%time-left%", String.valueOf(merlingAirBreathingTime)),
+                    Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor(),
+                    Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
 
             @Override
             public void run() {
@@ -125,6 +129,7 @@ public class Merling implements Listener {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
                                 if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                     bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
+                                    bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -135,11 +140,13 @@ public class Merling implements Listener {
                                 }
                             } else {
                                 bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
+                                bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
                             }
                         } else {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
                                 if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                     bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
+                                    bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -150,9 +157,11 @@ public class Merling implements Listener {
                                 }
                             } else {
                                 bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
+                                bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
                                 if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
                                     if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                         bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
+                                        bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                         merlingAirBreathingTime++;
                                         merlingAirBreathingTime++;
                                     } else {
@@ -189,8 +198,13 @@ public class Merling implements Listener {
     public void merlingAirBreathingTimerZero(Player player) {
 
         new BukkitRunnable() {
-            final BossBar bossBar = Bukkit.createBossBar("Air Breathing", Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor(), BarStyle.SOLID);
             int merlingAirBreathingTime = 1;
+            final BossBar bossBar = Bukkit.createBossBar(
+                    Lang.MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE
+                            .toString()
+                            .replace("%time-left%", String.valueOf(merlingAirBreathingTime)),
+                    Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor(),
+                    Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
 
             @Override
             public void run() {
@@ -236,6 +250,7 @@ public class Merling implements Listener {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
                                 if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                     bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
+                                    bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -246,11 +261,13 @@ public class Merling implements Listener {
                                 }
                             } else {
                                 bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
+                                bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
                             }
                         } else {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
                                 if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                     bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
+                                    bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                     merlingAirBreathingTime++;
                                     merlingAirBreathingTime++;
                                 } else {
@@ -261,9 +278,11 @@ public class Merling implements Listener {
                                 }
                             } else {
                                 bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
+                                bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
                                 if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
                                     if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                         bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
+                                        bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                         merlingAirBreathingTime++;
                                         merlingAirBreathingTime++;
                                     } else {
@@ -337,7 +356,10 @@ public class Merling implements Listener {
     public void merlingAirDamage(Player player) {
 
         new BukkitRunnable() {
-            final BossBar bossBar = Bukkit.createBossBar(Lang.MERLING_BOSSBAR_DROWNING_TITLE.toString(), Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING.toBarColor(), BarStyle.SOLID);
+            final BossBar bossBar = Bukkit.createBossBar(
+                    Lang.MERLING_BOSSBAR_DROWNING_TITLE.toString(),
+                    Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING.toBarColor(),
+                    Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DROWNING.toBarStyle());
 
             @Override
             public void run() {

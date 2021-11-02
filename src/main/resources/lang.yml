@@ -65,7 +65,7 @@ Lang:
         - '&7Your underwater speed is increased.'
         - ''
       Bossbar:
-        Air-Breathing-Timer-Title: 'Air Breathing - %time-left%'
+        Air-Breathing-Timer-Title: '&7Air Breathing - %time-left%'
         Drowning-Title: '&cWarning: You''re Drowning!'
     Phantom:
       Title: '&fPhantom'

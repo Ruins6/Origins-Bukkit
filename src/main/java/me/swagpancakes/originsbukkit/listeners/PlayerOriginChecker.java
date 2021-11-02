@@ -18,7 +18,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -59,8 +59,15 @@ public class PlayerOriginChecker implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-            openOriginPickerGui(player);
-            NoOriginPlayerRestrict.restrictPlayerMovement(player);
+            plugin.noOriginPlayerRestrict.restrictPlayerMovement(player);
+
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+                    openOriginPickerGui(player);
+                }
+            }.runTaskLater(plugin, 5L);
         } else {
             initiatePlayerOrigin(player);
         }
@@ -76,7 +83,7 @@ public class PlayerOriginChecker implements Listener {
 
         if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             openOriginPickerGui(player);
-            NoOriginPlayerRestrict.restrictPlayerMovement(player);
+            plugin.noOriginPlayerRestrict.restrictPlayerMovement(player);
         } else {
             initiatePlayerOrigin(player);
         }
@@ -137,6 +144,9 @@ public class PlayerOriginChecker implements Listener {
      * Initialize items.
      */
     public void initializeItems() {
+        inv.setItem(13, createGuiItem(Material.PLAYER_HEAD, 1,
+                Lang.HUMAN_TITLE.toString(),
+                Lang.HUMAN_DESCRIPTION.toStringList()));
         inv.setItem(19, createGuiItem(Material.ENDER_PEARL, 1,
                 Lang.ENDERIAN_TITLE.toString(),
                 Lang.ENDERIAN_DESCRIPTION.toStringList()));
@@ -172,17 +182,6 @@ public class PlayerOriginChecker implements Listener {
     }
 
     /**
-     * Initialize player skull items.
-     *
-     * @param player the player
-     */
-    public void initializePlayerSkullItems(Player player) {
-        inv.setItem(13, createGuiPlayerSkullItem(player, 1,
-                Lang.HUMAN_TITLE.toString(),
-                Lang.HUMAN_DESCRIPTION.toStringList()));
-    }
-
-    /**
      * Create gui item item stack.
      *
      * @param material the material
@@ -203,35 +202,11 @@ public class PlayerOriginChecker implements Listener {
     }
 
     /**
-     * Create gui player skull item item stack.
-     *
-     * @param player   the player
-     * @param amount   the amount
-     * @param itemName the item name
-     * @param itemLore the item lore
-     * @return the item stack
-     */
-    ItemStack createGuiPlayerSkullItem(Player player, Integer amount, String itemName, String... itemLore) {
-        ItemStack itemStack = new ItemStack(Material.PLAYER_HEAD, amount);
-        SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
-        assert skullMeta != null;
-        skullMeta.setDisplayName(itemName);
-        skullMeta.setOwningPlayer(player);
-        skullMeta.setLore(Arrays.asList(itemLore));
-        itemStack.setItemMeta(skullMeta);
-
-        return itemStack;
-    }
-
-    /**
      * Open origin picker gui.
      *
      * @param humanEntity the human entity
      */
     public void openOriginPickerGui(HumanEntity humanEntity) {
-        Player player = (Player) humanEntity;
-
-        initializePlayerSkullItems(player);
         humanEntity.openInventory(inv);
     }
 
@@ -258,7 +233,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.HUMAN);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.HUMAN)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -277,7 +252,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.ENDERIAN);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -296,7 +271,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.MERLING);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -315,7 +290,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.PHANTOM);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -334,7 +309,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.ELYTRIAN);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -353,7 +328,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.BLAZEBORN);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -372,7 +347,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.AVIAN);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -391,7 +366,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.ARACHNID);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -410,7 +385,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.SHULK);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -429,7 +404,7 @@ public class PlayerOriginChecker implements Listener {
                     plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.FELINE);
                     initiatePlayerOrigin(player);
                     player.closeInventory();
-                    NoOriginPlayerRestrict.unrestrictPlayerMovement(player);
+                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
                 } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.FELINE)) {
                     ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                             .toString()
@@ -444,7 +419,7 @@ public class PlayerOriginChecker implements Listener {
                 }
                 break;
             case 49:
-                player.kickPlayer("&7You logged out of the game.");
+                player.kickPlayer(ChatUtils.format("&7You logged out of the game."));
         }
     }
 
@@ -454,6 +429,7 @@ public class PlayerOriginChecker implements Listener {
     public void closeAllOriginPickerGui() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getInventory().equals(inv)) {
+                inv.clear();
                 player.closeInventory();
             }
         }

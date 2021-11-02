@@ -76,7 +76,19 @@ public enum Config {
     /**
      * Origins merling bossbar air breathing barcolor on drowning config.
      */
-    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Drowning", BarColor.RED);
+    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Drowning", BarColor.RED),
+    /**
+     * Origins merling bossbar air breathing barstyle on decrease config.
+     */
+    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Decrease", BarStyle.SOLID),
+    /**
+     * Origins merling bossbar air breathing barstyle on increase config.
+     */
+    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Increase", BarStyle.SOLID),
+    /**
+     * Origins merling bossbar air breathing barstyle on drowning config.
+     */
+    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Drowning", BarStyle.SOLID);
 
     private final String Path;
     private final Object defaultValue;

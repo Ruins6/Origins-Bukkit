@@ -25,7 +25,6 @@ public class AbilitySceptre implements Listener {
      */
     public AbilitySceptre(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-
         this.plugin = plugin;
     }
 

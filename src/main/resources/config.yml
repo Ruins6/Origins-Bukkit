@@ -29,10 +29,14 @@ Config:
           Period-Delay: 10
       Bossbar:
         Air-Breathing-Timer:
+          #Available Bar Colors:
+          #BLUE, GREEN, RED, PINK, PURPLE, WHITE, YELLOW
           BarColor:
             On-Decrease: BLUE
             On-Increase: GREEN
             On-Drowning: RED
+          #Available Bar Styles:
+          #SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
           BarStyle:
             On-Decrease: SOLID
             On-Increase: SOLID
