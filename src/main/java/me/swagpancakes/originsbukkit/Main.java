@@ -9,6 +9,7 @@ import me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager.AbilityScept
 import me.swagpancakes.originsbukkit.listeners.origins.*;
 import me.swagpancakes.originsbukkit.metrics.Metrics;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -47,6 +48,11 @@ public final class Main extends JavaPlugin {
      * The Storage utils.
      */
     public StorageUtils storageUtils = new StorageUtils(this);
+
+    /**
+     * The Server version checker.
+     */
+    public ServerVersionChecker serverVersionChecker = new ServerVersionChecker(this);
 
     /**
      * The Arachnid.
@@ -106,22 +112,25 @@ public final class Main extends JavaPlugin {
 
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &4   ___       _       _                 ____        _    _    _ _");
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &c  / _ \\ _ __(_) __ _(_)_ __  ___      | __ ) _   _| | _| | _(_) |_");
-        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &e | | | | '__| |/ _` | | '_ \\/ __|_____|  _ \\| | | | |/ / |/ / | __|");
-        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &a | |_| | |  | | (_| | | | | \\__ \\_____| |_) | |_| |   <|   <| | |_");
-        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &b  \\___/|_|  |_|\\__, |_|_| |_|___/     |____/ \\__,_|_|\\_\\_|\\_\\_|\\__|");
-        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &9               |___/");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &6 | | | | '__| |/ _` | | '_ \\/ __|_____|  _ \\| | | | |/ / |/ / | __|");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &e | |_| | |  | | (_| | | | | \\__ \\_____| |_) | |_| |   <|   <| | |_");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &a  \\___/|_|  |_|\\__, |_|_| |_|___/     |____/ \\__,_|_|\\_\\_|\\_\\_|\\__|");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &b               |___/");
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &5               By SwagPannekaker");
-        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &dInitializing!");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit]");
+        checkServerCompatibility();
 
-        loadFiles();
-        registerCommands();
-        registerListeners();
-        registerItems();
-        registerRecipes();
-        startMetrics();
-        checkUpdates();
+        if (plugin.isEnabled()) {
+            loadFiles();
+            registerCommands();
+            registerListeners();
+            registerItems();
+            registerRecipes();
+            startMetrics();
+            checkUpdates();
 
-        ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Plugin has been enabled!");
+            ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Plugin has been enabled!");
+        }
     }
 
     /**
@@ -130,9 +139,20 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         unregisterRecipes();
-        closeAllPlayerInventory();
+
+        if (plugin.isEnabled()) {
+            closeAllPlayerInventory();
+        }
 
         ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Plugin has been disabled!");
+    }
+
+    /**
+     * Check server compatibility.
+     */
+    public void checkServerCompatibility() {
+        serverVersionChecker.checkServerSoftwareCompatibility();
+        serverVersionChecker.checkServerVersionCompatibility();
     }
 
     /**

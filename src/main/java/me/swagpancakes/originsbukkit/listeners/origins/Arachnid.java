@@ -132,9 +132,13 @@ public class Arachnid implements Listener {
                 UUID playerUUID = player.getUniqueId();
 
                 if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
-                    if (player.isSneaking()) {
-                        if (nextToWall(player)) {
-                            player.setVelocity(player.getVelocity().setY(0.175));
+                    if (player.isOnline()) {
+                        if (player.isSneaking()) {
+                            if (nextToWall(player)) {
+                                player.setVelocity(player.getVelocity().setY(0.175));
+                            }
+                        } else {
+                            this.cancel();
                         }
                     } else {
                         this.cancel();

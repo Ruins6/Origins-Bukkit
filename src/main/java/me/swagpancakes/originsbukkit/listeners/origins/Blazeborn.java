@@ -64,22 +64,26 @@ public class Blazeborn implements Listener {
                 Material material = block.getType();
 
                 if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
-                    if (player.getWorld().hasStorm()) {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
-                        } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                            player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                    if (player.isOnline()) {
+                        if (player.getWorld().hasStorm()) {
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                            } else {
+                                blazebornAirEnter(player);
+                                this.cancel();
+                            }
                         } else {
-                            blazebornAirEnter(player);
-                            this.cancel();
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                            } else {
+                                blazebornAirEnter(player);
+                                this.cancel();
+                            }
                         }
                     } else {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
-                        } else {
-                            blazebornAirEnter(player);
-                            this.cancel();
-                        }
+                        this.cancel();
                     }
                 } else {
                     this.cancel();
@@ -105,19 +109,23 @@ public class Blazeborn implements Listener {
                 Material material = block.getType();
 
                 if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
-                    if (player.getWorld().hasStorm()) {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            blazebornWaterDamage(player);
-                            this.cancel();
-                        } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                            blazebornWaterDamage(player);
-                            this.cancel();
+                    if (player.isOnline()) {
+                        if (player.getWorld().hasStorm()) {
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                blazebornWaterDamage(player);
+                                this.cancel();
+                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                blazebornWaterDamage(player);
+                                this.cancel();
+                            }
+                        } else {
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                blazebornWaterDamage(player);
+                                this.cancel();
+                            }
                         }
                     } else {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            blazebornWaterDamage(player);
-                            this.cancel();
-                        }
+                        this.cancel();
                     }
                 } else {
                     this.cancel();

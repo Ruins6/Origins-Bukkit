@@ -75,22 +75,26 @@ public class Enderian implements Listener {
                 Material material = block.getType();
 
                 if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN)) {
-                    if (player.getWorld().hasStorm()) {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
-                        } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                            player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                    if (player.isOnline()) {
+                        if (player.getWorld().hasStorm()) {
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                            } else {
+                                enderianAirEnter(player);
+                                this.cancel();
+                            }
                         } else {
-                            enderianAirEnter(player);
-                            this.cancel();
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                            } else {
+                                enderianAirEnter(player);
+                                this.cancel();
+                            }
                         }
                     } else {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
-                        } else {
-                            enderianAirEnter(player);
-                            this.cancel();
-                        }
+                        this.cancel();
                     }
                 } else {
                     this.cancel();
@@ -116,19 +120,23 @@ public class Enderian implements Listener {
                 Material material = block.getType();
 
                 if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN)) {
-                    if (player.getWorld().hasStorm()) {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            enderianWaterDamage(player);
-                            this.cancel();
-                        } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                            enderianWaterDamage(player);
-                            this.cancel();
+                    if (player.isOnline()) {
+                        if (player.getWorld().hasStorm()) {
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                enderianWaterDamage(player);
+                                this.cancel();
+                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                enderianWaterDamage(player);
+                                this.cancel();
+                            }
+                        } else {
+                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                enderianWaterDamage(player);
+                                this.cancel();
+                            }
                         }
                     } else {
-                        if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                            enderianWaterDamage(player);
-                            this.cancel();
-                        }
+                        this.cancel();
                     }
                 } else {
                     this.cancel();

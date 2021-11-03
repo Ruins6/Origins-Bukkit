@@ -67,7 +67,7 @@ public class PlayerOriginChecker implements Listener {
                 public void run() {
                     openOriginPickerGui(player);
                 }
-            }.runTaskLater(plugin, 5L);
+            }.runTaskLater(plugin, 20L);
         } else {
             initiatePlayerOrigin(player);
         }
@@ -429,7 +429,6 @@ public class PlayerOriginChecker implements Listener {
     public void closeAllOriginPickerGui() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.getInventory().equals(inv)) {
-                inv.clear();
                 player.closeInventory();
             }
         }

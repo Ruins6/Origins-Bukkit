@@ -7,5 +7,6 @@ me.swagpancakes.originsbukkit.items
 me.swagpancakes.originsbukkit.listeners
 me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager
 me.swagpancakes.originsbukkit.listeners.origins
+me.swagpancakes.originsbukkit.metrics
 me.swagpancakes.originsbukkit.storage
 me.swagpancakes.originsbukkit.util
