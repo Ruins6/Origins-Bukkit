@@ -7,6 +7,7 @@ import me.swagpancakes.originsbukkit.listeners.NoOriginPlayerRestrict;
 import me.swagpancakes.originsbukkit.listeners.PlayerOriginChecker;
 import me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager.AbilitySceptre;
 import me.swagpancakes.originsbukkit.listeners.origins.*;
+import me.swagpancakes.originsbukkit.metrics.Metrics;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
@@ -103,6 +104,15 @@ public final class Main extends JavaPlugin {
     public void onEnable() {
         plugin = this;
 
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &4   ___       _       _                 ____        _    _    _ _");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &c  / _ \\ _ __(_) __ _(_)_ __  ___      | __ ) _   _| | _| | _(_) |_");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &e | | | | '__| |/ _` | | '_ \\/ __|_____|  _ \\| | | | |/ / |/ / | __|");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &a | |_| | |  | | (_| | | | | \\__ \\_____| |_) | |_| |   <|   <| | |_");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &b  \\___/|_|  |_|\\__, |_|_| |_|___/     |____/ \\__,_|_|\\_\\_|\\_\\_|\\__|");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &9               |___/");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &5               By SwagPannekaker");
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &dInitializing!");
+
         loadFiles();
         registerCommands();
         registerListeners();
@@ -176,7 +186,9 @@ public final class Main extends JavaPlugin {
      * Start metrics.
      */
     public void startMetrics() {
+        int serviceId = 13236;
 
+        Metrics metrics = new Metrics(this, serviceId);
     }
 
     /**
