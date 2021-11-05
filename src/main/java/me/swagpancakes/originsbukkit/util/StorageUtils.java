@@ -18,6 +18,7 @@ import java.util.UUID;
 public class StorageUtils {
 
     private final Main plugin;
+    private ArrayList<OriginsPlayerData> originsPlayerData = new ArrayList<>();
 
     /**
      * Instantiates a new Storage utils.
@@ -27,8 +28,6 @@ public class StorageUtils {
     public StorageUtils(Main plugin) {
         this.plugin = plugin;
     }
-
-    private ArrayList<OriginsPlayerData> originsPlayerData = new ArrayList<>();
 
     /**
      * Create origins player data.
@@ -55,6 +54,7 @@ public class StorageUtils {
      * Find origins player data origins player data.
      *
      * @param playerUUID the player uuid
+     *
      * @return the origins player data
      */
     public OriginsPlayerData findOriginsPlayerData(UUID playerUUID) {
@@ -70,6 +70,7 @@ public class StorageUtils {
      * Gets player origin.
      *
      * @param playerUUID the player uuid
+     *
      * @return the player origin
      */
     public Origins getPlayerOrigin(UUID playerUUID) {

@@ -34,7 +34,7 @@ public class Phantom implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM)) {
-            player.setHealthScale((10)*2);
+            player.setHealthScale((10) * 2);
         }
     }
 }

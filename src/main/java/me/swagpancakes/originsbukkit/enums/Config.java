@@ -90,10 +90,9 @@ public enum Config {
      */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Drowning", BarStyle.SOLID);
 
+    private static YamlConfiguration CONFIG;
     private final String Path;
     private final Object defaultValue;
-
-    private static YamlConfiguration CONFIG;
 
     Config(final String Path, final Object defaultValue) {
         this.Path = Path;

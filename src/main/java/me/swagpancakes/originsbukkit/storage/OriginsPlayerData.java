@@ -14,6 +14,19 @@ public class OriginsPlayerData {
     private Origins origin;
 
     /**
+     * Instantiates a new Origins player data.
+     *
+     * @param playerUUID the player uuid
+     * @param playerName the player name
+     * @param origin     the origin
+     */
+    public OriginsPlayerData(UUID playerUUID, String playerName, Origins origin) {
+        this.playerUUID = playerUUID;
+        this.playerName = playerName;
+        this.origin = origin;
+    }
+
+    /**
      * Gets origin.
      *
      * @return the origin
@@ -28,19 +41,6 @@ public class OriginsPlayerData {
      * @param origin the origin
      */
     public void setOrigin(Origins origin) {
-        this.origin = origin;
-    }
-
-    /**
-     * Instantiates a new Origins player data.
-     *
-     * @param playerUUID the player uuid
-     * @param playerName the player name
-     * @param origin     the origin
-     */
-    public OriginsPlayerData(UUID playerUUID, String playerName, Origins origin) {
-        this.playerUUID = playerUUID;
-        this.playerName = playerName;
         this.origin = origin;
     }
 

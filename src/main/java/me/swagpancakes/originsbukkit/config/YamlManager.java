@@ -1,10 +1,10 @@
 package me.swagpancakes.originsbukkit.config;
 
 import com.google.common.io.ByteStreams;
+import me.swagpancakes.originsbukkit.Main;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -20,13 +20,13 @@ import java.util.Map;
  */
 public class YamlManager {
 
-    private JavaPlugin plugin;
+    private final Main plugin;
+    private final String internalName;
+    private final String internalLocation;
+    private final String externalName;
+    private final String externalLocation;
     private FileConfiguration file;
     private File loc;
-    private String internalName;
-    private String internalLocation;
-    private String externalName;
-    private String externalLocation;
 
     /**
      * Instantiates a new Yaml manager.
@@ -34,7 +34,7 @@ public class YamlManager {
      * @param plugin the plugin
      * @param name   the name
      */
-    public YamlManager(JavaPlugin plugin,String name) {
+    public YamlManager(Main plugin, String name) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = name;
@@ -50,7 +50,7 @@ public class YamlManager {
      * @param name     the name
      * @param location the location
      */
-    public YamlManager(JavaPlugin plugin,String name,String location) {
+    public YamlManager(Main plugin, String name, String location) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = name;
@@ -67,7 +67,7 @@ public class YamlManager {
      * @param location the location
      * @param newName  the new name
      */
-    public YamlManager(JavaPlugin plugin,String name,String location,String newName) {
+    public YamlManager(Main plugin, String name, String location, String newName) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = newName;
@@ -85,7 +85,7 @@ public class YamlManager {
      * @param newName     the new name
      * @param newLocation the new location
      */
-    public YamlManager(JavaPlugin plugin,String name,String location,String newName,String newLocation) {
+    public YamlManager(Main plugin, String name, String location, String newName, String newLocation) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = newName;
@@ -98,6 +98,7 @@ public class YamlManager {
      * Is readable boolean.
      *
      * @param file the file
+     *
      * @return the boolean
      */
     public static boolean isReadable(File file) {
@@ -105,11 +106,9 @@ public class YamlManager {
         try {
             yamlConfiguration.load(file);
             return true;
-        }
-        catch (IOException event) {
+        } catch (IOException event) {
             return false;
-        }
-        catch (InvalidConfigurationException event) {
+        } catch (InvalidConfigurationException event) {
             return false;
         }
     }
@@ -129,53 +128,49 @@ public class YamlManager {
             return;
         }
         Reader reader = new InputStreamReader(stream);
-        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader)reader : new BufferedReader(reader);
+        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader) reader : new BufferedReader(reader);
         List<String> toSave = new ArrayList<String>();
         try {
             String temp;
             try {
-                while ((temp = input.readLine()) !=  null) {
+                while ((temp = input.readLine()) != null) {
                     toSave.add(temp);
                 }
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
-        }
-        finally {
+        } finally {
             try {
                 input.close();
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
         }
         //add comments to the data
         int maxIndex = Integer.MIN_VALUE;
-        for(int i:comments.keySet())
-            if(i>maxIndex)
+        for (int i : comments.keySet())
+            if (i > maxIndex)
                 maxIndex = i;
-        while(maxIndex>toSave.size())
+        while (maxIndex > toSave.size())
             toSave.add("");
-        for(int i = 0;i <= maxIndex;i++) {
-            if(comments.containsKey(i)) {
+        for (int i = 0; i <= maxIndex; i++) {
+            if (comments.containsKey(i)) {
                 String comment = comments.get(i);
-                if(!comment.startsWith("#"))
-                    comment = "#"+comment;
+                if (!comment.startsWith("#"))
+                    comment = "#" + comment;
                 toSave.add(i, comment);
             }
         }
         //make string
         StringBuilder builder = new StringBuilder();
-        for(String s:toSave) {
+        for (String s : toSave) {
             builder.append(s);
             builder.append("\n");
         }
         //save it
         try {
             Files.write(loc.toPath(), builder.toString().getBytes(), StandardOpenOption.WRITE);
-        }
-        catch (IOException event) {
+        } catch (IOException event) {
             return;
         }
     }
@@ -186,10 +181,10 @@ public class YamlManager {
      * @param comment the comment
      * @param line    the line
      */
-    public void addComment(String comment,int line) {
+    public void addComment(String comment, int line) {
         save(true);
-        if(!comment.startsWith("#"))
-            comment = "#"+comment;
+        if (!comment.startsWith("#"))
+            comment = "#" + comment;
         //load all data from file
         FileInputStream stream = null;
         try {
@@ -198,42 +193,38 @@ public class YamlManager {
             return;
         }
         Reader reader = new InputStreamReader(stream);
-        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader)reader : new BufferedReader(reader);
+        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader) reader : new BufferedReader(reader);
         List<String> toSave = new ArrayList<String>();
         try {
             String temp;
             try {
-                while ((temp = input.readLine()) !=  null) {
+                while ((temp = input.readLine()) != null) {
                     toSave.add(temp);
                 }
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
-        }
-        finally {
+        } finally {
             try {
                 input.close();
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
         }
         //add comments to the data
-        while(line>toSave.size())
+        while (line > toSave.size())
             toSave.add("");
         toSave.add(line, comment);
         //make string
         StringBuilder builder = new StringBuilder();
-        for(String s:toSave) {
+        for (String s : toSave) {
             builder.append(s);
             builder.append("\n");
         }
         //save it
         try {
             Files.write(loc.toPath(), builder.toString().getBytes(), StandardOpenOption.WRITE);
-        }
-        catch (IOException event) {
+        } catch (IOException event) {
             return;
         }
     }
@@ -245,8 +236,8 @@ public class YamlManager {
      */
     public void addComment(String comment) {
         save(true);
-        if(!comment.startsWith("#"))
-            comment = "#"+comment;
+        if (!comment.startsWith("#"))
+            comment = "#" + comment;
         //load all data from file
         FileInputStream stream = null;
         try {
@@ -255,24 +246,21 @@ public class YamlManager {
             return;
         }
         Reader reader = new InputStreamReader(stream);
-        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader)reader : new BufferedReader(reader);
+        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader) reader : new BufferedReader(reader);
         List<String> toSave = new ArrayList<String>();
         try {
             String temp;
             try {
-                while ((temp = input.readLine()) !=  null) {
+                while ((temp = input.readLine()) != null) {
                     toSave.add(temp);
                 }
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
-        }
-        finally {
+        } finally {
             try {
                 input.close();
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
         }
@@ -280,15 +268,14 @@ public class YamlManager {
         toSave.add(comment);
         //make string
         StringBuilder builder = new StringBuilder();
-        for(String s:toSave) {
+        for (String s : toSave) {
             builder.append(s);
             builder.append("\n");
         }
         //save it
         try {
             Files.write(loc.toPath(), builder.toString().getBytes(), StandardOpenOption.WRITE);
-        }
-        catch (IOException event) {
+        } catch (IOException event) {
             return;
         }
     }
@@ -308,14 +295,12 @@ public class YamlManager {
      * @param preserveComments the preserve comments
      */
     public void save(boolean preserveComments) {
-        if(preserveComments) {
+        if (preserveComments) {
             saveCommented(this.loc);
-        }
-        else {
+        } else {
             try {
                 file.save(loc);
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
             }
         }
     }
@@ -326,15 +311,13 @@ public class YamlManager {
      * @param location         the location
      * @param preserveComments the preserve comments
      */
-    public void save(File location,boolean preserveComments) {
-        if(preserveComments) {
+    public void save(File location, boolean preserveComments) {
+        if (preserveComments) {
             saveCommented(location);
-        }
-        else {
+        } else {
             try {
                 file.save(loc);
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
             }
         }
     }
@@ -350,33 +333,30 @@ public class YamlManager {
      * Load from plugin.
      */
     public void loadFromPlugin() {
-        if(!plugin.getDataFolder().exists())
+        if (!plugin.getDataFolder().exists())
             plugin.getDataFolder().mkdir();
         //make directories upto external location
-        if(externalLocation != null) {
-            File temp = new File(plugin.getDataFolder()+File.separator+externalLocation);
-            if(!temp.exists())
+        if (externalLocation != null) {
+            File temp = new File(plugin.getDataFolder() + File.separator + externalLocation);
+            if (!temp.exists())
                 temp.mkdirs();
-            loc = new File(plugin.getDataFolder()+File.separator+externalLocation,externalName+".yml");
-        }
-        else
-        loc = new File(plugin.getDataFolder(),externalName+".yml");
+            loc = new File(plugin.getDataFolder() + File.separator + externalLocation, externalName + ".yml");
+        } else
+            loc = new File(plugin.getDataFolder(), externalName + ".yml");
         //create a new file
         try {
             loc.createNewFile();
             //check if there is a file within plugin
-            if(internalLocation == null&&plugin.getResource(internalName+".yml") != null) { //exists
-                InputStream is  = plugin.getResource(internalName+".yml");
+            if (internalLocation == null && plugin.getResource(internalName + ".yml") != null) { //exists
+                InputStream is = plugin.getResource(internalName + ".yml");
+                OutputStream os = new FileOutputStream(loc);
+                ByteStreams.copy(is, os);
+            } else if (plugin.getClass().getResourceAsStream(File.separator + internalLocation + File.separator + internalName + ".yml") != null) { //exists
+                InputStream is = plugin.getClass().getResourceAsStream(File.separator + internalLocation + File.separator + internalName + ".yml");
                 OutputStream os = new FileOutputStream(loc);
                 ByteStreams.copy(is, os);
             }
-            else if(plugin.getClass().getResourceAsStream(File.separator+internalLocation+File.separator+internalName+".yml") != null) { //exists
-                InputStream is  = plugin.getClass().getResourceAsStream(File.separator+internalLocation+File.separator+internalName+".yml");
-                OutputStream os = new FileOutputStream(loc);
-                ByteStreams.copy(is, os);
-            }
-        }
-        catch(IOException event) {
+        } catch (IOException event) {
         }
         //load the yml file
         file = YamlConfiguration.loadConfiguration(loc);
@@ -392,34 +372,32 @@ public class YamlManager {
     }
 
     private void load() {
-        if(!plugin.getDataFolder().exists())
+        if (!plugin.getDataFolder().exists())
             plugin.getDataFolder().mkdir();
         //make directories upto external location
-        if(externalLocation != null) {
-            File temp = new File(plugin.getDataFolder()+File.separator+externalLocation);
-            if(!temp.exists())
+        if (externalLocation != null) {
+            File temp = new File(plugin.getDataFolder() + File.separator + externalLocation);
+            if (!temp.exists())
                 temp.mkdirs();
-            loc = new File(plugin.getDataFolder()+File.separator+externalLocation,externalName+".yml");
+            loc = new File(plugin.getDataFolder() + File.separator + externalLocation, externalName + ".yml");
         } else
-        loc = new File(plugin.getDataFolder(),externalName+".yml");
+            loc = new File(plugin.getDataFolder(), externalName + ".yml");
         //check if the yml file already exists
-        if(!loc.exists()) {
+        if (!loc.exists()) {
             //create a new file
             try {
                 loc.createNewFile();
                 //check if there is a file within plugin
-                if(internalLocation == null&&plugin.getResource(internalName+".yml") != null) { //exists
-                    InputStream is  = plugin.getResource(internalName+".yml");
+                if (internalLocation == null && plugin.getResource(internalName + ".yml") != null) { //exists
+                    InputStream is = plugin.getResource(internalName + ".yml");
+                    OutputStream os = new FileOutputStream(loc);
+                    ByteStreams.copy(is, os);
+                } else if (plugin.getClass().getResourceAsStream(File.separator + internalLocation + File.separator + internalName + ".yml") != null) { //exists
+                    InputStream is = plugin.getClass().getResourceAsStream(File.separator + internalLocation + File.separator + internalName + ".yml");
                     OutputStream os = new FileOutputStream(loc);
                     ByteStreams.copy(is, os);
                 }
-                else if(plugin.getClass().getResourceAsStream(File.separator+internalLocation+File.separator+internalName+".yml") != null) { //exists
-                    InputStream is  = plugin.getClass().getResourceAsStream(File.separator+internalLocation+File.separator+internalName+".yml");
-                    OutputStream os = new FileOutputStream(loc);
-                    ByteStreams.copy(is, os);
-                }
-            }
-            catch(IOException event) {
+            } catch (IOException event) {
             }
         }
         //load the yml file
@@ -435,59 +413,54 @@ public class YamlManager {
             return;
         }
         Reader reader = new InputStreamReader(stream);
-        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader)reader : new BufferedReader(reader);
+        BufferedReader input = (reader instanceof BufferedReader) ? (BufferedReader) reader : new BufferedReader(reader);
         Map<Integer, String> comments = new HashMap<Integer, String>();
         try {
             String line;
             int index = 0;
             try {
-                while ((line = input.readLine()) !=  null)
-                {
-                    if(line.contains("#"))
+                while ((line = input.readLine()) != null) {
+                    if (line.contains("#"))
                         comments.put(index, line.substring(line.indexOf("#")));
                     index++;
                 }
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
-        }
-        finally {
+        } finally {
             try {
                 input.close();
-            }
-            catch (IOException event) {
+            } catch (IOException event) {
                 return;
             }
         }
         //load all data
         List<String> toSave = new ArrayList<String>();
         String dataStream = file.saveToString();
-        for(String s:dataStream.split("\n")) {
+        for (String s : dataStream.split("\n")) {
             toSave.add(s);
         }
         //add comments to the data
         int maxIndex = Integer.MIN_VALUE;
-        for(int i:comments.keySet())
-            if(i>maxIndex)
+        for (int i : comments.keySet())
+            if (i > maxIndex)
                 maxIndex = i;
-        while(maxIndex>toSave.size())
+        while (maxIndex > toSave.size())
             toSave.add("");
-        for(int i = 0;i <= maxIndex;i++) {
-            if(comments.containsKey(i))
+        for (int i = 0; i <= maxIndex; i++) {
+            if (comments.containsKey(i))
                 toSave.add(i, comments.get(i));
         }
         //make string
         StringBuilder builder = new StringBuilder();
-        for(String s:toSave) {
+        for (String s : toSave) {
             builder.append(s);
             builder.append("\n");
         }
         //save it
         try {
             Files.write(location.toPath(), builder.toString().getBytes(), StandardOpenOption.WRITE);
-        }
-        catch (IOException event) {
+        } catch (IOException event) {
             return;
         }
     }

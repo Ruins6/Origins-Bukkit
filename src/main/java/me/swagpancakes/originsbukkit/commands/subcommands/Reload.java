@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * The type Reload.
  */
-public class Reload{
+public class Reload {
 
     private final Main plugin;
 
@@ -74,6 +74,7 @@ public class Reload{
      * @param command the command
      * @param alias   the alias
      * @param args    the args
+     *
      * @return the list
      */
     public List<String> ReloadSubCommandTabComplete(CommandSender sender, Command command, String alias, String[] args) {

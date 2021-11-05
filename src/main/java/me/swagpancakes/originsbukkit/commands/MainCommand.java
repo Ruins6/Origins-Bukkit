@@ -29,7 +29,7 @@ public class MainCommand implements TabExecutor {
      *
      * @param plugin the plugin
      */
-    public MainCommand(Main plugin){
+    public MainCommand(Main plugin) {
         Objects.requireNonNull(plugin.getCommand("origins")).setExecutor(this);
         this.plugin = plugin;
         this.help = new Help(plugin);
@@ -45,6 +45,7 @@ public class MainCommand implements TabExecutor {
      * @param command the command
      * @param label   the label
      * @param args    the args
+     *
      * @return the boolean
      */
     @Override
@@ -74,6 +75,7 @@ public class MainCommand implements TabExecutor {
      * @param command the command
      * @param alias   the alias
      * @param args    the args
+     *
      * @return the list
      */
     @Override

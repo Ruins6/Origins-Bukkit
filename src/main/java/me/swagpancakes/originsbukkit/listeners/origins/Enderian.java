@@ -30,6 +30,8 @@ import java.util.UUID;
 public class Enderian implements Listener {
 
     private final Main plugin;
+    private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
+    private final int COOLDOWNTIME = Config.ORIGINS_ENDERIAN_ABILITY_COOLDOWN.toInt();
 
     /**
      * Instantiates a new Enderian.
@@ -40,9 +42,6 @@ public class Enderian implements Listener {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
     }
-
-    private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
-    private final int COOLDOWNTIME = Config.ORIGINS_ENDERIAN_ABILITY_COOLDOWN.toInt();
 
     /**
      * Enderian join.

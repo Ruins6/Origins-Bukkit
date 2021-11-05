@@ -221,6 +221,17 @@ public class Metrics {
             }
         }
 
+        private static byte[] compress(final String str) throws IOException {
+            if (str == null) {
+                return null;
+            }
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
+                gzip.write(str.getBytes(StandardCharsets.UTF_8));
+            }
+            return outputStream.toByteArray();
+        }
+
         /**
          * Add custom chart.
          *
@@ -327,9 +338,9 @@ public class Metrics {
                 // Maven's Relocate is clever and changes strings, too. So we have to use this little
                 // "trick" ... :D
                 final String defaultPackage =
-                        new String(new byte[] {'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's'});
+                        new String(new byte[]{'o', 'r', 'g', '.', 'b', 's', 't', 'a', 't', 's'});
                 final String examplePackage =
-                        new String(new byte[] {'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
+                        new String(new byte[]{'y', 'o', 'u', 'r', '.', 'p', 'a', 'c', 'k', 'a', 'g', 'e'});
                 // We want to make sure no one just copy & pastes the example and uses the wrong package
                 // names
                 if (MetricsBase.class.getPackage().getName().startsWith(defaultPackage)
@@ -337,17 +348,6 @@ public class Metrics {
                     throw new IllegalStateException("bStats Metrics class has not been relocated correctly!");
                 }
             }
-        }
-
-        private static byte[] compress(final String str) throws IOException {
-            if (str == null) {
-                return null;
-            }
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            try (GZIPOutputStream gzip = new GZIPOutputStream(outputStream)) {
-                gzip.write(str.getBytes(StandardCharsets.UTF_8));
-            }
-            return outputStream.toByteArray();
         }
     }
 
@@ -373,6 +373,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -422,6 +423,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -433,7 +435,7 @@ public class Metrics {
                 return null;
             }
             for (Map.Entry<String, Integer> entry : map.entrySet()) {
-                valuesBuilder.appendField(entry.getKey(), new int[] {entry.getValue()});
+                valuesBuilder.appendField(entry.getKey(), new int[]{entry.getValue()});
             }
             return new JsonObjectBuilder().appendField("values", valuesBuilder.build()).build();
         }
@@ -461,6 +463,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -510,6 +513,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -561,6 +565,7 @@ public class Metrics {
          *
          * @param errorLogger the error logger
          * @param logErrors   the log errors
+         *
          * @return the request json object
          */
         public JsonObjectBuilder.JsonObject getRequestJsonObject(
@@ -587,6 +592,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         protected abstract JsonObjectBuilder.JsonObject getChartData() throws Exception;
@@ -614,6 +620,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -649,6 +656,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -684,6 +692,7 @@ public class Metrics {
          * Gets chart data.
          *
          * @return the chart data
+         *
          * @throws Exception the exception
          */
         @Override
@@ -731,10 +740,30 @@ public class Metrics {
             builder.append("{");
         }
 
+        private static String escape(String value) {
+            final StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < value.length(); i++) {
+                char c = value.charAt(i);
+                if (c == '"') {
+                    builder.append("\\\"");
+                } else if (c == '\\') {
+                    builder.append("\\\\");
+                } else if (c <= '\u000F') {
+                    builder.append("\\u000").append(Integer.toHexString(c));
+                } else if (c <= '\u001F') {
+                    builder.append("\\u00").append(Integer.toHexString(c));
+                } else {
+                    builder.append(c);
+                }
+            }
+            return builder.toString();
+        }
+
         /**
          * Append null json object builder.
          *
          * @param key the key
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendNull(String key) {
@@ -747,6 +776,7 @@ public class Metrics {
          *
          * @param key   the key
          * @param value the value
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendField(String key, String value) {
@@ -762,6 +792,7 @@ public class Metrics {
          *
          * @param key   the key
          * @param value the value
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendField(String key, int value) {
@@ -774,6 +805,7 @@ public class Metrics {
          *
          * @param key    the key
          * @param object the object
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendField(String key, JsonObject object) {
@@ -789,6 +821,7 @@ public class Metrics {
          *
          * @param key    the key
          * @param values the values
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendField(String key, String[] values) {
@@ -808,6 +841,7 @@ public class Metrics {
          *
          * @param key    the key
          * @param values the values
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendField(String key, int[] values) {
@@ -825,6 +859,7 @@ public class Metrics {
          *
          * @param key    the key
          * @param values the values
+         *
          * @return the json object builder
          */
         public JsonObjectBuilder appendField(String key, JsonObject[] values) {
@@ -863,25 +898,6 @@ public class Metrics {
             JsonObject object = new JsonObject(builder.append("}").toString());
             builder = null;
             return object;
-        }
-
-        private static String escape(String value) {
-            final StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < value.length(); i++) {
-                char c = value.charAt(i);
-                if (c == '"') {
-                    builder.append("\\\"");
-                } else if (c == '\\') {
-                    builder.append("\\\\");
-                } else if (c <= '\u000F') {
-                    builder.append("\\u000").append(Integer.toHexString(c));
-                } else if (c <= '\u001F') {
-                    builder.append("\\u00").append(Integer.toHexString(c));
-                } else {
-                    builder.append(c);
-                }
-            }
-            return builder.toString();
         }
 
         /**

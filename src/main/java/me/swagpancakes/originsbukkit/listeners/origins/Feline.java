@@ -34,7 +34,7 @@ public class Feline implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.FELINE)) {
-            player.setHealthScale((9)*2);
+            player.setHealthScale((9) * 2);
         }
     }
 }

@@ -30,6 +30,7 @@ import java.util.UUID;
 public class PlayerOriginChecker implements Listener {
 
     private final Main plugin;
+    private Inventory inv;
 
     /**
      * Instantiates a new Player origin checker.
@@ -45,8 +46,6 @@ public class PlayerOriginChecker implements Listener {
             checkPlayerOriginData(player);
         }
     }
-
-    private Inventory inv;
 
     /**
      * On player origin check.
@@ -190,6 +189,7 @@ public class PlayerOriginChecker implements Listener {
      * @param amount   the amount
      * @param itemName the item name
      * @param itemLore the item lore
+     *
      * @return the item stack
      */
     ItemStack createGuiItem(Material material, Integer amount, String itemName, String... itemLore) {

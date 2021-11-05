@@ -34,7 +34,7 @@ public class Avian implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN)) {
-            player.setHealthScale((10)*2);
+            player.setHealthScale((10) * 2);
         }
     }
 }

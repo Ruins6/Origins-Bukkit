@@ -19,6 +19,14 @@ import java.util.List;
 public class ItemManager {
 
     private final Main plugin;
+    /**
+     * The Ability sceptre.
+     */
+    public ItemStack abilitySceptre;
+    /**
+     * The Ability sceptre recipe.
+     */
+    public ShapedRecipe abilitySceptreRecipe;
 
     /**
      * Instantiates a new Item manager.
@@ -28,16 +36,6 @@ public class ItemManager {
     public ItemManager(Main plugin) {
         this.plugin = plugin;
     }
-
-    /**
-     * The Ability sceptre.
-     */
-    public ItemStack abilitySceptre;
-
-    /**
-     * The Ability sceptre recipe.
-     */
-    public ShapedRecipe abilitySceptreRecipe;
 
     /**
      * Init.
@@ -74,5 +72,4 @@ public class ItemManager {
 
         abilitySceptreRecipe = shapedRecipe;
     }
-
 }

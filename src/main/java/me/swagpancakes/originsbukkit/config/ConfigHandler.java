@@ -19,6 +19,10 @@ import java.io.InputStreamReader;
 public class ConfigHandler {
 
     private final Main plugin;
+    private YamlConfiguration CONFIG;
+    private File CONFIG_FILE;
+    private YamlConfiguration LANG;
+    private File LANG_FILE;
 
     /**
      * Instantiates a new Config handler.
@@ -28,23 +32,6 @@ public class ConfigHandler {
     public ConfigHandler(Main plugin) {
         this.plugin = plugin;
     }
-
-    /**
-     * The constant CONFIG.
-     */
-    public static YamlConfiguration CONFIG;
-    /**
-     * The constant CONFIG_FILE.
-     */
-    public static File CONFIG_FILE;
-    /**
-     * The constant LANG.
-     */
-    public static YamlConfiguration LANG;
-    /**
-     * The constant LANG_FILE.
-     */
-    public static File LANG_FILE;
 
     /**
      * Gets config.
@@ -122,7 +109,7 @@ public class ConfigHandler {
                     ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully created the config.yml file");
                     return defaultConfig;
                 }
-            } catch(IOException event) {
+            } catch (IOException event) {
                 event.printStackTrace();
                 ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Couldn't create config file.");
                 ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] This is a fatal error. Now disabling.");
@@ -140,7 +127,7 @@ public class ConfigHandler {
         CONFIG_FILE = configFile;
         try {
             yamlConfiguration.save(getConfigFile());
-        } catch(IOException event) {
+        } catch (IOException event) {
             event.printStackTrace();
             ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Failed to save lang.yml.");
             ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] this stack trace to <your name>.");
@@ -177,7 +164,7 @@ public class ConfigHandler {
                     ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully created the lang.yml file");
                     return defaultConfig;
                 }
-            } catch(IOException event) {
+            } catch (IOException event) {
                 event.printStackTrace();
                 ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Couldn't create language file.");
                 ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] This is a fatal error. Now disabling.");
@@ -195,7 +182,7 @@ public class ConfigHandler {
         LANG_FILE = langFile;
         try {
             yamlConfiguration.save(getLangFile());
-        } catch(IOException event) {
+        } catch (IOException event) {
             event.printStackTrace();
             ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Failed to save lang.yml.");
             ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] this stack trace to <your name>.");
@@ -212,7 +199,7 @@ public class ConfigHandler {
      * Reload files.
      */
     public void reloadFiles() {
-        File configFile = new File (plugin.getDataFolder(), "config.yml");
+        File configFile = new File(plugin.getDataFolder(), "config.yml");
         File langFile = new File(plugin.getDataFolder(), "lang.yml");
 
         if (configFile.exists()) {

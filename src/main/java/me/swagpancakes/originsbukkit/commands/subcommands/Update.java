@@ -125,6 +125,7 @@ public class Update {
      * @param command the command
      * @param alias   the alias
      * @param args    the args
+     *
      * @return the list
      */
     public List<String> UpdateSubCommandTabComplete(CommandSender sender, Command command, String alias, String[] args) {

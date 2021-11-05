@@ -23,37 +23,22 @@ import java.io.IOException;
  */
 public final class Main extends JavaPlugin {
 
-    private Main plugin;
-
-    /**
-     * Gets plugin.
-     *
-     * @return the plugin
-     */
-    public Main getPlugin() {
-        return plugin;
-    }
-
     /**
      * The Config handler.
      */
     public ConfigHandler configHandler = new ConfigHandler(this);
-
     /**
      * The Item manager.
      */
     public ItemManager itemManager = new ItemManager(this);
-
     /**
      * The Storage utils.
      */
     public StorageUtils storageUtils = new StorageUtils(this);
-
     /**
      * The Server version checker.
      */
     public ServerVersionChecker serverVersionChecker = new ServerVersionChecker(this);
-
     /**
      * The Arachnid.
      */
@@ -102,6 +87,17 @@ public final class Main extends JavaPlugin {
      * The Player origin checker.
      */
     public PlayerOriginChecker playerOriginChecker;
+
+    private Main plugin;
+
+    /**
+     * Gets plugin.
+     *
+     * @return the plugin
+     */
+    public Main getPlugin() {
+        return plugin;
+    }
 
     /**
      * On enable.

@@ -14,6 +14,7 @@ public class ChatUtils {
      * Format string.
      *
      * @param format the format
+     *
      * @return the string
      */
     public static String format(String format) {
@@ -24,12 +25,13 @@ public class ChatUtils {
      * Format list string [ ].
      *
      * @param format the format
+     *
      * @return the string [ ]
      */
     public static String[] formatList(String[] format) {
         String[] result;
         result = new String[format.length];
-        for(int i = 0; i < format.length ; i++) {
+        for (int i = 0; i < format.length; i++) {
             result[i] = ChatColor.translateAlternateColorCodes('&', format[i]);
         }
         return result;

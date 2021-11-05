@@ -28,6 +28,7 @@ public class OriginsBukkitAPI {
      * Gets player origin.
      *
      * @param playerUUID the player uuid
+     *
      * @return the player origin
      */
     public Origins getPlayerOrigin(@NotNull UUID playerUUID) {

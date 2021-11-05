@@ -25,6 +25,8 @@ import java.util.*;
 public class Arachnid implements Listener {
 
     private final Main plugin;
+    private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
+    private final int COOLDOWNTIME = 5;
 
     /**
      * Instantiates a new Arachnid.
@@ -36,9 +38,6 @@ public class Arachnid implements Listener {
         this.plugin = plugin;
     }
 
-    private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
-    private final int COOLDOWNTIME = 5;
-
     /**
      * Arachnid join.
      *
@@ -48,7 +47,7 @@ public class Arachnid implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
-            player.setHealthScale((10 - 3)*2);
+            player.setHealthScale((10 - 3) * 2);
         }
     }
 
@@ -85,7 +84,7 @@ public class Arachnid implements Listener {
             UUID playerUUID = player.getUniqueId();
 
             if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
-                Location location1 = location.add(0, 1 , 0);
+                Location location1 = location.add(0, 1, 0);
                 Block block1 = location1.getBlock();
                 Material material1 = block1.getType();
 
@@ -154,6 +153,7 @@ public class Arachnid implements Listener {
      * Next to wall boolean.
      *
      * @param player the player
+     *
      * @return the boolean
      */
     public boolean nextToWall(Player player) {
@@ -169,10 +169,7 @@ public class Arachnid implements Listener {
         if (block.getRelative(BlockFace.EAST).getType().isSolid()) {
             return true;
         }
-        if (block.getRelative(BlockFace.WEST).getType().isSolid()) {
-            return true;
-        }
-        return false;
+        return block.getRelative(BlockFace.WEST).getType().isSolid();
     }
 
     /**

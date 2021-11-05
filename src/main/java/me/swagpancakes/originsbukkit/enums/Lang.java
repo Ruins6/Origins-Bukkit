@@ -297,7 +297,7 @@ public enum Lang {
      */
     NO_PERMISSION_COMMAND("Lang.Player.Messages.Error.Commands.No-Permission",
             "&cI'm sorry, but you do not have permission to perform this command. " +
-            "Please contact the server administrators if you believe that this is in error."),
+                    "Please contact the server administrators if you believe that this is in error."),
     /**
      * The Player origin already selected.
      */
@@ -327,10 +327,9 @@ public enum Lang {
      */
     MERLING_BOSSBAR_DROWNING_TITLE("Lang.Origins.Merling.Bossbar.Drowning-Title", "&cWarning: You're Drowning!");
 
+    private static YamlConfiguration LANG;
     private final String Path;
     private final Object defaultValue;
-
-    private static YamlConfiguration LANG;
 
     Lang(final String Path, final Object defaultValue) {
         this.Path = Path;

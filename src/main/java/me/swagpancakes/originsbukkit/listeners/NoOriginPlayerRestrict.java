@@ -116,7 +116,7 @@ public class NoOriginPlayerRestrict implements Listener {
     public void onNoOriginPlayerItemPickup(EntityPickupItemEvent event) {
         Entity entity = event.getEntity();
 
-        if (entity instanceof  Player) {
+        if (entity instanceof Player) {
             Player player = ((Player) entity).getPlayer();
             assert player != null;
             UUID playerUUID = player.getUniqueId();

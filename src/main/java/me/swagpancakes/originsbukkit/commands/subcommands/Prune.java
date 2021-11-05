@@ -98,6 +98,7 @@ public class Prune {
      * @param command the command
      * @param alias   the alias
      * @param args    the args
+     *
      * @return the list
      */
     public List<String> PruneSubCommandTabComplete(CommandSender sender, Command command, String alias, String[] args) {
