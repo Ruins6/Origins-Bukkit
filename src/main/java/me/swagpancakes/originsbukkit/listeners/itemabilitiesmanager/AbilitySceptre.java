@@ -41,29 +41,31 @@ public class AbilitySceptre implements Listener {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR) {
             if (event.getItem() != null) {
                 if (Objects.equals(event.getItem().getItemMeta(), plugin.itemManager.abilitySceptre.getItemMeta())) {
-                    switch (Objects.requireNonNull(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
-                        case HUMAN:
-                            ChatUtils.sendPlayerMessage(player, "&bHuman :D");
-                            break;
-                        case ENDERIAN:
-                            plugin.enderian.enderianEnderPearlThrow(player);
-                            break;
-                        case MERLING:
-                            break;
-                        case PHANTOM:
-                            break;
-                        case ELYTRIAN:
-                            break;
-                        case BLAZEBORN:
-                            break;
-                        case AVIAN:
-                            break;
-                        case ARACHNID:
-                            break;
-                        case SHULK:
-                            break;
-                        case FELINE:
-                            break;
+                    if (plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
+                        switch (plugin.storageUtils.getPlayerOrigin(playerUUID)) {
+                            case HUMAN:
+                                ChatUtils.sendPlayerMessage(player, "&bHuman :D");
+                                break;
+                            case ENDERIAN:
+                                plugin.enderian.enderianEnderPearlThrow(player);
+                                break;
+                            case MERLING:
+                                break;
+                            case PHANTOM:
+                                break;
+                            case ELYTRIAN:
+                                break;
+                            case BLAZEBORN:
+                                break;
+                            case AVIAN:
+                                break;
+                            case ARACHNID:
+                                break;
+                            case SHULK:
+                                break;
+                            case FELINE:
+                                break;
+                        }
                     }
                 }
             }

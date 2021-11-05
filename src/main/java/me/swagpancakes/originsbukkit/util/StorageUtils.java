@@ -40,12 +40,14 @@ public class StorageUtils {
     public void createOriginsPlayerData(UUID playerUUID, Player player, Origins origin) {
         String playerName = player.getName();
 
-        OriginsPlayerData originsPlayerData = new OriginsPlayerData(playerUUID, playerName, origin);
-        this.originsPlayerData.add(originsPlayerData);
-        try {
-            saveOriginsPlayerData();
-        } catch (IOException event) {
-            event.printStackTrace();
+        if (findOriginsPlayerData(playerUUID) == null) {
+            OriginsPlayerData originsPlayerData = new OriginsPlayerData(playerUUID, playerName, origin);
+            this.originsPlayerData.add(originsPlayerData);
+            try {
+                saveOriginsPlayerData();
+            } catch (IOException event) {
+                event.printStackTrace();
+            }
         }
     }
 
@@ -85,16 +87,18 @@ public class StorageUtils {
      * @param playerUUID the player uuid
      */
     public void deleteOriginsPlayerData(UUID playerUUID) {
-        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
-            if (originsPlayerData.getUuid().equals(playerUUID)) {
-                this.originsPlayerData.remove(originsPlayerData);
-                break;
+        if (findOriginsPlayerData(playerUUID) != null) {
+            for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
+                if (originsPlayerData.getUuid().equals(playerUUID)) {
+                    this.originsPlayerData.remove(originsPlayerData);
+                    break;
+                }
             }
-        }
-        try {
-            saveOriginsPlayerData();
-        } catch (IOException event) {
-            event.printStackTrace();
+            try {
+                saveOriginsPlayerData();
+            } catch (IOException event) {
+                event.printStackTrace();
+            }
         }
     }
 
@@ -105,14 +109,16 @@ public class StorageUtils {
      * @param newOriginsPlayerData the new origins player data
      */
     public void updateOriginsPlayerData(UUID playerUUID, OriginsPlayerData newOriginsPlayerData) {
-        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
-            if (originsPlayerData.getUuid().equals(playerUUID)) {
-                originsPlayerData.setPlayerName(newOriginsPlayerData.getPlayerName());
-                originsPlayerData.setOrigin(newOriginsPlayerData.getOrigin());
-                try {
-                    saveOriginsPlayerData();
-                } catch (IOException event) {
-                    event.printStackTrace();
+        if (findOriginsPlayerData(playerUUID) != null) {
+            for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
+                if (originsPlayerData.getUuid().equals(playerUUID)) {
+                    originsPlayerData.setPlayerName(newOriginsPlayerData.getPlayerName());
+                    originsPlayerData.setOrigin(newOriginsPlayerData.getOrigin());
+                    try {
+                        saveOriginsPlayerData();
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
                 }
             }
         }

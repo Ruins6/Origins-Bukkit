@@ -8,7 +8,7 @@ Lang:
     Messages:
       Error:
         Commands:
-          No-Permission: '&cI''m sorry but you do not have permission to perform this
+          No-Permission: '&cI''m sorry, but you do not have permission to perform this
             command. Please contact the server administrators if you believe that
             this is in error.'
         Player-Origin-Already-Selected: '&cYou have already chosen this origin! &e(%player_current_origin%)'

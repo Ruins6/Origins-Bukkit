@@ -27,25 +27,19 @@ public class ServerVersionChecker {
     public String getServerSoftware() {
         String serverSoftware = Bukkit.getVersion().toUpperCase();
 
-        if (serverSoftware.contains("CRAFTBUKKIT")) {
-            return "CraftBukkit";
-        }
-        if (serverSoftware.contains("SPIGOT")) {
+        if (serverSoftware.contains("BUKKIT")) {
+            return "Bukkit";
+        } else if (serverSoftware.contains("SPIGOT")) {
             return "Spigot";
-        }
-        if (serverSoftware.contains("PAPER")) {
+        } else if (serverSoftware.contains("PAPER")) {
             return "Paper";
-        }
-        if (serverSoftware.contains("TUINITY")) {
+        } else if (serverSoftware.contains("TUINITY")) {
             return "Tuinity";
-        }
-        if (serverSoftware.contains("PURPUR")) {
+        } else if (serverSoftware.contains("PURPUR")) {
             return "Purpur";
-        }
-        if (serverSoftware.contains("YATOPIA")) {
+        } else if (serverSoftware.contains("YATOPIA")) {
             return "Yatopia";
-        }
-        if (serverSoftware.contains("AIRPLANE")) {
+        } else if (serverSoftware.contains("AIRPLANE")) {
             return "Airplane";
         } else {
             return "Custom";
@@ -60,25 +54,19 @@ public class ServerVersionChecker {
     public boolean isServerSoftwareSafe() {
         String serverSoftware = getServerSoftware().toUpperCase();
 
-        if (serverSoftware.contains("CRAFTBUKKIT")) {
+        if (serverSoftware.contains("BUKKIT")) {
             return true;
-        }
-        if (serverSoftware.contains("SPIGOT")) {
+        } else if (serverSoftware.contains("SPIGOT")) {
             return true;
-        }
-        if (serverSoftware.contains("PAPER")) {
+        } else if (serverSoftware.contains("PAPER")) {
             return true;
-        }
-        if (serverSoftware.contains("TUINITY")) {
+        } else if (serverSoftware.contains("TUINITY")) {
             return true;
-        }
-        if (serverSoftware.contains("PURPUR")) {
+        } else if (serverSoftware.contains("PURPUR")) {
             return true;
-        }
-        if (serverSoftware.contains("AIRPLANE")) {
+        } else if (serverSoftware.contains("AIRPLANE")) {
             return true;
-        }
-        if (serverSoftware.contains("YATOPIA")) {
+        } else if (serverSoftware.contains("YATOPIA")) {
             return false;
         } else if (serverSoftware.contains("CUSTOM")) {
             return false;
@@ -119,59 +107,41 @@ public class ServerVersionChecker {
 
         if (serverVersion.contains("1.17.1")) {
             return "1.17.1";
-        }
-        if (serverVersion.contains("1.17")) {
+        } else if (serverVersion.contains("1.17")) {
             return "1.17";
-        }
-        if (serverVersion.contains("1.16.5")) {
+        } else if (serverVersion.contains("1.16.5")) {
             return "1.16.5";
-        }
-        if (serverVersion.contains("1.16.4")) {
+        } else if (serverVersion.contains("1.16.4")) {
             return "1.16.4";
-        }
-        if (serverVersion.contains("1.16.3")) {
+        } else if (serverVersion.contains("1.16.3")) {
             return "1.16.3";
-        }
-        if (serverVersion.contains("1.16.2")) {
+        } else if (serverVersion.contains("1.16.2")) {
             return "1.16.2";
-        }
-        if (serverVersion.contains("1.16.1")) {
+        } else if (serverVersion.contains("1.16.1")) {
             return "1.16.1";
-        }
-        if (serverVersion.contains("1.16")) {
+        } else if (serverVersion.contains("1.16")) {
             return "1.16";
-        }
-        if (serverVersion.contains("1.15.2")) {
+        } else if (serverVersion.contains("1.15.2")) {
             return "1.15.2";
-        }
-        if (serverVersion.contains("1.15.1")) {
+        } else if (serverVersion.contains("1.15.1")) {
             return "1.15.1";
-        }
-        if (serverVersion.contains("1.15")) {
+        } else if (serverVersion.contains("1.15")) {
             return "1.15";
-        }
-        if (serverVersion.contains("1.14.4")) {
+        } else if (serverVersion.contains("1.14.4")) {
             return "1.14.4";
-        }
-        if (serverVersion.contains("1.14.3")) {
+        } else if (serverVersion.contains("1.14.3")) {
             return "1.14.3";
-        }
-        if (serverVersion.contains("1.14.2")) {
+        } else if (serverVersion.contains("1.14.2")) {
             return "1.14.2";
-        }
-        if (serverVersion.contains("1.14.1")) {
+        } else if (serverVersion.contains("1.14.1")) {
             return "1.14.1";
-        }
-        if (serverVersion.contains("1.14")) {
+        } else if (serverVersion.contains("1.14")) {
             return "1.14";
-        }
-        if (serverVersion.contains("1.13.2")) {
+        } else if (serverVersion.contains("1.13.2")) {
             return "1.13.2";
-        }
-        if (serverVersion.contains("1.13.1")) {
+        } else if (serverVersion.contains("1.13.1")) {
             return "1.13.1";
-        }
-        if (serverVersion.contains("1.13")) {
+        } else if (serverVersion.contains("1.13")) {
             return "1.13";
         } else {
             return "Unknown/Unsupported Version";
@@ -188,35 +158,25 @@ public class ServerVersionChecker {
 
         if (serverVersion.contains("1.17")) {
             return "1.17.x";
-        }
-        if (serverVersion.contains("1.16")) {
+        } else if (serverVersion.contains("1.16")) {
             return "1.16.x";
-        }
-        if (serverVersion.contains("1.15")) {
+        } else if (serverVersion.contains("1.15")) {
             return "1.15.x";
-        }
-        if (serverVersion.contains("1.14")) {
+        } else if (serverVersion.contains("1.14")) {
             return "1.14.x";
-        }
-        if (serverVersion.contains("1.13")) {
+        } else if (serverVersion.contains("1.13")) {
             return "1.13.x";
-        }
-        if (serverVersion.contains("1.12")) {
+        } else if (serverVersion.contains("1.12")) {
             return "1.12.x";
-        }
-        if (serverVersion.contains("1.11")) {
+        } else if (serverVersion.contains("1.11")) {
             return "1.11.x";
-        }
-        if (serverVersion.contains("1.10")) {
+        } else if (serverVersion.contains("1.10")) {
             return "1.10.x";
-        }
-        if (serverVersion.contains("1.9")) {
+        } else if (serverVersion.contains("1.9")) {
             return "1.9.x";
-        }
-        if (serverVersion.contains("1.8")) {
+        } else if (serverVersion.contains("1.8")) {
             return "1.8.x";
-        }
-        if (serverVersion.contains("1.7")) {
+        } else if (serverVersion.contains("1.7")) {
             return "1.7.x";
         } else {
             return "Unknown/Unsupported Version";

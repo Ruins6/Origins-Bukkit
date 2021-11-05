@@ -296,7 +296,7 @@ public enum Lang {
      * The No permission command.
      */
     NO_PERMISSION_COMMAND("Lang.Player.Messages.Error.Commands.No-Permission",
-            "&cI'm sorry but you do not have permission to perform this command. " +
+            "&cI'm sorry, but you do not have permission to perform this command. " +
             "Please contact the server administrators if you believe that this is in error."),
     /**
      * The Player origin already selected.

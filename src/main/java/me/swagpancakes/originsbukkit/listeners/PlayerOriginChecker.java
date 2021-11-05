@@ -42,7 +42,7 @@ public class PlayerOriginChecker implements Listener {
 
         originPickerGui();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            checkAllOnlinePlayersOriginData(player);
+            checkPlayerOriginData(player);
         }
     }
 
@@ -67,18 +67,18 @@ public class PlayerOriginChecker implements Listener {
                 public void run() {
                     openOriginPickerGui(player);
                 }
-            }.runTaskLater(plugin, 20L);
+            }.runTaskLater(plugin, 30L);
         } else {
             initiatePlayerOrigin(player);
         }
     }
 
     /**
-     * Check all online players origin data.
+     * Check player origin data.
      *
      * @param player the player
      */
-    public void checkAllOnlinePlayersOriginData(Player player) {
+    public void checkPlayerOriginData(Player player) {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
@@ -97,37 +97,39 @@ public class PlayerOriginChecker implements Listener {
     public void initiatePlayerOrigin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        switch (Objects.requireNonNull(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
-            case HUMAN:
-                plugin.human.humanJoin(player);
-                break;
-            case ENDERIAN:
-                plugin.enderian.enderianJoin(player);
-                break;
-            case MERLING:
-                plugin.merling.merlingJoin(player);
-                break;
-            case PHANTOM:
-                plugin.phantom.phantomJoin(player);
-                break;
-            case ELYTRIAN:
-                plugin.elytrian.elytrianJoin(player);
-                break;
-            case BLAZEBORN:
-                plugin.blazeborn.blazebornJoin(player);
-                break;
-            case AVIAN:
-                plugin.avian.avianJoin(player);
-                break;
-            case ARACHNID:
-                plugin.arachnid.arachnidJoin(player);
-                break;
-            case SHULK:
-                plugin.shulk.shulkJoin(player);
-                break;
-            case FELINE:
-                plugin.feline.felineJoin(player);
-                break;
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
+            switch (plugin.storageUtils.getPlayerOrigin(playerUUID)) {
+                case HUMAN:
+                    plugin.human.humanJoin(player);
+                    break;
+                case ENDERIAN:
+                    plugin.enderian.enderianJoin(player);
+                    break;
+                case MERLING:
+                    plugin.merling.merlingJoin(player);
+                    break;
+                case PHANTOM:
+                    plugin.phantom.phantomJoin(player);
+                    break;
+                case ELYTRIAN:
+                    plugin.elytrian.elytrianJoin(player);
+                    break;
+                case BLAZEBORN:
+                    plugin.blazeborn.blazebornJoin(player);
+                    break;
+                case AVIAN:
+                    plugin.avian.avianJoin(player);
+                    break;
+                case ARACHNID:
+                    plugin.arachnid.arachnidJoin(player);
+                    break;
+                case SHULK:
+                    plugin.shulk.shulkJoin(player);
+                    break;
+                case FELINE:
+                    plugin.feline.felineJoin(player);
+                    break;
+            }
         }
     }
 
@@ -225,201 +227,68 @@ public class PlayerOriginChecker implements Listener {
         if (clickedItem == null || clickedItem.getType().isAir()) return;
 
         Player player = (Player) event.getWhoClicked();
-        UUID playerUUID = player.getUniqueId();
 
         switch (event.getRawSlot()) {
             case 13:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.HUMAN);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.HUMAN)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.HUMAN));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.HUMAN);
                 break;
             case 19:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.ENDERIAN);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.ENDERIAN));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.ENDERIAN);
                 break;
             case 22:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.MERLING);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.MERLING));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.MERLING);
                 break;
             case 25:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.PHANTOM);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.PHANTOM));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.PHANTOM);
                 break;
             case 28:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.ELYTRIAN);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.ELYTRIAN));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.ELYTRIAN);
                 break;
             case 31:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.BLAZEBORN);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.BLAZEBORN));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.BLAZEBORN);
                 break;
             case 34:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.AVIAN);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.AVIAN));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.AVIAN);
                 break;
             case 37:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.ARACHNID);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.ARACHNID));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.ARACHNID);
                 break;
             case 40:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.SHULK);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.SHULK));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.SHULK);
                 break;
             case 43:
-                if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                    plugin.storageUtils.createOriginsPlayerData(playerUUID, player, Origins.FELINE);
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-                } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.FELINE)) {
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
-                            .toString()
-                            .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                } else {
-                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), Origins.FELINE));
-                    initiatePlayerOrigin(player);
-                    player.closeInventory();
-                    ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
-                            .toString()
-                            .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
-                }
+                executeOriginPickerGuiOriginOption(player, Origins.FELINE);
                 break;
             case 49:
                 player.kickPlayer(ChatUtils.format("&7You logged out of the game."));
+        }
+    }
+
+    /**
+     * Execute origin picker gui origin option.
+     *
+     * @param player the player
+     * @param origin the origin
+     */
+    public void executeOriginPickerGuiOriginOption(Player player, Origins origin) {
+        UUID playerUUID = player.getUniqueId();
+
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+            plugin.storageUtils.createOriginsPlayerData(playerUUID, player, origin);
+            initiatePlayerOrigin(player);
+            player.closeInventory();
+            plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
+        } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), origin)) {
+            ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
+                    .toString()
+                    .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+        } else {
+            plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), origin));
+            initiatePlayerOrigin(player);
+            player.closeInventory();
+            ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
+                    .toString()
+                    .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
         }
     }
 

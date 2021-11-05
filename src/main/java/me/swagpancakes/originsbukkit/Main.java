@@ -95,13 +95,13 @@ public final class Main extends JavaPlugin {
      */
     public Shulk shulk;
     /**
-     * The Player origin checker.
-     */
-    public PlayerOriginChecker playerOriginChecker;
-    /**
      * The No origin player restrict.
      */
     public NoOriginPlayerRestrict noOriginPlayerRestrict;
+    /**
+     * The Player origin checker.
+     */
+    public PlayerOriginChecker playerOriginChecker;
 
     /**
      * On enable.
@@ -188,8 +188,8 @@ public final class Main extends JavaPlugin {
         merling = new Merling(this);
         phantom = new Phantom(this);
         shulk = new Shulk(this);
-        playerOriginChecker = new PlayerOriginChecker(this);
         noOriginPlayerRestrict = new NoOriginPlayerRestrict(this);
+        playerOriginChecker = new PlayerOriginChecker(this);
         new AbilitySceptre(this);
     }
 

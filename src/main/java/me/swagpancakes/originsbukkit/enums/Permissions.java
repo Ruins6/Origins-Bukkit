@@ -11,7 +11,19 @@ public enum Permissions {
     /**
      * User permissions.
      */
-    USER("origins.user");
+    USER("origins.user"),
+    /**
+     * Update permissions.
+     */
+    UPDATE("origins.commands.update"),
+    /**
+     * Prune permissions.
+     */
+    PRUNE("origins.commands.prune"),
+    /**
+     * Reload permissions.
+     */
+    RELOAD("origins.commands.reload");
 
     private final Object value;
 

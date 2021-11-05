@@ -1,21 +1,28 @@
 package me.swagpancakes.originsbukkit.commands;
 
 import me.swagpancakes.originsbukkit.Main;
-import me.swagpancakes.originsbukkit.enums.Lang;
-import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.commands.subcommands.Help;
+import me.swagpancakes.originsbukkit.commands.subcommands.Prune;
+import me.swagpancakes.originsbukkit.commands.subcommands.Reload;
+import me.swagpancakes.originsbukkit.commands.subcommands.Update;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.command.TabExecutor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * The type Main command.
  */
-public class MainCommand implements CommandExecutor {
+public class MainCommand implements TabExecutor {
 
     private final Main plugin;
+    private final Help help;
+    private final Prune prune;
+    private final Reload reload;
+    private final Update update;
 
     /**
      * Instantiates a new Main command.
@@ -25,6 +32,10 @@ public class MainCommand implements CommandExecutor {
     public MainCommand(Main plugin){
         Objects.requireNonNull(plugin.getCommand("origins")).setExecutor(this);
         this.plugin = plugin;
+        this.help = new Help(plugin);
+        this.prune = new Prune(plugin);
+        this.reload = new Reload(plugin);
+        this.update = new Update(plugin);
     }
 
     /**
@@ -38,54 +49,45 @@ public class MainCommand implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-
-            if (sender.hasPermission("origins.admin")) {
-                if (args.length == 1) {
-                    switch (args[0].toUpperCase()) {
-                        case "RELOAD":
-                            try {
-                                plugin.configHandler.reloadFiles();
-                                ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Reloading the config files...");
-                            } catch (Exception event) {
-                                event.printStackTrace();
-                                ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] There was an error reloading the config files. Please check console.");
-                            }
-                            ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config files.");
-                            break;
-                        case "TEST":
-                            player.getInventory().addItem(plugin.itemManager.abilitySceptre);
-                            break;
-                        case "TEST2":
-                            plugin.playerOriginChecker.openOriginPickerGui(player);
-                            break;
-                        case "TEST3":
-                            player.sendMessage(Lang.HUMAN_DESCRIPTION.toString());
-                        case "TEST4":
-                            plugin.human.humanJoin(player);
-                    }
-                }
-            }
+        if (args.length == 0) {
+            help.HelpSubCommand(sender, command, label, args);
         } else {
-            if (args.length == 1) {
-                switch (args[0].toUpperCase()) {
-                    case "RELOAD":
-                        try {
-                            plugin.configHandler.reloadFiles();
-                            ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Reloading the config files...");
-                        } catch (Exception event) {
-                            event.printStackTrace();
-                            ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] There was an error reloading the config files. Please check console.");
-                        }
-                        ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully reloaded the config files.");
-                        break;
-                    case "TEST":
-                        ChatUtils.sendCommandSenderMessage(sender, "HI :D");
-                        break;
-                }
+            if (args[0].equalsIgnoreCase("help")) {
+                help.HelpSubCommand(sender, command, label, args);
+            } else if (args[0].equalsIgnoreCase("reload")) {
+                reload.ReloadSubCommand(sender, command, label, args);
+            } else if (args[0].equalsIgnoreCase("prune")) {
+                prune.PruneSubCommand(sender, command, label, args);
+            } else if (args[0].equalsIgnoreCase("update")) {
+                update.UpdateSubCommand(sender, command, label, args);
+            } else {
+                help.HelpSubCommand(sender, command, label, args);
             }
         }
         return true;
+    }
+
+    /**
+     * On tab complete list.
+     *
+     * @param sender  the sender
+     * @param command the command
+     * @param alias   the alias
+     * @param args    the args
+     * @return the list
+     */
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        if (args.length >= 1) {
+            List<String> subCommands = new ArrayList<>();
+
+            subCommands.addAll(help.HelpSubCommandTabComplete(sender, command, alias, args));
+            subCommands.addAll(prune.PruneSubCommandTabComplete(sender, command, alias, args));
+            subCommands.addAll(reload.ReloadSubCommandTabComplete(sender, command, alias, args));
+            subCommands.addAll(update.UpdateSubCommandTabComplete(sender, command, alias, args));
+
+            return subCommands;
+        }
+        return null;
     }
 }
