@@ -82,7 +82,6 @@ public class ConfigHandler {
         } catch (Exception event) {
             event.printStackTrace();
         }
-        reloadFiles();
     }
 
     /**
@@ -137,6 +136,7 @@ public class ConfigHandler {
         } catch (IOException event) {
             event.printStackTrace();
         }
+        YamlConfiguration.loadConfiguration(configFile);
         return yamlConfiguration;
     }
 
@@ -192,6 +192,7 @@ public class ConfigHandler {
         } catch (IOException event) {
             event.printStackTrace();
         }
+        YamlConfiguration.loadConfiguration(langFile);
         return yamlConfiguration;
     }
 
@@ -199,14 +200,14 @@ public class ConfigHandler {
      * Reload files.
      */
     public void reloadFiles() {
-        File configFile = new File(plugin.getDataFolder(), "config.yml");
-        File langFile = new File(plugin.getDataFolder(), "lang.yml");
-
-        if (configFile.exists()) {
-            loadConfig();
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdir();
         }
-        if (langFile.exists()) {
+        try {
+            loadConfig();
             loadLang();
+        } catch (Exception event) {
+            event.printStackTrace();
         }
     }
 }

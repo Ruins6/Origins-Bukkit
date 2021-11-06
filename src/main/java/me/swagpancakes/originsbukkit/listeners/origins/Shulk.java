@@ -5,7 +5,6 @@ import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -33,7 +32,7 @@ public class Shulk implements Listener {
     public void shulkJoin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.SHULK) {
             player.setHealthScale((10) * 2);
         }
     }

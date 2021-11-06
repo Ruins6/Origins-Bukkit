@@ -5,7 +5,6 @@ import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -33,7 +32,7 @@ public class Elytrian implements Listener {
     public void elytrianJoin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
             player.setHealthScale((10) * 2);
         }
     }

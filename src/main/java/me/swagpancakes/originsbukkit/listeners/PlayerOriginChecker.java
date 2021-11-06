@@ -42,9 +42,19 @@ public class PlayerOriginChecker implements Listener {
         this.plugin = plugin;
 
         originPickerGui();
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            checkPlayerOriginData(player);
-        }
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if (plugin.storageUtils.isOriginsPlayerDataLoaded) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        checkPlayerOriginData(player);
+                    }
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(plugin, 0, 5L);
     }
 
     /**

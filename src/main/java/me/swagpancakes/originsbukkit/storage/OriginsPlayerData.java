@@ -27,21 +27,21 @@ public class OriginsPlayerData {
     }
 
     /**
-     * Gets origin.
+     * Gets player uuid.
      *
-     * @return the origin
+     * @return the player uuid
      */
-    public Origins getOrigin() {
-        return origin;
+    public UUID getPlayerUUID() {
+        return playerUUID;
     }
 
     /**
-     * Sets origin.
+     * Sets player uuid.
      *
-     * @param origin the origin
+     * @param playerUUID the player uuid
      */
-    public void setOrigin(Origins origin) {
-        this.origin = origin;
+    public void setPlayerUUID(UUID playerUUID) {
+        this.playerUUID = playerUUID;
     }
 
     /**
@@ -63,20 +63,20 @@ public class OriginsPlayerData {
     }
 
     /**
-     * Gets uuid.
+     * Gets origin.
      *
-     * @return the uuid
+     * @return the origin
      */
-    public UUID getUuid() {
-        return playerUUID;
+    public Origins getOrigin() {
+        return origin;
     }
 
     /**
-     * Sets uuid.
+     * Sets origin.
      *
-     * @param playerUUID the player uuid
+     * @param origin the origin
      */
-    public void setUuid(UUID playerUUID) {
-        this.playerUUID = playerUUID;
+    public void setOrigin(Origins origin) {
+        this.origin = origin;
     }
 }

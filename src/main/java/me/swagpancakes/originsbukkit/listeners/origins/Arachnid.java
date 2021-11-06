@@ -17,7 +17,10 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * The type Arachnid.
@@ -46,7 +49,7 @@ public class Arachnid implements Listener {
     public void arachnidJoin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
             player.setHealthScale((10 - 3) * 2);
         }
     }
@@ -61,7 +64,7 @@ public class Arachnid implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
             if (!player.isSneaking()) {
                 arachnidClimb(player);
             }
@@ -83,7 +86,7 @@ public class Arachnid implements Listener {
             Player player = (Player) event.getDamager();
             UUID playerUUID = player.getUniqueId();
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
+            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
                 Location location1 = location.add(0, 1, 0);
                 Block block1 = location1.getBlock();
                 Material material1 = block1.getType();
@@ -130,7 +133,7 @@ public class Arachnid implements Listener {
             public void run() {
                 UUID playerUUID = player.getUniqueId();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
+                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
                     if (player.isOnline()) {
                         if (player.isSneaking()) {
                             if (nextToWall(player)) {
@@ -218,7 +221,7 @@ public class Arachnid implements Listener {
                 Material.PUFFERFISH,
                 Material.ROTTEN_FLESH);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
             if (!materials.contains(material)) {
                 event.setCancelled(true);
             }

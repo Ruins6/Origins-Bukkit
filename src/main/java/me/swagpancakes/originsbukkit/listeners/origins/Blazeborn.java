@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -41,7 +40,7 @@ public class Blazeborn implements Listener {
     public void blazebornJoin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
             player.setHealthScale(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble());
             blazebornWaterDamage(player);
         }
@@ -63,7 +62,7 @@ public class Blazeborn implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
+                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
                     if (player.isOnline()) {
                         if (player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -108,7 +107,7 @@ public class Blazeborn implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
+                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
                     if (player.isOnline()) {
                         if (player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -149,7 +148,7 @@ public class Blazeborn implements Listener {
             assert player != null;
             UUID playerUUID = player.getUniqueId();
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN)) {
+            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
                 if (damageCause == EntityDamageEvent.DamageCause.LAVA || damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.HOT_FLOOR || damageCause == EntityDamageEvent.DamageCause.POISON || damageCause == EntityDamageEvent.DamageCause.STARVATION) {
                     event.setCancelled(true);
                 }

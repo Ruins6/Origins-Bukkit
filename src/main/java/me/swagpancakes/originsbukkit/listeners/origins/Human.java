@@ -5,7 +5,6 @@ import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -33,7 +32,7 @@ public class Human implements Listener {
     public void humanJoin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.HUMAN)) {
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.HUMAN) {
             player.setHealthScale((10) * 2);
         }
     }

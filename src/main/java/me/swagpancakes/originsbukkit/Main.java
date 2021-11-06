@@ -161,6 +161,11 @@ public final class Main extends JavaPlugin {
         } catch (IOException event) {
             event.printStackTrace();
         }
+        try {
+            storageUtils.loadMerlingTimerSessionData();
+        } catch (IOException event) {
+            event.printStackTrace();
+        }
     }
 
     /**

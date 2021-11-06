@@ -58,7 +58,7 @@ public class Update {
 
                         if (origins.contains(origin)) {
                             if (plugin.storageUtils.findOriginsPlayerData(playerUUID) != null) {
-                                if (!plugin.storageUtils.getPlayerOrigin(playerUUID).equals(origin)) {
+                                if (plugin.storageUtils.getPlayerOrigin(playerUUID) != origin) {
                                     plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, playerName, origin));
                                     plugin.playerOriginChecker.checkPlayerOriginData(target);
                                     ChatUtils.sendCommandSenderMessage(sender, "&aChanged " + playerName + "'s origin to " + origin);
