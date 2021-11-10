@@ -51,6 +51,18 @@ public class Merling implements Listener {
     }
 
     /**
+     * Calculate percentage int.
+     *
+     * @param obtained the obtained
+     * @param total    the total
+     *
+     * @return the int
+     */
+    public int calculatePercentage(int obtained, int total) {
+        return obtained * 100 / total;
+    }
+
+    /**
      * Merling underwater breathing.
      *
      * @param event the event
@@ -211,7 +223,7 @@ public class Merling implements Listener {
                     merlingAirBreathingTime--;
                 }
             }
-        }.runTaskTimer(plugin, 0L, 20L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 20L);
     }
 
     /**
@@ -279,7 +291,7 @@ public class Merling implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 5L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
     }
 
     /**

@@ -2,20 +2,20 @@ package me.swagpancakes.originsbukkit.util;
 
 import com.google.gson.Gson;
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The type Storage utils.
@@ -25,6 +25,7 @@ public class StorageUtils {
     private final Main plugin;
     private List<OriginsPlayerData> originsPlayerData = new ArrayList<>();
     private List<MerlingTimerSessionData> merlingTimerSessionData = new ArrayList<>();
+    private Map<UUID, ItemStack[]> shulkData = new HashMap<>();
     /**
      * The Is origins player data loaded.
      */
@@ -37,6 +38,18 @@ public class StorageUtils {
      */
     public void setOriginsPlayerDataLoaded(boolean originsPlayerDataLoaded) {
         isOriginsPlayerDataLoaded = originsPlayerDataLoaded;
+    }
+
+    /**
+     * Load data files.
+     */
+    public void loadDataFiles() {
+        try {
+            loadOriginsPlayerData();
+            loadMerlingTimerSessionData();
+        } catch (IOException event) {
+            event.printStackTrace();
+        }
     }
 
     /**
@@ -60,7 +73,11 @@ public class StorageUtils {
 
         if (findOriginsPlayerData(playerUUID) == null) {
             OriginsPlayerData originsPlayerData = new OriginsPlayerData(playerUUID, playerName, origin);
+            Origins newOrigin = originsPlayerData.getOrigin();
+
             this.originsPlayerData.add(originsPlayerData);
+            OriginChangeEvent originChangeEvent = new OriginChangeEvent(player, null, newOrigin);
+            Bukkit.getPluginManager().callEvent(originChangeEvent);
             try {
                 saveOriginsPlayerData();
             } catch (IOException event) {
@@ -107,10 +124,16 @@ public class StorageUtils {
      * @param playerUUID the player uuid
      */
     public void deleteOriginsPlayerData(UUID playerUUID) {
+        Player player = Bukkit.getPlayer(playerUUID);
+
         if (findOriginsPlayerData(playerUUID) != null) {
             for (OriginsPlayerData originsPlayerData : plugin.storageUtils.originsPlayerData) {
                 if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
+                    Origins oldOrigin = originsPlayerData.getOrigin();
+
                     plugin.storageUtils.originsPlayerData.remove(originsPlayerData);
+                    OriginChangeEvent originChangeEvent = new OriginChangeEvent(player, oldOrigin, null);
+                    Bukkit.getPluginManager().callEvent(originChangeEvent);
                     break;
                 }
             }
@@ -129,11 +152,17 @@ public class StorageUtils {
      * @param newOriginsPlayerData the new origins player data
      */
     public void updateOriginsPlayerData(UUID playerUUID, OriginsPlayerData newOriginsPlayerData) {
+        Player player = Bukkit.getPlayer(playerUUID);
+
         if (findOriginsPlayerData(playerUUID) != null) {
             for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
                 if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
+                    Origins oldOrigin = originsPlayerData.getOrigin();
+
                     originsPlayerData.setPlayerName(newOriginsPlayerData.getPlayerName());
                     originsPlayerData.setOrigin(newOriginsPlayerData.getOrigin());
+                    OriginChangeEvent originChangeEvent = new OriginChangeEvent(player, oldOrigin, newOriginsPlayerData.getOrigin());
+                    Bukkit.getPluginManager().callEvent(originChangeEvent);
                     try {
                         saveOriginsPlayerData();
                     } catch (IOException event) {
@@ -165,8 +194,16 @@ public class StorageUtils {
             @Override
             public void run() {
                 Gson gson = new Gson();
-                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "playerdata.json");
+                Path cache = Paths.get(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache");
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache" + File.separator + "playerdata.json");
 
+                if (!Files.exists(cache)) {
+                    try {
+                        Files.createDirectories(cache);
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
                 try {
                     Writer writer = new FileWriter(file, false);
                     gson.toJson(plugin.storageUtils.originsPlayerData, writer);
@@ -191,19 +228,27 @@ public class StorageUtils {
             @Override
             public void run() {
                 Gson gson = new Gson();
-                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "playerdata.json");
+                Path cache = Paths.get(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache");
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache" + File.separator + "playerdata.json");
 
+                if (!Files.exists(cache)) {
+                    try {
+                        Files.createDirectories(cache);
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
                 if (file.exists()) {
                     ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Loading player data...");
 
                     try {
                         Reader reader = new FileReader(file);
                         OriginsPlayerData[] n = gson.fromJson(reader, OriginsPlayerData[].class);
-                        plugin.storageUtils.originsPlayerData = new ArrayList<>(Arrays.asList(n));
+                        originsPlayerData = new ArrayList<>(Arrays.asList(n));
                     } catch (FileNotFoundException event) {
                         event.printStackTrace();
                     }
-                    plugin.storageUtils.setOriginsPlayerDataLoaded(true);
+                    setOriginsPlayerDataLoaded(true);
                     ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Player data loaded.");
                 }
             }

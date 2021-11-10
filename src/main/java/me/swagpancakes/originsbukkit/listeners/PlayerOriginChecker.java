@@ -1,11 +1,13 @@
 package me.swagpancakes.originsbukkit.listeners;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -18,6 +20,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
@@ -307,9 +310,7 @@ public class PlayerOriginChecker implements Listener {
      */
     public void closeAllOriginPickerGui() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.getInventory().equals(inv)) {
-                player.closeInventory();
-            }
+            player.closeInventory();
         }
     }
 
@@ -339,6 +340,42 @@ public class PlayerOriginChecker implements Listener {
             if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
                 Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.openInventory(inv), 0L);
             }
+        }
+    }
+
+    /**
+     * On player origin change.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void onPlayerOriginChange(OriginChangeEvent event) {
+        Player player = event.getPlayer();
+        Origins newOrigin = event.getNewOrigin();
+
+        if (newOrigin != Origins.AVIAN) {
+            player.removePotionEffect(PotionEffectType.SLOW_FALLING);
+            player.setWalkSpeed(0.2F);
+        }
+        if (newOrigin != Origins.ARACHNID) {
+            if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                player.setFlySpeed(0.1F);
+                player.setAllowFlight(false);
+                player.setFlying(false);
+            } else {
+                player.setFlySpeed(0.1F);
+                player.setAllowFlight(true);
+            }
+        }
+        if (newOrigin != Origins.ELYTRIAN) {
+            ItemStack prevChestplate = player.getInventory().getChestplate();
+
+            if (prevChestplate != null && prevChestplate.equals(plugin.elytrian.elytra)) {
+                player.getInventory().setChestplate(new ItemStack(Material.AIR));
+            }
+        }
+        if (newOrigin != Origins.FELINE) {
+            player.removePotionEffect(PotionEffectType.JUMP);
         }
     }
 }

@@ -8,8 +8,10 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -130,7 +132,50 @@ public class Blazeborn implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 5L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
+    }
+
+    /**
+     * Blazeborn burning wrath.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void blazebornBurningWrath(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        double baseDamage = event.getDamage();
+
+        if (damager instanceof Player) {
+            Player player = (Player) damager;
+            UUID playerUUID = player.getUniqueId();
+
+            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                if (player.getFireTicks() > 0) {
+                    event.setDamage(baseDamage + 1.5);
+                }
+            }
+        }
+    }
+
+    /**
+     * Blazeborn snow ball damage.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void blazebornSnowBallDamage(EntityDamageByEntityEvent event) {
+        Entity target = event.getEntity();
+        Entity damager = event.getDamager();
+        double baseDamage = event.getDamage();
+
+        if (target instanceof Player && damager instanceof Snowball) {
+            Player targetPlayer = (Player) target;
+            UUID targetPlayerUUID = targetPlayer.getUniqueId();
+
+            if (plugin.storageUtils.getPlayerOrigin(targetPlayerUUID) == Origins.BLAZEBORN) {
+                event.setDamage(baseDamage + 1.5);
+            }
+        }
     }
 
     /**
@@ -145,12 +190,14 @@ public class Blazeborn implements Listener {
 
         if (entity instanceof Player) {
             Player player = ((Player) entity).getPlayer();
-            assert player != null;
-            UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
-                if (damageCause == EntityDamageEvent.DamageCause.LAVA || damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.HOT_FLOOR || damageCause == EntityDamageEvent.DamageCause.POISON || damageCause == EntityDamageEvent.DamageCause.STARVATION) {
-                    event.setCancelled(true);
+            if (player != null) {
+                UUID playerUUID = player.getUniqueId();
+
+                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                    if (damageCause == EntityDamageEvent.DamageCause.LAVA || damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.HOT_FLOOR || damageCause == EntityDamageEvent.DamageCause.POISON || damageCause == EntityDamageEvent.DamageCause.STARVATION) {
+                        event.setCancelled(true);
+                    }
                 }
             }
         }

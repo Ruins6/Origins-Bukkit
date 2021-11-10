@@ -1,6 +1,5 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import com.inkzzz.spigot.armorevent.PlayerArmorEquipEvent;
 import me.swagpancakes.originsbukkit.Main;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
@@ -10,18 +9,14 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EnderPearl;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -141,7 +136,7 @@ public class Enderian implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 5L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
     }
 
     /**
@@ -185,54 +180,14 @@ public class Enderian implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
         PlayerTeleportEvent.TeleportCause teleportCause = event.getCause();
+        Location getTo = event.getTo();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
             if (teleportCause == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
                 event.setCancelled(true);
                 player.setNoDamageTicks(1);
-                player.teleport(Objects.requireNonNull(event.getTo()));
-            }
-        }
-    }
-
-    /**
-     * Enderian pumpkin helmet wearing disability.
-     *
-     * @param event the event
-     */
-    @EventHandler
-    public void enderianPumpkinHelmetWearingDisability(PlayerArmorEquipEvent event) {
-        Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        ItemStack itemStack = event.getItemStack();
-        Material material = itemStack.getType();
-        player.sendMessage("s");
-
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
-            if (material == Material.CARVED_PUMPKIN) {
-                player.sendMessage("a");
-            }
-        }
-    }
-
-    /**
-     * Enderian pumpkin pickup disability.
-     *
-     * @param event the event
-     */
-    @EventHandler
-    public void enderianPumpkinPickupDisability(EntityPickupItemEvent event) {
-        Entity entity = event.getEntity();
-
-        if (entity instanceof Player) {
-            Player player = ((Player) entity).getPlayer();
-            assert player != null;
-            UUID playerUUID = player.getUniqueId();
-            Material material = event.getItem().getItemStack().getType();
-
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
-                if (material == Material.PUMPKIN || material == Material.CARVED_PUMPKIN || material == Material.JACK_O_LANTERN || material == Material.PUMPKIN_PIE || material == Material.PUMPKIN_SEEDS) {
-                    event.setCancelled(true);
+                if (getTo != null) {
+                    player.teleport(getTo);
                 }
             }
         }

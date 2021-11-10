@@ -54,6 +54,7 @@ public class AbilitySceptre implements Listener {
                             case PHANTOM:
                                 break;
                             case ELYTRIAN:
+                                plugin.elytrian.elytrianLaunchIntoAir(player);
                                 break;
                             case BLAZEBORN:
                                 break;

@@ -4,17 +4,24 @@ import me.swagpancakes.originsbukkit.Main;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
@@ -72,12 +79,12 @@ public class Arachnid implements Listener {
     }
 
     /**
-     * On entity damage by entity.
+     * On arachnid attack.
      *
      * @param event the event
      */
     @EventHandler
-    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+    public void onArachnidAttack(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
         Entity damager = event.getDamager();
         Location location = entity.getLocation();
@@ -121,6 +128,39 @@ public class Arachnid implements Listener {
     }
 
     /**
+     * On arachnid bane of arthropods damage.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void onArachnidBaneOfArthropodsDamage(EntityDamageByEntityEvent event) {
+        Entity target = event.getEntity();
+        Entity damager = event.getDamager();
+        double baseDamage = event.getDamage();
+
+
+        if (target instanceof Player && damager instanceof LivingEntity) {
+            Player targetPlayer = (Player) target;
+            LivingEntity livingDamager = (LivingEntity) damager;
+            UUID targetPlayerUUID = targetPlayer.getUniqueId();
+            EntityEquipment entityEquipment = livingDamager.getEquipment();
+
+            if (entityEquipment != null) {
+                ItemStack itemStack = livingDamager.getEquipment().getItemInMainHand();
+                ItemMeta itemMeta = itemStack.getItemMeta();
+
+                if (plugin.storageUtils.getPlayerOrigin(targetPlayerUUID) == Origins.ARACHNID) {
+                    if (itemMeta != null && itemMeta.hasEnchant(Enchantment.DAMAGE_ARTHROPODS)) {
+                        int enchantLevel = itemMeta.getEnchantLevel(Enchantment.DAMAGE_ARTHROPODS);
+
+                        event.setDamage(baseDamage + (2.5 * enchantLevel));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Arachnid climb.
      *
      * @param player the player
@@ -132,11 +172,13 @@ public class Arachnid implements Listener {
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                Location location = player.getLocation();
+                Block block = location.getBlock();
 
                 if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
                     if (player.isOnline()) {
-                        if (player.isSneaking()) {
-                            if (nextToWall(player)) {
+                        if (player.isSneaking() && !player.isGliding()) {
+                            if (nextToWall(player) && !block.isLiquid()) {
                                 player.setVelocity(player.getVelocity().setY(0.175));
                             }
                         } else {
@@ -153,6 +195,45 @@ public class Arachnid implements Listener {
     }
 
     /**
+     * On arachnid cobweb enter.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void onArachnidCobwebEnter(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        Location location = player.getLocation();
+        Block block = location.getBlock();
+        Block block1 = location.add(0, 1, 0).getBlock();
+        Block block2 = location.subtract(0, 1, 0).getBlock();
+        Material material = block.getType();
+        Material material1 = block1.getType();
+        Material material2 = block2.getType();
+
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
+            if (material == Material.COBWEB || material1 == Material.COBWEB || material2 == Material.COBWEB || nextToCobweb(player)) {
+                if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                    if (!player.isFlying()) {
+                        player.teleport(location.add(0, 0.00001, 0));
+                    }
+                    player.setFlySpeed(0.04F);
+                    player.setAllowFlight(true);
+                    player.setFlying(true);
+                } else {
+                    player.setFlySpeed(0.1F);
+                }
+            } else {
+                if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                    player.setFlySpeed(0.1F);
+                    player.setAllowFlight(false);
+                    player.setFlying(false);
+                }
+            }
+        }
+    }
+
+    /**
      * Next to wall boolean.
      *
      * @param player the player
@@ -160,19 +241,54 @@ public class Arachnid implements Listener {
      * @return the boolean
      */
     public boolean nextToWall(Player player) {
-        Location location = player.getLocation();
-        Block block = location.getBlock();
+        World world = player.getWorld();
+        double locX = player.getLocation().getX();
+        double locY = player.getLocation().getY();
+        double locZ = player.getLocation().getZ();
+        Location xp = new Location(world, locX + 0.30175, locY, locZ);
+        Location xn = new Location(world, locX - 0.30175, locY, locZ);
+        Location zp = new Location(world, locX, locY, locZ + 0.30175);
+        Location zn = new Location(world, locX, locY, locZ - 0.30175);
 
-        if (block.getRelative(BlockFace.NORTH).getType().isSolid()) {
+        if (xp.getBlock().getType().isSolid()) {
             return true;
         }
-        if (block.getRelative(BlockFace.SOUTH).getType().isSolid()) {
+        if (xn.getBlock().getType().isSolid()) {
             return true;
         }
-        if (block.getRelative(BlockFace.EAST).getType().isSolid()) {
+        if (zp.getBlock().getType().isSolid()) {
             return true;
         }
-        return block.getRelative(BlockFace.WEST).getType().isSolid();
+        return zn.getBlock().getType().isSolid();
+    }
+
+    /**
+     * Next to cobweb boolean.
+     *
+     * @param player the player
+     *
+     * @return the boolean
+     */
+    public boolean nextToCobweb(Player player) {
+        World world = player.getWorld();
+        double locX = player.getLocation().getX();
+        double locY = player.getLocation().getY();
+        double locZ = player.getLocation().getZ();
+        Location xp = new Location(world, locX + 0.3, locY, locZ);
+        Location xn = new Location(world, locX - 0.3, locY, locZ);
+        Location zp = new Location(world, locX, locY, locZ + 0.3);
+        Location zn = new Location(world, locX, locY, locZ - 0.3);
+
+        if (xp.getBlock().getType() == Material.COBWEB) {
+            return true;
+        }
+        if (xn.getBlock().getType() == Material.COBWEB) {
+            return true;
+        }
+        if (zp.getBlock().getType() == Material.COBWEB) {
+            return true;
+        }
+        return zn.getBlock().getType() == Material.COBWEB;
     }
 
     /**

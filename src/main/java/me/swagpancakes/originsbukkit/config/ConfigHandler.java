@@ -70,26 +70,28 @@ public class ConfigHandler {
     }
 
     /**
-     * Sets .
+     * Load files.
      */
-    public void setup() {
+    public void loadFiles() {
         if (!plugin.getDataFolder().exists()) {
             plugin.getDataFolder().mkdir();
         }
+        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Loading files...");
         try {
             loadConfig();
             loadLang();
+            plugin.storageUtils.loadDataFiles();
         } catch (Exception event) {
             event.printStackTrace();
+            ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] There was an error loading the files.");
         }
+        ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully loaded the files.");
     }
 
     /**
-     * Load config yaml configuration.
-     *
-     * @return the yaml configuration
+     * Load config.
      */
-    public YamlConfiguration loadConfig() {
+    public void loadConfig() {
         File configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] The config.yml file was not found. Creating one...");
@@ -106,7 +108,6 @@ public class ConfigHandler {
                     }
                     Config.setFile(defaultConfig);
                     ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully created the config.yml file");
-                    return defaultConfig;
                 }
             } catch (IOException event) {
                 event.printStackTrace();
@@ -137,15 +138,12 @@ public class ConfigHandler {
             event.printStackTrace();
         }
         YamlConfiguration.loadConfiguration(configFile);
-        return yamlConfiguration;
     }
 
     /**
-     * Load lang yaml configuration.
-     *
-     * @return the yaml configuration
+     * Load lang.
      */
-    public YamlConfiguration loadLang() {
+    public void loadLang() {
         File langFile = new File(plugin.getDataFolder(), "lang.yml");
         if (!langFile.exists()) {
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] The lang.yml file was not found. Creating one...");
@@ -162,7 +160,6 @@ public class ConfigHandler {
                     }
                     Lang.setFile(defaultConfig);
                     ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully created the lang.yml file");
-                    return defaultConfig;
                 }
             } catch (IOException event) {
                 event.printStackTrace();
@@ -193,7 +190,6 @@ public class ConfigHandler {
             event.printStackTrace();
         }
         YamlConfiguration.loadConfiguration(langFile);
-        return yamlConfiguration;
     }
 
     /**
@@ -206,6 +202,7 @@ public class ConfigHandler {
         try {
             loadConfig();
             loadLang();
+            plugin.storageUtils.loadDataFiles();
         } catch (Exception event) {
             event.printStackTrace();
         }

@@ -1,5 +1,7 @@
 package me.swagpancakes.originsbukkit;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import me.swagpancakes.originsbukkit.commands.MainCommand;
 import me.swagpancakes.originsbukkit.config.ConfigHandler;
 import me.swagpancakes.originsbukkit.items.ItemManager;
@@ -13,9 +15,8 @@ import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.IOException;
 
 
 /**
@@ -23,6 +24,11 @@ import java.io.IOException;
  */
 public final class Main extends JavaPlugin {
 
+
+    /**
+     * The Protocol manager.
+     */
+    public ProtocolManager protocolManager;
     /**
      * The Config handler.
      */
@@ -112,11 +118,13 @@ public final class Main extends JavaPlugin {
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &e | |_| | |  | | (_| | | | | \\__ \\_____| |_) | |_| |   <|   <| | |_");
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &a  \\___/|_|  |_|\\__, |_|_| |_|___/     |____/ \\__,_|_|\\_\\_|\\_\\_|\\__|");
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &b               |___/");
-        ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &5               By SwagPannekaker");
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit]");
         checkServerCompatibility();
+        checkServerDependencies();
 
         if (plugin.isEnabled()) {
+            protocolManager = ProtocolLibrary.getProtocolManager();
+
             loadFiles();
             registerCommands();
             registerListeners();
@@ -152,20 +160,49 @@ public final class Main extends JavaPlugin {
     }
 
     /**
+     * Check server dependencies.
+     */
+    public void checkServerDependencies() {
+        if (plugin.isEnabled()) {
+            ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Checking dependencies...");
+        }
+        if (plugin.isEnabled()) {
+            Plugin protocolLib = Bukkit.getServer().getPluginManager().getPlugin("ProtocolLib");
+
+            if (protocolLib != null) {
+                if (protocolLib.isEnabled()) {
+                    ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] ProtocolLib found! Hooking...");
+                } else {
+                    ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] ProtocolLib seems to be disabled. Safely disabling plugin...");
+                    disablePlugin();
+                }
+            } else {
+                ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Dependency not found (ProtocolLib). Safely disabling plugin...");
+                disablePlugin();
+            }
+        }
+        if (plugin.isEnabled()) {
+            Plugin pancakeLibCore = Bukkit.getServer().getPluginManager().getPlugin("PancakeLibCore");
+
+            if (pancakeLibCore != null) {
+                if (pancakeLibCore.isEnabled()) {
+                    ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] PancakeLibCore found! Hooking...");
+                } else {
+                    ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] PancakeLibCore seems to be disabled. Safely disabling plugin...");
+                    disablePlugin();
+                }
+            } else {
+                ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Dependency not found (PancakeLibCore). Safely disabling plugin...");
+                disablePlugin();
+            }
+        }
+    }
+
+    /**
      * Load files.
      */
     public void loadFiles() {
-        configHandler.setup();
-        try {
-            storageUtils.loadOriginsPlayerData();
-        } catch (IOException event) {
-            event.printStackTrace();
-        }
-        try {
-            storageUtils.loadMerlingTimerSessionData();
-        } catch (IOException event) {
-            event.printStackTrace();
-        }
+        configHandler.loadFiles();
     }
 
     /**

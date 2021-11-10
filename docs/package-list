@@ -1,5 +1,6 @@
 me.swagpancakes.originsbukkit
 me.swagpancakes.originsbukkit.api
+me.swagpancakes.originsbukkit.api.events
 me.swagpancakes.originsbukkit.commands
 me.swagpancakes.originsbukkit.commands.subcommands
 me.swagpancakes.originsbukkit.config
