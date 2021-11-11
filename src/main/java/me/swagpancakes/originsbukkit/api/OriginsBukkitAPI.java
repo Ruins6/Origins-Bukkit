@@ -47,12 +47,14 @@ public class OriginsBukkitAPI {
     }
 
     /**
-     * Find origins player data.
+     * Find origins player data origins player data.
      *
      * @param playerUUID the player uuid
+     *
+     * @return the origins player data
      */
-    public void findOriginsPlayerData(@NotNull UUID playerUUID) {
-        plugin.storageUtils.findOriginsPlayerData(playerUUID);
+    public OriginsPlayerData findOriginsPlayerData(@NotNull UUID playerUUID) {
+        return plugin.storageUtils.findOriginsPlayerData(playerUUID);
     }
 
     /**

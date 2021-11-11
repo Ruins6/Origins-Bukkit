@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import me.swagpancakes.originsbukkit.commands.MainCommand;
 import me.swagpancakes.originsbukkit.config.ConfigHandler;
 import me.swagpancakes.originsbukkit.items.ItemManager;
+import me.swagpancakes.originsbukkit.listeners.KeyListener;
 import me.swagpancakes.originsbukkit.listeners.NoOriginPlayerRestrict;
 import me.swagpancakes.originsbukkit.listeners.PlayerOriginChecker;
 import me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager.AbilitySceptre;
@@ -229,6 +230,7 @@ public final class Main extends JavaPlugin {
         noOriginPlayerRestrict = new NoOriginPlayerRestrict(this);
         playerOriginChecker = new PlayerOriginChecker(this);
         new AbilitySceptre(this);
+        new KeyListener(this);
     }
 
     /**
