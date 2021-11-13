@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.enums;
 
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -9,96 +26,48 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * The enum Config.
  */
 public enum Config {
-    /**
-     * Origins blazeborn max health config.
-     */
     ORIGINS_BLAZEBORN_MAX_HEALTH("Config.Origins.Blazeborn.Max-Health", 20),
-    /**
-     * Origins blazeborn water damage amount config.
-     */
     ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT("Config.Origins.Blazeborn.Water-Damage.Amount", 1),
-    /**
-     * Origins blazeborn water damage delay config.
-     */
     ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY("Config.Origins.Blazeborn.Water-Damage.Delay", 0L),
-    /**
-     * Origins blazeborn water damage period delay config.
-     */
     ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY("Config.Origins.Blazeborn.Water-Damage.Period-Delay", 10L),
-    /**
-     * Origins enderian max health config.
-     */
     ORIGINS_ENDERIAN_MAX_HEALTH("Config.Origins.Enderian.Max-Health", 20),
-    /**
-     * Origins enderian water damage amount config.
-     */
     ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT("Config.Origins.Enderian.Water-Damage.Amount", 1),
-    /**
-     * Origins enderian water damage delay config.
-     */
     ORIGINS_ENDERIAN_WATER_DAMAGE_DELAY("Config.Origins.Enderian.Water-Damage.Delay", 0L),
-    /**
-     * Origins enderian water damage period delay config.
-     */
     ORIGINS_ENDERIAN_WATER_DAMAGE_PERIOD_DELAY("Config.Origins.Enderian.Water-Damage.Period-Delay", 10L),
-    /**
-     * Origins enderian ability cooldown config.
-     */
     ORIGINS_ENDERIAN_ABILITY_COOLDOWN("Config.Origins.Enderian.Ability.Cooldown", 2),
-    /**
-     * Origins merling max health config.
-     */
     ORIGINS_MERLING_MAX_HEALTH("Config.Origins.Merling.Max-Health", 20),
-    /**
-     * Origins merling air breathing max time config.
-     */
     ORIGINS_MERLING_AIR_BREATHING_MAX_TIME("Config.Origins.Merling.Air-Breathing.Max-Time", 120),
-    /**
-     * Origins merling air breathing damage amount config.
-     */
     ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT("Config.Origins.Merling.Air-Breathing.Damage.Amount", 1),
-    /**
-     * Origins merling air breathing damage delay config.
-     */
     ORIGINS_MERLING_AIR_BREATHING_DAMAGE_DELAY("Config.Origins.Merling.Air-Breathing.Damage.Delay", 0),
-    /**
-     * Origins merling air breathing damage period delay config.
-     */
     ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY("Config.Origins.Merling.Air-Breathing.Damage.Period-Delay", 10),
-    /**
-     * Origins merling bossbar air breathing barcolor on decrease config.
-     */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Decrease", BarColor.BLUE),
-    /**
-     * Origins merling bossbar air breathing barcolor on increase config.
-     */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Increase", BarColor.GREEN),
-    /**
-     * Origins merling bossbar air breathing barcolor on drowning config.
-     */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Drowning", BarColor.RED),
-    /**
-     * Origins merling bossbar air breathing barstyle on decrease config.
-     */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Decrease", BarStyle.SOLID),
-    /**
-     * Origins merling bossbar air breathing barstyle on increase config.
-     */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Increase", BarStyle.SOLID),
-    /**
-     * Origins merling bossbar air breathing barstyle on drowning config.
-     */
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Drowning", BarStyle.SOLID);
 
     private static YamlConfiguration CONFIG;
     private final String Path;
     private final Object defaultValue;
 
+    /**
+     * Instantiates a new Config.
+     *
+     * @param Path         the path
+     * @param defaultValue the default value
+     */
     Config(final String Path, final Object defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;
     }
 
+    /**
+     * Instantiates a new Config.
+     *
+     * @param Path         the path
+     * @param defaultValue the default value
+     */
     Config(final String Path, final String... defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;

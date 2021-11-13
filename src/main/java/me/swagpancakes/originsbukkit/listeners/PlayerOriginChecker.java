@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.listeners;
 
 import me.swagpancakes.originsbukkit.Main;
@@ -9,6 +26,8 @@ import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +48,8 @@ import java.util.UUID;
 
 /**
  * The type Player origin checker.
+ *
+ * @author SwagPannekaker
  */
 public class PlayerOriginChecker implements Listener {
 
@@ -50,14 +71,14 @@ public class PlayerOriginChecker implements Listener {
 
             @Override
             public void run() {
-                if (plugin.storageUtils.isOriginsPlayerDataLoaded) {
+                if (plugin.storageUtils.isOriginsPlayerDataLoaded()) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         checkPlayerOriginData(player);
                     }
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0, 5L);
+        }.runTaskTimer(plugin, 0L, 5L);
     }
 
     /**
@@ -376,6 +397,21 @@ public class PlayerOriginChecker implements Listener {
         }
         if (newOrigin != Origins.FELINE) {
             player.removePotionEffect(PotionEffectType.JUMP);
+        }
+        if (newOrigin != Origins.PHANTOM) {
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+            //plugin.ghostFactory.setGhost(player, false);
+        }
+        if (newOrigin != Origins.SHULK) {
+            AttributeInstance genericArmorAttribute = player.getAttribute(Attribute.GENERIC_ARMOR);
+
+            if (genericArmorAttribute != null) {
+                double modifiedBaseValue = genericArmorAttribute.getBaseValue();
+
+                if (modifiedBaseValue == 8) {
+                    genericArmorAttribute.setBaseValue(modifiedBaseValue - 8);
+                }
+            }
         }
     }
 }

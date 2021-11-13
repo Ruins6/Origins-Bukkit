@@ -25,6 +25,8 @@ import java.util.zip.GZIPOutputStream;
 
 /**
  * The type Metrics.
+ *
+ * @author SwagPannekaker
  */
 public class Metrics {
 
@@ -97,6 +99,11 @@ public class Metrics {
         metricsBase.addCustomChart(chart);
     }
 
+    /**
+     * Append platform data.
+     *
+     * @param builder the builder
+     */
     private void appendPlatformData(JsonObjectBuilder builder) {
         builder.appendField("playerAmount", getPlayerAmount());
         builder.appendField("onlineMode", Bukkit.getOnlineMode() ? 1 : 0);
@@ -109,10 +116,20 @@ public class Metrics {
         builder.appendField("coreCount", Runtime.getRuntime().availableProcessors());
     }
 
+    /**
+     * Append service data.
+     *
+     * @param builder the builder
+     */
     private void appendServiceData(JsonObjectBuilder builder) {
         builder.appendField("pluginVersion", plugin.getDescription().getVersion());
     }
 
+    /**
+     * Gets player amount.
+     *
+     * @return the player amount
+     */
     private int getPlayerAmount() {
         try {
             // Around MC 1.8 the return type was changed from an array to a collection,
@@ -130,12 +147,11 @@ public class Metrics {
 
     /**
      * The type Metrics base.
+     *
+     * @author SwagPannekaker
      */
     public static class MetricsBase {
 
-        /**
-         * The constant METRICS_VERSION.
-         */
         public static final String METRICS_VERSION = "2.2.1";
 
         private static final ScheduledExecutorService scheduler =
@@ -221,6 +237,15 @@ public class Metrics {
             }
         }
 
+        /**
+         * Compress byte [ ].
+         *
+         * @param str the str
+         *
+         * @return the byte [ ]
+         *
+         * @throws IOException the io exception
+         */
         private static byte[] compress(final String str) throws IOException {
             if (str == null) {
                 return null;
@@ -241,6 +266,9 @@ public class Metrics {
             this.customCharts.add(chart);
         }
 
+        /**
+         * Start submitting.
+         */
         private void startSubmitting() {
             final Runnable submitTask =
                     () -> {
@@ -269,6 +297,9 @@ public class Metrics {
                     submitTask, initialDelay + secondDelay, 1000 * 60 * 30, TimeUnit.MILLISECONDS);
         }
 
+        /**
+         * Submit data.
+         */
         private void submitData() {
             final JsonObjectBuilder baseJsonBuilder = new JsonObjectBuilder();
             appendPlatformDataConsumer.accept(baseJsonBuilder);
@@ -299,6 +330,13 @@ public class Metrics {
                     });
         }
 
+        /**
+         * Send data.
+         *
+         * @param data the data
+         *
+         * @throws Exception the exception
+         */
         private void sendData(JsonObjectBuilder.JsonObject data) throws Exception {
             if (logSentData) {
                 infoLogger.accept("Sent bStats metrics data: " + data.toString());
@@ -331,6 +369,9 @@ public class Metrics {
             }
         }
 
+        /**
+         * Check relocation.
+         */
         private void checkRelocation() {
             // You can use the property to disable the check in your test environment
             if (System.getProperty("bstats.relocatecheck") == null
@@ -353,6 +394,8 @@ public class Metrics {
 
     /**
      * The type Advanced bar chart.
+     *
+     * @author SwagPannekaker
      */
     public static class AdvancedBarChart extends CustomChart {
 
@@ -403,6 +446,8 @@ public class Metrics {
 
     /**
      * The type Simple bar chart.
+     *
+     * @author SwagPannekaker
      */
     public static class SimpleBarChart extends CustomChart {
 
@@ -443,6 +488,8 @@ public class Metrics {
 
     /**
      * The type Multi line chart.
+     *
+     * @author SwagPannekaker
      */
     public static class MultiLineChart extends CustomChart {
 
@@ -493,6 +540,8 @@ public class Metrics {
 
     /**
      * The type Advanced pie.
+     *
+     * @author SwagPannekaker
      */
     public static class AdvancedPie extends CustomChart {
 
@@ -543,6 +592,8 @@ public class Metrics {
 
     /**
      * The type Custom chart.
+     *
+     * @author SwagPannekaker
      */
     public abstract static class CustomChart {
 
@@ -600,6 +651,8 @@ public class Metrics {
 
     /**
      * The type Single line chart.
+     *
+     * @author SwagPannekaker
      */
     public static class SingleLineChart extends CustomChart {
 
@@ -636,6 +689,8 @@ public class Metrics {
 
     /**
      * The type Simple pie.
+     *
+     * @author SwagPannekaker
      */
     public static class SimplePie extends CustomChart {
 
@@ -672,6 +727,8 @@ public class Metrics {
 
     /**
      * The type Drilldown pie.
+     *
+     * @author SwagPannekaker
      */
     public static class DrilldownPie extends CustomChart {
 
@@ -726,6 +783,8 @@ public class Metrics {
 
     /**
      * The type Json object builder.
+     *
+     * @author SwagPannekaker
      */
     public static class JsonObjectBuilder {
 
@@ -740,6 +799,13 @@ public class Metrics {
             builder.append("{");
         }
 
+        /**
+         * Escape string.
+         *
+         * @param value the value
+         *
+         * @return the string
+         */
         private static String escape(String value) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < value.length(); i++) {
@@ -872,6 +938,12 @@ public class Metrics {
             return this;
         }
 
+        /**
+         * Append field unescaped.
+         *
+         * @param key          the key
+         * @param escapedValue the escaped value
+         */
         private void appendFieldUnescaped(String key, String escapedValue) {
             if (builder == null) {
                 throw new IllegalStateException("JSON has already been built");
@@ -902,11 +974,18 @@ public class Metrics {
 
         /**
          * The type Json object.
+         *
+         * @author SwagPannekaker
          */
         public static class JsonObject {
 
             private final String value;
 
+            /**
+             * Instantiates a new Json object.
+             *
+             * @param value the value
+             */
             private JsonObject(String value) {
                 this.value = value;
             }

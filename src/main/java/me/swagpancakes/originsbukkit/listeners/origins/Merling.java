@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
@@ -21,6 +38,8 @@ import java.util.UUID;
 
 /**
  * The type Merling.
+ *
+ * @author SwagPannekaker
  */
 public class Merling implements Listener {
 
@@ -121,8 +140,7 @@ public class Merling implements Listener {
                         if (merlingAirBreathingTime <= 0) {
                             if (!player.getWorld().hasStorm()) {
                                 if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                    merlingAirBreathingTime++;
-                                    merlingAirBreathingTime++;
+                                    merlingAirBreathingTime+=2;
                                 } else {
                                     merlingAirDamage(player);
                                     bossBar.setVisible(false);
@@ -131,8 +149,7 @@ public class Merling implements Listener {
                                 }
                             } else {
                                 if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                    merlingAirBreathingTime++;
-                                    merlingAirBreathingTime++;
+                                    merlingAirBreathingTime+=2;
                                 } else {
                                     if (!(location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY())) {
                                         merlingAirDamage(player);
@@ -140,8 +157,7 @@ public class Merling implements Listener {
                                         bossBar.removePlayer(player);
                                         this.cancel();
                                     } else {
-                                        merlingAirBreathingTime++;
-                                        merlingAirBreathingTime++;
+                                        merlingAirBreathingTime+=2;
                                     }
                                 }
                             }
@@ -151,8 +167,7 @@ public class Merling implements Listener {
                                     if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                         bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                         bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
-                                        merlingAirBreathingTime++;
-                                        merlingAirBreathingTime++;
+                                        merlingAirBreathingTime+=2;
                                     } else {
                                         if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
                                             plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);
@@ -171,8 +186,7 @@ public class Merling implements Listener {
                                     if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                         bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                         bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
-                                        merlingAirBreathingTime++;
-                                        merlingAirBreathingTime++;
+                                        merlingAirBreathingTime+=2;
                                     } else {
                                         if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
                                             plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);
@@ -189,8 +203,7 @@ public class Merling implements Listener {
                                         if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
                                             bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                             bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
-                                            merlingAirBreathingTime++;
-                                            merlingAirBreathingTime++;
+                                            merlingAirBreathingTime+=2;
                                         } else {
                                             if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
                                                 plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);

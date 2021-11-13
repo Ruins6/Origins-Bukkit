@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.util;
 
 import com.google.gson.Gson;
@@ -7,29 +24,90 @@ import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
  * The type Storage utils.
+ *
+ * @author SwagPannekaker
  */
 public class StorageUtils {
 
     private final Main plugin;
     private List<OriginsPlayerData> originsPlayerData = new ArrayList<>();
     private List<MerlingTimerSessionData> merlingTimerSessionData = new ArrayList<>();
-    private Map<UUID, ItemStack[]> shulkData = new HashMap<>();
+    private Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
+    private boolean isOriginsPlayerDataLoaded = false;
+
     /**
-     * The Is origins player data loaded.
+     * Gets origins player data.
+     *
+     * @return the origins player data
      */
-    public boolean isOriginsPlayerDataLoaded = false;
+    public List<OriginsPlayerData> getOriginsPlayerData() {
+        return originsPlayerData;
+    }
+
+    /**
+     * Sets origins player data.
+     *
+     * @param originsPlayerData the origins player data
+     */
+    public void setOriginsPlayerData(List<OriginsPlayerData> originsPlayerData) {
+        this.originsPlayerData = originsPlayerData;
+    }
+
+    /**
+     * Gets merling timer session data.
+     *
+     * @return the merling timer session data
+     */
+    public List<MerlingTimerSessionData> getMerlingTimerSessionData() {
+        return merlingTimerSessionData;
+    }
+
+    /**
+     * Sets merling timer session data.
+     *
+     * @param merlingTimerSessionData the merling timer session data
+     */
+    public void setMerlingTimerSessionData(List<MerlingTimerSessionData> merlingTimerSessionData) {
+        this.merlingTimerSessionData = merlingTimerSessionData;
+    }
+
+    /**
+     * Gets shulk player storage data.
+     *
+     * @return the shulk player storage data
+     */
+    public Map<UUID, ItemStack[]> getShulkPlayerStorageData() {
+        return shulkPlayerStorageData;
+    }
+
+    /**
+     * Sets shulk player storage data.
+     *
+     * @param shulkPlayerStorageData the shulk player storage data
+     */
+    public void setShulkPlayerStorageData(Map<UUID, ItemStack[]> shulkPlayerStorageData) {
+        this.shulkPlayerStorageData = shulkPlayerStorageData;
+    }
+
+    /**
+     * Is origins player data loaded boolean.
+     *
+     * @return the boolean
+     */
+    public boolean isOriginsPlayerDataLoaded() {
+        return isOriginsPlayerDataLoaded;
+    }
 
     /**
      * Sets origins player data loaded.
@@ -174,15 +252,6 @@ public class StorageUtils {
     }
 
     /**
-     * Find all origin player data list.
-     *
-     * @return the list
-     */
-    public List<OriginsPlayerData> findAllOriginPlayerData() {
-        return this.originsPlayerData;
-    }
-
-    /**
      * Save origins player data.
      *
      * @throws IOException the io exception
@@ -194,15 +263,11 @@ public class StorageUtils {
             @Override
             public void run() {
                 Gson gson = new Gson();
-                Path cache = Paths.get(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache");
-                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache" + File.separator + "playerdata.json");
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "playerorigindata.json");
 
-                if (!Files.exists(cache)) {
-                    try {
-                        Files.createDirectories(cache);
-                    } catch (IOException event) {
-                        event.printStackTrace();
-                    }
+                if (file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
                 }
                 try {
                     Writer writer = new FileWriter(file, false);
@@ -228,15 +293,11 @@ public class StorageUtils {
             @Override
             public void run() {
                 Gson gson = new Gson();
-                Path cache = Paths.get(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache");
-                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache" + File.separator + "playerdata.json");
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "playerorigindata.json");
 
-                if (!Files.exists(cache)) {
-                    try {
-                        Files.createDirectories(cache);
-                    } catch (IOException event) {
-                        event.printStackTrace();
-                    }
+                if (file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
                 }
                 if (file.exists()) {
                     ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Loading player data...");
@@ -356,15 +417,11 @@ public class StorageUtils {
             @Override
             public void run() {
                 Gson gson = new Gson();
-                Path cache = Paths.get(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache");
-                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache" + File.separator + "merlingtimer-session.json");
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "merlingdata" + s + "merlingtimersessiondata.json");
 
-                if (!Files.exists(cache)) {
-                    try {
-                        Files.createDirectories(cache);
-                    } catch (IOException event) {
-                        event.printStackTrace();
-                    }
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
                 }
                 try {
                     Writer writer = new FileWriter(file, false);
@@ -390,15 +447,11 @@ public class StorageUtils {
             @Override
             public void run() {
                 Gson gson = new Gson();
-                Path cache = Paths.get(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache");
-                File file = new File(plugin.getDataFolder().getAbsolutePath() + File.separator + "cache" + File.separator + "merlingtimer-session.json");
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "merlingdata" + s + "merlingtimersessiondata.json");
 
-                if (!Files.exists(cache)) {
-                    try {
-                        Files.createDirectories(cache);
-                    } catch (IOException event) {
-                        event.printStackTrace();
-                    }
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
                 }
                 if (file.exists()) {
                     ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Loading sessions...");
@@ -412,6 +465,82 @@ public class StorageUtils {
                     }
                     ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Sessions loaded.");
                 }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Save shulk player storage data.
+     *
+     * @param playerUUID the player uuid
+     *
+     * @throws IOException the io exception
+     */
+    public void saveShulkPlayerStorageData(UUID playerUUID) throws IOException {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                String s = File.separator;
+                File shulkPlayerStorageDataFile = new File(plugin.getDataFolder(), s + "cache" + s + "shulkdata" + s + "inventoriesdata" + s + playerUUID + ".yml");
+
+                if (!shulkPlayerStorageDataFile.getParentFile().exists()) {
+                    shulkPlayerStorageDataFile.getParentFile().mkdirs();
+                }
+                if (!shulkPlayerStorageDataFile.exists()) {
+                    try {
+                        shulkPlayerStorageDataFile.createNewFile();
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
+                FileConfiguration shulkPlayerStorageData = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
+
+                for (Map.Entry<UUID, ItemStack[]> entry : plugin.storageUtils.shulkPlayerStorageData.entrySet()) {
+                    shulkPlayerStorageData.set("data." + entry.getKey(), entry.getValue());
+                }
+                try {
+                    shulkPlayerStorageData.save(shulkPlayerStorageDataFile);
+                } catch (IOException event) {
+                    event.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Load shulk player storage data.
+     *
+     * @param playerUUID the player uuid
+     *
+     * @throws IOException the io exception
+     */
+    public void loadShulkPlayerStorageData(UUID playerUUID) throws IOException {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                String s = File.separator;
+                File shulkPlayerStorageDataFile = new File(plugin.getDataFolder(), s + "cache" + s + "shulkdata" + s + "inventoriesdata" + s + playerUUID + ".yml");
+
+                if (!shulkPlayerStorageDataFile.getParentFile().exists()) {
+                    shulkPlayerStorageDataFile.getParentFile().mkdirs();
+                }
+                if (!shulkPlayerStorageDataFile.exists()) {
+                    try {
+                        shulkPlayerStorageDataFile.createNewFile();
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
+                FileConfiguration shulkPlayerStorageData = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
+                shulkPlayerStorageData.getConfigurationSection("data").getKeys(false).forEach(key ->{
+                    @SuppressWarnings("unchecked")
+                    ItemStack[] contents = ((List<ItemStack>) shulkPlayerStorageData.get("data." + key)).toArray(new ItemStack[0]);
+                    plugin.storageUtils.shulkPlayerStorageData.put(UUID.fromString(key), contents);
+                });
             }
         }.runTaskAsynchronously(plugin);
     }

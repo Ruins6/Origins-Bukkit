@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
@@ -7,18 +24,25 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Collection;
 import java.util.UUID;
 
 /**
  * The type Blazeborn.
+ *
+ * @author SwagPannekaker
  */
 public class Blazeborn implements Listener {
 
@@ -201,5 +225,54 @@ public class Blazeborn implements Listener {
                 }
             }
         }
+    }
+
+    /**
+     * Blazeborn potion drinking damage.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void blazebornPotionDrinkingDamage(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
+        ItemStack itemStack = event.getItem();
+        Material material = itemStack.getType();
+
+        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+            if (material == Material.POTION) {
+                player.damage(2);
+            }
+        }
+    }
+
+    /**
+     * Blazeborn splash potion damage.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void blazebornSplashPotionDamage(PotionSplashEvent event) {
+        Collection<LivingEntity> livingEntities = event.getAffectedEntities();
+
+        for (LivingEntity livingEntity : livingEntities) {
+            if (livingEntity instanceof Player) {
+                Player player = (Player) livingEntity;
+                UUID playerUUID = player.getUniqueId();
+
+                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                    player.damage(2);
+                }
+            }
+        }
+    }
+
+    /**
+     * Blazeborn nether spawn.
+     *
+     * @param player the player
+     */
+    public void blazebornNetherSpawn(Player player) {
+
     }
 }

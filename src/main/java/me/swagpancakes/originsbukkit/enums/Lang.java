@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.enums;
 
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -7,25 +24,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * The enum Lang.
  */
 public enum Lang {
-    /**
-     * Human title lang.
-     */
     HUMAN_TITLE("Lang.Origins.Human.Title", "&fHuman"),
-    /**
-     * The Human description.
-     */
     HUMAN_DESCRIPTION("Lang.Origins.Human.Description",
             "",
             "&7A regular human. Your",
             "&7ordinary Minecraft",
             "&7experience awaits."),
-    /**
-     * Enderian title lang.
-     */
     ENDERIAN_TITLE("Lang.Origins.Enderian.Title", "&fEnderian"),
-    /**
-     * The Enderian description.
-     */
     ENDERIAN_DESCRIPTION("Lang.Origins.Enderian.Description",
             "",
             "&7Born as sons and daughters of the Ender Dragon,",
@@ -43,13 +48,7 @@ public enum Lang {
             "&f&nScared of Gourds",
             "&7You are afraid of pumpkins.",
             ""),
-    /**
-     * Merling title lang.
-     */
     MERLING_TITLE("Lang.Origins.Merling.Title", "&fMerling"),
-    /**
-     * The Merling description.
-     */
     MERLING_DESCRIPTION("Lang.Origins.Merling.Description",
             "",
             "&7These natural inhabitants of the ocean are not",
@@ -68,13 +67,7 @@ public enum Lang {
             "&f&nFins",
             "&7Your underwater speed is increased.",
             ""),
-    /**
-     * Phantom title lang.
-     */
     PHANTOM_TITLE("Lang.Origins.Phantom.Title", "&fPhantom"),
-    /**
-     * The Phantom description.
-     */
     PHANTOM_DESCRIPTION("Lang.Origins.Phantom.Description",
             "",
             "&7As half-human and half-phantom offspring, these",
@@ -96,13 +89,7 @@ public enum Lang {
             "&f&nFragile",
             "&7You have 3 less hearts of health than humans.",
             ""),
-    /**
-     * Elytrian title lang.
-     */
     ELYTRIAN_TITLE("Lang.Origins.Elytrian.Title", "&fElytrian"),
-    /**
-     * The Elytrian description.
-     */
     ELYTRIAN_DESCRIPTION("Lang.Origins.Elytrian.Description",
             "",
             "&7Often flying around in the winds, Elytrians are",
@@ -131,13 +118,7 @@ public enum Lang {
             "&f&nBrittle Bones",
             "&7You take more damage from falling or flying into blocks.",
             ""),
-    /**
-     * Blazeborn title lang.
-     */
     BLAZEBORN_TITLE("Lang.Origins.Blazeborn.Title", "&fBlazeborn"),
-    /**
-     * The Blazeborn description.
-     */
     BLAZEBORN_DESCRIPTION("Lang.Origins.Blazeborn.Description",
             "",
             "&7Late descendants of the Blaze, the Blazeborn are naturally",
@@ -160,13 +141,7 @@ public enum Lang {
             "&7You receive damage over time while in contact",
             "&7with water.",
             ""),
-    /**
-     * Avian title lang.
-     */
     AVIAN_TITLE("Lang.Origins.Avian.Title", "&fAvian"),
-    /**
-     * The Avian description.
-     */
     AVIAN_DESCRIPTION("Lang.Origins.Avian.Description",
             "",
             "&7The Avian race has lost their ability to fly a",
@@ -191,13 +166,7 @@ public enum Lang {
             "&f&nVegetarian",
             "&7You can't digest any meat.",
             ""),
-    /**
-     * Arachnid title lang.
-     */
     ARACHNID_TITLE("Lang.Origins.Arachnid.Title", "&fArachnid"),
-    /**
-     * The Arachnid description.
-     */
     ARACHNID_DESCRIPTION("Lang.Origins.Arachnid.Description",
             "",
             "&7Their climbing abilities and the ability to trap their",
@@ -221,13 +190,7 @@ public enum Lang {
             "&f&nFragile",
             "&7You have 3 less hearts of health than humans.",
             ""),
-    /**
-     * Shulk title lang.
-     */
     SHULK_TITLE("Lang.Origins.Shulk.Title", "&fShulk"),
-    /**
-     * The Shulk description.
-     */
     SHULK_DESCRIPTION("Lang.Origins.Shulk.Description",
             "",
             "&7Related to Shulkers, the bodies of the Shulk are",
@@ -253,13 +216,7 @@ public enum Lang {
             "&7You exhaust much quicker than others, thus",
             "&7requiring you to eat more.",
             ""),
-    /**
-     * Feline title lang.
-     */
     FELINE_TITLE("Lang.Origins.Feline.Title", "&fFeline"),
-    /**
-     * The Feline description.
-     */
     FELINE_DESCRIPTION("Lang.Origins.Feline.Description",
             "",
             "&7With their cat-like appearance, the Feline scare",
@@ -289,50 +246,41 @@ public enum Lang {
             "&f&nNocturnal",
             "&7You can slightly see in the dark when not in water.",
             ""),
-    /**
-     * The No permission command.
-     */
     NO_PERMISSION_COMMAND("Lang.Player.Messages.Error.Commands.No-Permission",
             "&cI'm sorry, but you do not have permission to perform this command. " +
                     "Please contact the server administrators if you believe that this is in error."),
-    /**
-     * The Player origin already selected.
-     */
     PLAYER_ORIGIN_ALREADY_SELECTED("Lang.Player.Messages.Error.Player-Origin-Already-Selected",
             "&cYou have already chosen this origin! &e(%player_current_origin%)"),
-    /**
-     * The Player origin update.
-     */
     PLAYER_ORIGIN_UPDATE("Lang.Player.Messages.Info.Player-Origin-Update",
             "&aYou updated your origin into &e(%player_selected_origin%)"),
-    /**
-     * The Player origin ability use.
-     */
     PLAYER_ORIGIN_ABILITY_USE("Lang.Player.Messages.Info.Player-Origin-Ability-Use",
             "&aYou used your %player_current_origin% ability."),
-    /**
-     * The Player origin ability cooldown.
-     */
     PLAYER_ORIGIN_ABILITY_COOLDOWN("Lang.Player.Messages.Error.Player-Origin-Ability-Cooldown",
             "&cThis ability is on cool-down (%seconds_left% seconds)."),
-    /**
-     * The Merling bossbar air breathing timer title.
-     */
     MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE("Lang.Origins.Merling.Bossbar.Air-Breathing-Timer-Title", "Air Breathing - %time-left%"),
-    /**
-     * The Merling bossbar drowning title.
-     */
     MERLING_BOSSBAR_DROWNING_TITLE("Lang.Origins.Merling.Bossbar.Drowning-Title", "&cWarning: You're Drowning!");
 
     private static YamlConfiguration LANG;
     private final String Path;
     private final Object defaultValue;
 
+    /**
+     * Instantiates a new Lang.
+     *
+     * @param Path         the path
+     * @param defaultValue the default value
+     */
     Lang(final String Path, final Object defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;
     }
 
+    /**
+     * Instantiates a new Lang.
+     *
+     * @param Path         the path
+     * @param defaultValue the default value
+     */
     Lang(final String Path, final String... defaultValue) {
         this.Path = Path;
         this.defaultValue = defaultValue;

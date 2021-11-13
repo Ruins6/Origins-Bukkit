@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit;
 
 import com.comphenix.protocol.ProtocolLibrary;
@@ -12,6 +29,7 @@ import me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager.AbilityScept
 import me.swagpancakes.originsbukkit.listeners.origins.*;
 import me.swagpancakes.originsbukkit.metrics.Metrics;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.util.GhostFactory;
 import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
@@ -19,80 +37,30 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-
 /**
  * The type Main.
+ *
+ * @author SwagPannekaker
  */
 public final class Main extends JavaPlugin {
 
-
-    /**
-     * The Protocol manager.
-     */
     public ProtocolManager protocolManager;
-    /**
-     * The Config handler.
-     */
+    public GhostFactory ghostFactory;
     public ConfigHandler configHandler = new ConfigHandler(this);
-    /**
-     * The Item manager.
-     */
     public ItemManager itemManager = new ItemManager(this);
-    /**
-     * The Storage utils.
-     */
     public StorageUtils storageUtils = new StorageUtils(this);
-    /**
-     * The Server version checker.
-     */
     public ServerVersionChecker serverVersionChecker = new ServerVersionChecker(this);
-    /**
-     * The Arachnid.
-     */
     public Arachnid arachnid;
-    /**
-     * The Avian.
-     */
     public Avian avian;
-    /**
-     * The Blazeborn.
-     */
     public Blazeborn blazeborn;
-    /**
-     * The Elytrian.
-     */
     public Elytrian elytrian;
-    /**
-     * The Enderian.
-     */
     public Enderian enderian;
-    /**
-     * The Feline.
-     */
     public Feline feline;
-    /**
-     * The Human.
-     */
     public Human human;
-    /**
-     * The Merling.
-     */
     public Merling merling;
-    /**
-     * The Phantom.
-     */
     public Phantom phantom;
-    /**
-     * The Shulk.
-     */
     public Shulk shulk;
-    /**
-     * The No origin player restrict.
-     */
     public NoOriginPlayerRestrict noOriginPlayerRestrict;
-    /**
-     * The Player origin checker.
-     */
     public PlayerOriginChecker playerOriginChecker;
 
     private Main plugin;
@@ -125,6 +93,7 @@ public final class Main extends JavaPlugin {
 
         if (plugin.isEnabled()) {
             protocolManager = ProtocolLibrary.getProtocolManager();
+            ghostFactory = new GhostFactory(this);
 
             loadFiles();
             registerCommands();

@@ -4,6 +4,7 @@ main: me.swagpancakes.originsbukkit.Main
 softdepend:
   - ProtocolLib
   - PancakeLibCore
+  - LibsDisguises
 api-version: 1.17
 authors: [ SwagPannekaker ]
 description: Origins for Bukkit and forks of Bukkit.

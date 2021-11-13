@@ -1,3 +1,20 @@
+/*
+ *     Origins-Bukkit
+ *     Copyright (C) 2021 SwagPannekaker
+ *
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
@@ -13,10 +30,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +45,8 @@ import java.util.UUID;
 
 /**
  * The type Elytrian.
+ *
+ * @author SwagPannekaker
  */
 public class Elytrian implements Listener {
 
@@ -37,9 +54,6 @@ public class Elytrian implements Listener {
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
     private final int COOLDOWNTIME = 30;
 
-    /**
-     * The Elytra.
-     */
     public ItemStack elytra;
 
     /**
@@ -153,10 +167,11 @@ public class Elytrian implements Listener {
         if (damager instanceof Player) {
             Player player = (Player) damager;
             UUID playerUUID = player.getUniqueId();
+            double additionalDamage = baseDamage * 0.5;
 
             if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
                 if (player.isGliding()) {
-                    event.setDamage(baseDamage + 1.5);
+                    event.setDamage(baseDamage + additionalDamage);
                 }
             }
         }
@@ -227,17 +242,5 @@ public class Elytrian implements Listener {
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);
-    }
-
-    /**
-     * On click.
-     *
-     * @param event the event
-     */
-    @EventHandler
-    public void onClick(PlayerInteractEvent event) {
-        if (event.getAction() == Action.RIGHT_CLICK_AIR && event.getAction() == Action.LEFT_CLICK_AIR) {
-            event.getPlayer().sendMessage("BLEP");
-        }
     }
 }
