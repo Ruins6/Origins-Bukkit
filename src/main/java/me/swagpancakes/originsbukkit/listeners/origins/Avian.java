@@ -18,6 +18,7 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import net.md_5.bungee.api.ChatMessageType;
@@ -72,8 +73,8 @@ public class Avian implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
-            player.setHealthScale((10) * 2);
-            player.setWalkSpeed(0.250F);
+            player.setHealthScale(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble());
+            player.setWalkSpeed(0.25F);
             avianSlowFalling(player);
         }
     }

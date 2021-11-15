@@ -67,7 +67,6 @@ public class KeyListener implements Listener {
                     case MERLING:
                         break;
                     case PHANTOM:
-                        plugin.phantom.phantomSwitchStateAbility(player);
                         break;
                     case ELYTRIAN:
                         plugin.elytrian.elytrianLaunchIntoAir(player);
@@ -77,6 +76,7 @@ public class KeyListener implements Listener {
                     case AVIAN:
                         break;
                     case ARACHNID:
+                        plugin.arachnid.arachnidClimbToggleAbility(player);
                         break;
                     case SHULK:
                         plugin.shulk.shulkInventoryAbility(player);

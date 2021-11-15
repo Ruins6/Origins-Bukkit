@@ -21,11 +21,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import me.swagpancakes.originsbukkit.commands.MainCommand;
 import me.swagpancakes.originsbukkit.config.ConfigHandler;
-import me.swagpancakes.originsbukkit.items.ItemManager;
 import me.swagpancakes.originsbukkit.listeners.KeyListener;
 import me.swagpancakes.originsbukkit.listeners.NoOriginPlayerRestrict;
 import me.swagpancakes.originsbukkit.listeners.PlayerOriginChecker;
-import me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager.AbilitySceptre;
 import me.swagpancakes.originsbukkit.listeners.origins.*;
 import me.swagpancakes.originsbukkit.metrics.Metrics;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -33,7 +31,6 @@ import me.swagpancakes.originsbukkit.util.GhostFactory;
 import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -47,7 +44,6 @@ public final class Main extends JavaPlugin {
     public ProtocolManager protocolManager;
     public GhostFactory ghostFactory;
     public ConfigHandler configHandler = new ConfigHandler(this);
-    public ItemManager itemManager = new ItemManager(this);
     public StorageUtils storageUtils = new StorageUtils(this);
     public ServerVersionChecker serverVersionChecker = new ServerVersionChecker(this);
     public Arachnid arachnid;
@@ -198,7 +194,6 @@ public final class Main extends JavaPlugin {
         shulk = new Shulk(this);
         noOriginPlayerRestrict = new NoOriginPlayerRestrict(this);
         playerOriginChecker = new PlayerOriginChecker(this);
-        new AbilitySceptre(this);
         new KeyListener(this);
     }
 
@@ -206,9 +201,7 @@ public final class Main extends JavaPlugin {
      * Register items.
      */
     public void registerItems() {
-        itemManager.init();
-
-        ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all items.");
+        //ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all items.");
     }
 
     /**
@@ -231,18 +224,14 @@ public final class Main extends JavaPlugin {
      * Register recipes.
      */
     public void registerRecipes() {
-        Bukkit.getServer().addRecipe(itemManager.abilitySceptreRecipe);
-
-        ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all item recipes.");
+        //ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all item recipes.");
     }
 
     /**
      * Unregister recipes.
      */
     public void unregisterRecipes() {
-        Bukkit.getServer().removeRecipe(NamespacedKey.minecraft("ability_sceptre"));
-
-        ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Unregistered all item recipes.");
+        //ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Unregistered all item recipes.");
     }
 
     /**

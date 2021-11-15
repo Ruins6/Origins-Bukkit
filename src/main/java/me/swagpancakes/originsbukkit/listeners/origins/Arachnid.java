@@ -18,8 +18,10 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -55,7 +57,7 @@ public class Arachnid implements Listener {
 
     private final Main plugin;
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
-    private final int COOLDOWNTIME = 5;
+    private final int COOLDOWNTIME = Config.ORIGINS_ARACHNID_ABILITY_SPIDER_WEB_COOLDOWN.toInt();
 
     /**
      * Instantiates a new Arachnid.
@@ -76,7 +78,7 @@ public class Arachnid implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
-            player.setHealthScale((10 - 3) * 2);
+            player.setHealthScale(Config.ORIGINS_ARACHNID_MAX_HEALTH.toDouble());
         }
     }
 
@@ -91,8 +93,13 @@ public class Arachnid implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
-            if (!player.isSneaking()) {
-                arachnidClimb(player);
+            if (plugin.storageUtils.findArachnidAbilityToggleData(playerUUID) == null) {
+                plugin.storageUtils.createArachnidAbilityToggleData(playerUUID, false);
+            }
+            if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
+                if (!player.isSneaking()) {
+                    arachnidClimb(player);
+                }
             }
         }
     }
@@ -196,9 +203,13 @@ public class Arachnid implements Listener {
 
                 if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
                     if (player.isOnline()) {
-                        if (player.isSneaking() && !player.isGliding()) {
-                            if (nextToWall(player) && !block.isLiquid()) {
-                                player.setVelocity(player.getVelocity().setY(0.175));
+                        if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
+                            if (player.isSneaking() && !player.isGliding()) {
+                                if (nextToWall(player) && !block.isLiquid()) {
+                                    player.setVelocity(player.getVelocity().setY(Config.ORIGINS_ARACHNID_ABILITY_CLIMBING_Y_VELOCITY.toDouble()));
+                                }
+                            } else {
+                                this.cancel();
                             }
                         } else {
                             this.cancel();
@@ -211,6 +222,33 @@ public class Arachnid implements Listener {
                 }
             }
         }.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    /**
+     * Arachnid climb toggle ability.
+     *
+     * @param player the player
+     */
+    public void arachnidClimbToggleAbility(Player player) {
+        UUID playerUUID = player.getUniqueId();
+        Location location = player.getLocation();
+        Block block = location.getBlock();
+
+        if (plugin.storageUtils.findArachnidAbilityToggleData(playerUUID) == null) {
+            plugin.storageUtils.createArachnidAbilityToggleData(playerUUID, false);
+            ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &cOFF");
+        } else {
+            if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
+                plugin.storageUtils.updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, false));
+                ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &cOFF");
+            } else {
+                plugin.storageUtils.updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, true));
+                if (nextToWall(player) && !block.isLiquid()) {
+                    arachnidClimb(player);
+                }
+                ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &aON");
+            }
+        }
     }
 
     /**

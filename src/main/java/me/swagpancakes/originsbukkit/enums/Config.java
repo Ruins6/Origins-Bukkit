@@ -26,26 +26,35 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * The enum Config.
  */
 public enum Config {
-    ORIGINS_BLAZEBORN_MAX_HEALTH("Config.Origins.Blazeborn.Max-Health", 20),
-    ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT("Config.Origins.Blazeborn.Water-Damage.Amount", 1),
-    ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY("Config.Origins.Blazeborn.Water-Damage.Delay", 0L),
-    ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY("Config.Origins.Blazeborn.Water-Damage.Period-Delay", 10L),
     ORIGINS_ENDERIAN_MAX_HEALTH("Config.Origins.Enderian.Max-Health", 20),
     ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT("Config.Origins.Enderian.Water-Damage.Amount", 1),
     ORIGINS_ENDERIAN_WATER_DAMAGE_DELAY("Config.Origins.Enderian.Water-Damage.Delay", 0L),
-    ORIGINS_ENDERIAN_WATER_DAMAGE_PERIOD_DELAY("Config.Origins.Enderian.Water-Damage.Period-Delay", 10L),
-    ORIGINS_ENDERIAN_ABILITY_COOLDOWN("Config.Origins.Enderian.Ability.Cooldown", 2),
+    ORIGINS_ENDERIAN_WATER_DAMAGE_PERIOD_DELAY("Config.Origins.Enderian.Water-Damage.Period-Delay", 20L),
+    ORIGINS_ENDERIAN_ABILITY_COOLDOWN("Config.Origins.Enderian.Ability.Cooldown", 1),
     ORIGINS_MERLING_MAX_HEALTH("Config.Origins.Merling.Max-Health", 20),
     ORIGINS_MERLING_AIR_BREATHING_MAX_TIME("Config.Origins.Merling.Air-Breathing.Max-Time", 120),
     ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT("Config.Origins.Merling.Air-Breathing.Damage.Amount", 1),
     ORIGINS_MERLING_AIR_BREATHING_DAMAGE_DELAY("Config.Origins.Merling.Air-Breathing.Damage.Delay", 0),
-    ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY("Config.Origins.Merling.Air-Breathing.Damage.Period-Delay", 10),
+    ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY("Config.Origins.Merling.Air-Breathing.Damage.Period-Delay", 20),
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Decrease", BarColor.BLUE),
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Increase", BarColor.GREEN),
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarColor.On-Drowning", BarColor.RED),
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Decrease", BarStyle.SOLID),
     ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Increase", BarStyle.SOLID),
-    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Drowning", BarStyle.SOLID);
+    ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DROWNING("Config.Origins.Merling.Bossbar.Air-Breathing-Timer.BarStyle.On-Drowning", BarStyle.SOLID),
+    ORIGINS_PHANTOM_MAX_HEALTH("Config.Origins.Phantom.Max-Health", 14),
+    ORIGINS_ELYTRIAN_MAX_HEALTH("Config.Origins.Elytrian.Max-Health", 20),
+    ORIGINS_ELYTRIAN_ABILITY_COOLDOWN("Config.Origins.Elytrian.Ability.Cooldown", 30),
+    ORIGINS_ELYTRIAN_ABILITY_Y_VELOCITY("Config.Origins.Elytrian.Ability.Y-Velocity", 2.1),
+    ORIGINS_BLAZEBORN_MAX_HEALTH("Config.Origins.Blazeborn.Max-Health", 20),
+    ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT("Config.Origins.Blazeborn.Water-Damage.Amount", 1),
+    ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY("Config.Origins.Blazeborn.Water-Damage.Delay", 0L),
+    ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY("Config.Origins.Blazeborn.Water-Damage.Period-Delay", 20L),
+    ORIGINS_AVIAN_MAX_HEALTH("Config.Origins.Avian.Max-Health", 20),
+    ORIGINS_ARACHNID_MAX_HEALTH("Config.Origins.Arachnid.Max-Health", 14),
+    ORIGINS_ARACHNID_ABILITY_SPIDER_WEB_COOLDOWN("Config.Origins.Arachnid.Ability.Spider-Web.Cooldown", 5),
+    ORIGINS_ARACHNID_ABILITY_CLIMBING_Y_VELOCITY("Config.Origins.Arachnid.Ability.Climbing.Y-Velocity", 0.175),
+    ORIGINS_FELINE_MAX_HEALTH("Config.Origins.Feline.Max-Health", 18);
 
     private static YamlConfiguration CONFIG;
     private final String Path;

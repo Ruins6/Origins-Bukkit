@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import me.swagpancakes.originsbukkit.Main;
 import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ public class StorageUtils {
     private List<OriginsPlayerData> originsPlayerData = new ArrayList<>();
     private List<MerlingTimerSessionData> merlingTimerSessionData = new ArrayList<>();
     private Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
+    private List<ArachnidAbilityToggleData> arachnidAbilityToggleData = new ArrayList<>();
     private boolean isOriginsPlayerDataLoaded = false;
 
     /**
@@ -101,6 +103,24 @@ public class StorageUtils {
     }
 
     /**
+     * Gets arachnid ability toggle data.
+     *
+     * @return the arachnid ability toggle data
+     */
+    public List<ArachnidAbilityToggleData> getArachnidAbilityToggleData() {
+        return arachnidAbilityToggleData;
+    }
+
+    /**
+     * Sets arachnid ability toggle data.
+     *
+     * @param arachnidAbilityToggleData the arachnid ability toggle data
+     */
+    public void setArachnidAbilityToggleData(List<ArachnidAbilityToggleData> arachnidAbilityToggleData) {
+        this.arachnidAbilityToggleData = arachnidAbilityToggleData;
+    }
+
+    /**
      * Is origins player data loaded boolean.
      *
      * @return the boolean
@@ -125,6 +145,7 @@ public class StorageUtils {
         try {
             loadOriginsPlayerData();
             loadMerlingTimerSessionData();
+            loadArachnidAbilityToggleData();
         } catch (IOException event) {
             event.printStackTrace();
         }
@@ -172,7 +193,7 @@ public class StorageUtils {
      * @return the origins player data
      */
     public OriginsPlayerData findOriginsPlayerData(UUID playerUUID) {
-        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
+        for (OriginsPlayerData originsPlayerData : originsPlayerData) {
             if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
                 return originsPlayerData;
             }
@@ -188,7 +209,7 @@ public class StorageUtils {
      * @return the player origin
      */
     public Origins getPlayerOrigin(UUID playerUUID) {
-        for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
+        for (OriginsPlayerData originsPlayerData : originsPlayerData) {
             if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
                 return originsPlayerData.getOrigin();
             }
@@ -205,11 +226,11 @@ public class StorageUtils {
         Player player = Bukkit.getPlayer(playerUUID);
 
         if (findOriginsPlayerData(playerUUID) != null) {
-            for (OriginsPlayerData originsPlayerData : plugin.storageUtils.originsPlayerData) {
+            for (OriginsPlayerData originsPlayerData : originsPlayerData) {
                 if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
                     Origins oldOrigin = originsPlayerData.getOrigin();
 
-                    plugin.storageUtils.originsPlayerData.remove(originsPlayerData);
+                    this.originsPlayerData.remove(originsPlayerData);
                     OriginChangeEvent originChangeEvent = new OriginChangeEvent(player, oldOrigin, null);
                     Bukkit.getPluginManager().callEvent(originChangeEvent);
                     break;
@@ -233,7 +254,7 @@ public class StorageUtils {
         Player player = Bukkit.getPlayer(playerUUID);
 
         if (findOriginsPlayerData(playerUUID) != null) {
-            for (OriginsPlayerData originsPlayerData : this.originsPlayerData) {
+            for (OriginsPlayerData originsPlayerData : originsPlayerData) {
                 if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
                     Origins oldOrigin = originsPlayerData.getOrigin();
 
@@ -271,7 +292,7 @@ public class StorageUtils {
                 }
                 try {
                     Writer writer = new FileWriter(file, false);
-                    gson.toJson(plugin.storageUtils.originsPlayerData, writer);
+                    gson.toJson(originsPlayerData, writer);
                     writer.flush();
                     writer.close();
                 } catch (IOException event) {
@@ -323,7 +344,7 @@ public class StorageUtils {
      * @param timeLeft   the time left
      */
     public void createMerlingTimerSessionData(UUID playerUUID, int timeLeft) {
-        this.merlingTimerSessionData.add(new MerlingTimerSessionData(playerUUID, timeLeft));
+        merlingTimerSessionData.add(new MerlingTimerSessionData(playerUUID, timeLeft));
         try {
             saveMerlingTimerSessionData();
         } catch (IOException event) {
@@ -339,7 +360,7 @@ public class StorageUtils {
      * @return the merling timer session data
      */
     public MerlingTimerSessionData findMerlingTimerSessionData(UUID playerUUID) {
-        for (MerlingTimerSessionData merlingTimerSessionData : this.merlingTimerSessionData) {
+        for (MerlingTimerSessionData merlingTimerSessionData : merlingTimerSessionData) {
             if (merlingTimerSessionData.getPlayerUUID().equals(playerUUID)) {
                 return merlingTimerSessionData;
             }
@@ -355,7 +376,7 @@ public class StorageUtils {
      * @return the merling timer session data time left
      */
     public int getMerlingTimerSessionDataTimeLeft(UUID playerUUID) {
-        for (MerlingTimerSessionData merlingTimerSessionData : this.merlingTimerSessionData) {
+        for (MerlingTimerSessionData merlingTimerSessionData : merlingTimerSessionData) {
             if (merlingTimerSessionData.getPlayerUUID().equals(playerUUID)) {
                 return merlingTimerSessionData.getTimeLeft();
             }
@@ -371,7 +392,7 @@ public class StorageUtils {
      */
     public void updateMerlingTimerSessionData(UUID playerUUID, MerlingTimerSessionData newMerlingTimerSessionData) {
         if (findMerlingTimerSessionData(playerUUID) != null) {
-            for (MerlingTimerSessionData merlingTimerSessionData : this.merlingTimerSessionData) {
+            for (MerlingTimerSessionData merlingTimerSessionData : merlingTimerSessionData) {
                 if (merlingTimerSessionData.getPlayerUUID().equals(playerUUID)) {
                     merlingTimerSessionData.setTimeLeft(newMerlingTimerSessionData.getTimeLeft());
                     try {
@@ -391,9 +412,9 @@ public class StorageUtils {
      */
     public void deleteMerlingTimerSessionData(UUID playerUUID) {
         if (findMerlingTimerSessionData(playerUUID) != null) {
-            for (MerlingTimerSessionData merlingTimerSessionData : plugin.storageUtils.merlingTimerSessionData) {
+            for (MerlingTimerSessionData merlingTimerSessionData : merlingTimerSessionData) {
                 if (merlingTimerSessionData.getPlayerUUID().equals(playerUUID)) {
-                    plugin.storageUtils.merlingTimerSessionData.remove(merlingTimerSessionData);
+                    this.merlingTimerSessionData.remove(merlingTimerSessionData);
                     break;
                 }
             }
@@ -425,7 +446,7 @@ public class StorageUtils {
                 }
                 try {
                     Writer writer = new FileWriter(file, false);
-                    gson.toJson(plugin.storageUtils.merlingTimerSessionData, writer);
+                    gson.toJson(merlingTimerSessionData, writer);
                     writer.flush();
                     writer.close();
                 } catch (IOException event) {
@@ -454,16 +475,13 @@ public class StorageUtils {
                     file.getParentFile().mkdirs();
                 }
                 if (file.exists()) {
-                    ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Loading sessions...");
-
                     try {
                         Reader reader = new FileReader(file);
                         MerlingTimerSessionData[] n = gson.fromJson(reader, MerlingTimerSessionData[].class);
-                        plugin.storageUtils.merlingTimerSessionData = new ArrayList<>(Arrays.asList(n));
+                        merlingTimerSessionData = new ArrayList<>(Arrays.asList(n));
                     } catch (FileNotFoundException event) {
                         event.printStackTrace();
                     }
-                    ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Sessions loaded.");
                 }
             }
         }.runTaskAsynchronously(plugin);
@@ -498,7 +516,9 @@ public class StorageUtils {
                 FileConfiguration shulkPlayerStorageData = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
 
                 for (Map.Entry<UUID, ItemStack[]> entry : plugin.storageUtils.shulkPlayerStorageData.entrySet()) {
-                    shulkPlayerStorageData.set("data." + entry.getKey(), entry.getValue());
+                    if (entry.getKey().equals(playerUUID)) {
+                        shulkPlayerStorageData.set("data." + entry.getKey(), entry.getValue());
+                    }
                 }
                 try {
                     shulkPlayerStorageData.save(shulkPlayerStorageDataFile);
@@ -536,11 +556,163 @@ public class StorageUtils {
                     }
                 }
                 FileConfiguration shulkPlayerStorageData = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
-                shulkPlayerStorageData.getConfigurationSection("data").getKeys(false).forEach(key ->{
-                    @SuppressWarnings("unchecked")
-                    ItemStack[] contents = ((List<ItemStack>) shulkPlayerStorageData.get("data." + key)).toArray(new ItemStack[0]);
-                    plugin.storageUtils.shulkPlayerStorageData.put(UUID.fromString(key), contents);
-                });
+                if (shulkPlayerStorageData.contains("data")) {
+                    shulkPlayerStorageData.getConfigurationSection("data").getKeys(false).forEach(key ->{
+                        @SuppressWarnings("unchecked")
+                        ItemStack[] contents = ((List<ItemStack>) shulkPlayerStorageData.get("data." + key)).toArray(new ItemStack[0]);
+                        plugin.storageUtils.shulkPlayerStorageData.put(UUID.fromString(key), contents);
+                    });
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Create arachnid ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     * @param isToggled  the is toggled
+     */
+    public void createArachnidAbilityToggleData(UUID playerUUID, boolean isToggled) {
+        arachnidAbilityToggleData.add(new ArachnidAbilityToggleData(playerUUID, isToggled));
+        try {
+            saveArachnidAbilityToggleData();
+        } catch (IOException event) {
+            event.printStackTrace();
+        }
+    }
+
+    /**
+     * Find arachnid ability toggle data arachnid ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     *
+     * @return the arachnid ability toggle data
+     */
+    public ArachnidAbilityToggleData findArachnidAbilityToggleData(UUID playerUUID) {
+        for (ArachnidAbilityToggleData arachnidAbilityToggleData : arachnidAbilityToggleData) {
+            if (arachnidAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                return arachnidAbilityToggleData;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets arachnid ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     *
+     * @return the arachnid ability toggle data
+     */
+    public boolean getArachnidAbilityToggleData(UUID playerUUID) {
+        for (ArachnidAbilityToggleData arachnidAbilityToggleData : arachnidAbilityToggleData) {
+            if (arachnidAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                return arachnidAbilityToggleData.isToggled();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Update arachnid ability toggle data.
+     *
+     * @param playerUUID                   the player uuid
+     * @param newArachnidAbilityToggleData the new arachnid ability toggle data
+     */
+    public void updateArachnidAbilityToggleData(UUID playerUUID, ArachnidAbilityToggleData newArachnidAbilityToggleData) {
+        if (findArachnidAbilityToggleData(playerUUID) != null) {
+            for (ArachnidAbilityToggleData arachnidAbilityToggleData : arachnidAbilityToggleData) {
+                if (arachnidAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                    arachnidAbilityToggleData.setToggled(newArachnidAbilityToggleData.isToggled());
+                    try {
+                        saveArachnidAbilityToggleData();
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete arachnid ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     */
+    public void deleteArachnidAbilityToggleData(UUID playerUUID) {
+        if (findArachnidAbilityToggleData(playerUUID) != null) {
+            for (ArachnidAbilityToggleData arachnidAbilityToggleData : arachnidAbilityToggleData) {
+                if (arachnidAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                    this.arachnidAbilityToggleData.remove(arachnidAbilityToggleData);
+                    break;
+                }
+            }
+            try {
+                saveArachnidAbilityToggleData();
+            } catch (IOException event) {
+                event.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Save arachnid ability toggle data.
+     *
+     * @throws IOException the io exception
+     */
+    public void saveArachnidAbilityToggleData() throws IOException {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                Gson gson = new Gson();
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "arachniddata" + s + "arachnidabilitytoggledata" + s + "arachnidabilitytoggledata.json");
+
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+                try {
+                    Writer writer = new FileWriter(file, false);
+                    gson.toJson(arachnidAbilityToggleData, writer);
+                    writer.flush();
+                    writer.close();
+                } catch (IOException event) {
+                    event.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Load arachnid ability toggle data.
+     *
+     * @throws IOException the io exception
+     */
+    public void loadArachnidAbilityToggleData() throws IOException {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                Gson gson = new Gson();
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "arachniddata" + s + "arachnidabilitytoggledata" + s + "arachnidabilitytoggledata.json");
+
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+                if (file.exists()) {
+                    try {
+                        Reader reader = new FileReader(file);
+                        ArachnidAbilityToggleData[] n = gson.fromJson(reader, ArachnidAbilityToggleData[].class);
+                        arachnidAbilityToggleData = new ArrayList<>(Arrays.asList(n));
+                    } catch (FileNotFoundException event) {
+                        event.printStackTrace();
+                    }
+                }
             }
         }.runTaskAsynchronously(plugin);
     }

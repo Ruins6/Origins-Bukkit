@@ -18,6 +18,7 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -52,7 +53,7 @@ public class Elytrian implements Listener {
 
     private final Main plugin;
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
-    private final int COOLDOWNTIME = 30;
+    private final int COOLDOWNTIME = Config.ORIGINS_ELYTRIAN_ABILITY_COOLDOWN.toInt();
 
     public ItemStack elytra;
 
@@ -77,7 +78,7 @@ public class Elytrian implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
-            player.setHealthScale((10) * 2);
+            player.setHealthScale(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble());
             elytrianElytra(player);
             elytrianClaustrophobiaTimer(player);
         }
@@ -139,14 +140,14 @@ public class Elytrian implements Listener {
                         .toString()
                         .replace("%seconds_left%", String.valueOf(secondsLeft)));
             } else {
-                player.setVelocity(new Vector(0, 2.1, 0));
+                player.setVelocity(new Vector(0, Config.ORIGINS_ELYTRIAN_ABILITY_Y_VELOCITY.toDouble(), 0));
                 COOLDOWN.put(playerUUID, System.currentTimeMillis());
                 ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                         .toString()
                         .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
             }
         } else {
-            player.setVelocity(new Vector(0, 2.1, 0));
+            player.setVelocity(new Vector(0, Config.ORIGINS_ELYTRIAN_ABILITY_Y_VELOCITY.toDouble(), 0));
             COOLDOWN.put(playerUUID, System.currentTimeMillis());
             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                     .toString()

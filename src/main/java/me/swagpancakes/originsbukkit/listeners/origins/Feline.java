@@ -18,6 +18,7 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -63,7 +64,7 @@ public class Feline implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.FELINE) {
-            player.setHealthScale((9) * 2);
+            player.setHealthScale(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble());
         }
     }
 

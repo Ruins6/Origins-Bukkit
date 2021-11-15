@@ -11,39 +11,113 @@
 ##
 Config:
   Origins:
-    Blazeborn:
-      Max-Health: 20
-      Water-Damage:
-        Amount: 1
-        Delay: 0
-        Period-Delay: 10
     Enderian:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
       Max-Health: 20
       Water-Damage:
+        # The amount of damage dealt when they're in water.
+        # 1 = 0.5 hearts
         Amount: 1
+        # The damage delay when player enters the water.
+        # In ticks, 1 tick = 0.05 second
+        # 20 ticks = 1 second
         Delay: 0
-        Period-Delay: 10
+        # The delay each damage.
+        # In ticks, 1 tick = 0.05 second
+        # 20 ticks = 1 second
+        Period-Delay: 20
       Ability:
-        Cooldown: 2
+        # Determines how long the player can perform this ability again.
+        # In seconds, 1 = 1 second
+        # No decimals allowed.
+        Cooldown: 1
     Merling:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
       Max-Health: 20
       Air-Breathing:
+        # The maximum amount of time the player can breathe when not in water.
+        # In seconds, 1 = 1 second
         Max-Time: 120
         Damage:
+          # The amount of damage dealt when they're not in water.
+          # 1 = 0.5 hearts
           Amount: 1
+          # The damage delay when player is not in water.
+          # In ticks, 1 tick = 0.05 second
+          # 20 ticks = 1 second
           Delay: 0
-          Period-Delay: 10
+          # The delay each damage.
+          # In ticks, 1 tick = 0.05 second
+          # 20 ticks = 1 second
+          Period-Delay: 20
       Bossbar:
         Air-Breathing-Timer:
-          #Available Bar Colors:
-          #BLUE, GREEN, RED, PINK, PURPLE, WHITE, YELLOW
+          # Available Bar Colors:
+          # BLUE, GREEN, RED, PINK, PURPLE, WHITE, YELLOW
           BarColor:
             On-Decrease: BLUE
             On-Increase: GREEN
             On-Drowning: RED
-          #Available Bar Styles:
-          #SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
+          # Available Bar Styles:
+          # SOLID, SEGMENTED_6, SEGMENTED_10, SEGMENTED_12, SEGMENTED_20
           BarStyle:
             On-Decrease: SOLID
             On-Increase: SOLID
             On-Drowning: SOLID
+    Phantom:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 14
+    Elytrian:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 20
+      Ability:
+        Y-Velocity: 2.1
+        # Determines how long the player can perform this ability again.
+        # In seconds, 1 = 1 second
+        # No decimals allowed.
+        Cooldown: 30
+    Blazeborn:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 20
+      Water-Damage:
+        # The amount of damage dealt when they're in water.
+        # 1 = 0.5 hearts
+        Amount: 1
+        # The damage delay when player enters the water.
+        # In ticks, 1 tick = 0.05 second
+        # 20 ticks = 1 second
+        Delay: 0
+        # The delay each damage.
+        # In ticks, 1 tick = 0.05 second
+        # 20 ticks = 1 second
+        Period-Delay: 20
+    Avian:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 20
+    Arachnid:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 14
+      Ability:
+        Climbing:
+          # Determines how fast the player could climb walls.
+          Y-Velocity: 0.175
+        Spider-Web:
+          # Determines how long the player can perform this ability again.
+          # In seconds, 1 = 1 second
+          # No decimals allowed.
+          Cooldown: 5
+    Shulk:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 20
+    Feline:
+      # The amount of health for this origin.
+      # 1 = 0.5 hearts
+      Max-Health: 18

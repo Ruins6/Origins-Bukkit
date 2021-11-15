@@ -21,7 +21,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.google.common.collect.Lists;
 import me.swagpancakes.originsbukkit.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -106,15 +105,13 @@ public class GhostMaker {
      * @param player the player
      */
     private void showAsGhost(Player viewer, Player player) {
-        PacketContainer packet = plugin.protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_TEAM, true);
+        PacketContainer packet = plugin.protocolManager.createPacket(PacketType.Play.Server.SCOREBOARD_TEAM);
         packet.getStrings().write(0, viewer.getEntityId() + "." + player.getEntityId()); //Make the team name unique to both the viewer and the ghost
-        packet.getIntegers().write(1, 0); //We are creating a new team
-        packet.getModifier().write(6, Lists.newArrayList(viewer.getName(), player.getName())); //Team only consists of the ghost and the viewer
-        packet.getIntegers().write(2, 3); //Ghost can be seen and attacked by the viewer
+        packet.getIntegers().write(0, 1); //We are creating a new team
         try {
             plugin.protocolManager.sendServerPacket(viewer, packet); //Only the viewer needs to be sent the packet
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (InvocationTargetException event) {
+            event.printStackTrace();
         }
     }
 }

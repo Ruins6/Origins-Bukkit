@@ -22,6 +22,8 @@ import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -36,7 +38,9 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -47,6 +51,8 @@ import java.util.UUID;
 public class Blazeborn implements Listener {
 
     private final Main plugin;
+    private final List<Player> blazebornPlayersInWater = new ArrayList<>();
+    private final List<Player> blazebornPlayersInAir = new ArrayList<>();
 
     /**
      * Instantiates a new Blazeborn.
@@ -56,6 +62,8 @@ public class Blazeborn implements Listener {
     public Blazeborn(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
+        registerBlazebornWaterDamageListener();
+        registerBlazebornAirEnterListener();
     }
 
     /**
@@ -68,87 +76,139 @@ public class Blazeborn implements Listener {
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
             player.setHealthScale(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble());
-            blazebornWaterDamage(player);
+            blazebornPlayersInWater.add(player);
+            blazebornFlameParticles(player);
         }
     }
 
     /**
-     * Blazeborn water damage.
-     *
-     * @param player the player
+     * Register blazeborn water damage listener.
      */
-    public void blazebornWaterDamage(Player player) {
+    public void registerBlazebornWaterDamageListener() {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
-                UUID playerUUID = player.getUniqueId();
-                Location location = player.getLocation();
-                Block block = location.getBlock();
-                Material material = block.getType();
+                if (!blazebornPlayersInWater.isEmpty()) {
+                    for (int i = 0; i < blazebornPlayersInWater.size(); i++) {
+                        Player player = blazebornPlayersInWater.get(i);
+                        UUID playerUUID = player.getUniqueId();
+                        Location location = player.getLocation();
+                        Block block = location.getBlock();
+                        Material material = block.getType();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
-                    if (player.isOnline()) {
-                        if (player.getWorld().hasStorm()) {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
-                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                            if (player.isOnline()) {
+                                if (player.getWorld().hasStorm()) {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        damageBlazeborn(player, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                                    } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                        damageBlazeborn(player, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                                    } else {
+                                        blazebornPlayersInWater.remove(player);
+                                        blazebornPlayersInAir.add(player);
+                                    }
+                                } else {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        damageBlazeborn(player, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
+                                    } else {
+                                        blazebornPlayersInWater.remove(player);
+                                        blazebornPlayersInAir.add(player);
+                                    }
+                                }
                             } else {
-                                blazebornAirEnter(player);
-                                this.cancel();
+                                blazebornPlayersInWater.remove(player);
                             }
                         } else {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                player.damage(Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_AMOUNT.toDouble());
-                            } else {
-                                blazebornAirEnter(player);
-                                this.cancel();
-                            }
+                            blazebornPlayersInWater.remove(player);
                         }
-                    } else {
-                        this.cancel();
                     }
-                } else {
-                    this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
+        }.runTaskTimerAsynchronously(plugin, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
     }
 
     /**
-     * Blazeborn air enter.
+     * Damage blazeborn.
+     *
+     * @param player the player
+     * @param amount the amount
+     */
+    private void damageBlazeborn(Player player, double amount) {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                player.damage(amount);
+            }
+        }.runTask(plugin);
+     }
+
+    /**
+     * Register blazeborn air enter listener.
+     */
+    public void registerBlazebornAirEnterListener() {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if (!blazebornPlayersInAir.isEmpty()) {
+                    for (int i = 0; i < blazebornPlayersInAir.size(); i++) {
+                        Player player = blazebornPlayersInAir.get(i);
+                        UUID playerUUID = player.getUniqueId();
+                        Location location = player.getLocation();
+                        Block block = location.getBlock();
+                        Material material = block.getType();
+
+                        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                            if (player.isOnline()) {
+                                if (player.getWorld().hasStorm()) {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        blazebornPlayersInAir.remove(player);
+                                        blazebornPlayersInWater.add(player);
+                                    } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                        blazebornPlayersInAir.remove(player);
+                                        blazebornPlayersInWater.add(player);
+                                    }
+                                } else {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        blazebornPlayersInAir.remove(player);
+                                        blazebornPlayersInWater.add(player);
+                                    }
+                                }
+                            } else {
+                                blazebornPlayersInAir.remove(player);
+                            }
+                        } else {
+                            blazebornPlayersInAir.remove(player);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
+    }
+
+    /**
+     * Blazeborn flame particles.
      *
      * @param player the player
      */
-    public void blazebornAirEnter(Player player) {
+    public void blazebornFlameParticles(Player player) {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                World world = player.getWorld();
                 Location location = player.getLocation();
-                Block block = location.getBlock();
-                Material material = block.getType();
 
                 if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
                     if (player.isOnline()) {
-                        if (player.getWorld().hasStorm()) {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                blazebornWaterDamage(player);
-                                this.cancel();
-                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                blazebornWaterDamage(player);
-                                this.cancel();
-                            }
-                        } else {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                blazebornWaterDamage(player);
-                                this.cancel();
-                            }
-                        }
+                        world.spawnParticle(Particle.SMALL_FLAME, location.add(0, 1, 0), 5);
                     } else {
                         this.cancel();
                     }
@@ -156,7 +216,7 @@ public class Blazeborn implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 20L);
     }
 
     /**

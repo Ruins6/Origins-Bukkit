@@ -24,6 +24,8 @@ import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.LivingEntity;
@@ -36,9 +38,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The type Enderian.
@@ -48,6 +48,8 @@ import java.util.UUID;
 public class Enderian implements Listener {
 
     private final Main plugin;
+    private final List<Player> enderianPlayersInWater = new ArrayList<>();
+    private final List<Player> enderianPlayersInAir = new ArrayList<>();
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
     private final int COOLDOWNTIME = Config.ORIGINS_ENDERIAN_ABILITY_COOLDOWN.toInt();
 
@@ -59,6 +61,8 @@ public class Enderian implements Listener {
     public Enderian(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
+        registerEnderianWaterDamageListener();
+        registerEnderianAirEnterListener();
     }
 
     /**
@@ -71,87 +75,139 @@ public class Enderian implements Listener {
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
             player.setHealthScale(Config.ORIGINS_ENDERIAN_MAX_HEALTH.toDouble());
-            enderianWaterDamage(player);
+            enderianPlayersInWater.add(player);
+            enderianEnderParticles(player);
         }
     }
 
     /**
-     * Enderian water damage.
-     *
-     * @param player the player
+     * Register enderian water damage listener.
      */
-    public void enderianWaterDamage(Player player) {
+    public void registerEnderianWaterDamageListener() {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
-                UUID playerUUID = player.getUniqueId();
-                Location location = player.getLocation();
-                Block block = location.getBlock();
-                Material material = block.getType();
+                if (!enderianPlayersInWater.isEmpty()) {
+                    for (int i = 0; i < enderianPlayersInWater.size(); i++) {
+                        Player player = enderianPlayersInWater.get(i);
+                        UUID playerUUID = player.getUniqueId();
+                        Location location = player.getLocation();
+                        Block block = location.getBlock();
+                        Material material = block.getType();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
-                    if (player.isOnline()) {
-                        if (player.getWorld().hasStorm()) {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
-                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
+                            if (player.isOnline()) {
+                                if (player.getWorld().hasStorm()) {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        damageEnderian(player, Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                                    } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                        damageEnderian(player, Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                                    } else {
+                                        enderianPlayersInWater.remove(player);
+                                        enderianPlayersInAir.add(player);
+                                    }
+                                } else {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        damageEnderian(player, Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
+                                    } else {
+                                        enderianPlayersInWater.remove(player);
+                                        enderianPlayersInAir.add(player);
+                                    }
+                                }
                             } else {
-                                enderianAirEnter(player);
-                                this.cancel();
+                                enderianPlayersInWater.remove(player);
                             }
                         } else {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                player.damage(Config.ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT.toDouble());
-                            } else {
-                                enderianAirEnter(player);
-                                this.cancel();
-                            }
+                            enderianPlayersInWater.remove(player);
                         }
-                    } else {
-                        this.cancel();
                     }
-                } else {
-                    this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, Config.ORIGINS_ENDERIAN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_ENDERIAN_WATER_DAMAGE_PERIOD_DELAY.toLong());
+        }.runTaskTimerAsynchronously(plugin, Config.ORIGINS_ENDERIAN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_ENDERIAN_WATER_DAMAGE_PERIOD_DELAY.toLong());
     }
 
     /**
-     * Enderian air enter.
+     * Damage enderian.
+     *
+     * @param player the player
+     * @param amount the amount
+     */
+    private void damageEnderian(Player player, double amount) {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                player.damage(amount);
+            }
+        }.runTask(plugin);
+    }
+
+    /**
+     * Register enderian air enter listener.
+     */
+    public void registerEnderianAirEnterListener() {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if (!enderianPlayersInAir.isEmpty()) {
+                    for (int i = 0; i < enderianPlayersInAir.size(); i++) {
+                        Player player = enderianPlayersInAir.get(i);
+                        UUID playerUUID = player.getUniqueId();
+                        Location location = player.getLocation();
+                        Block block = location.getBlock();
+                        Material material = block.getType();
+
+                        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
+                            if (player.isOnline()) {
+                                if (player.getWorld().hasStorm()) {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        enderianPlayersInAir.remove(player);
+                                        enderianPlayersInWater.add(player);
+                                    } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                        enderianPlayersInAir.remove(player);
+                                        enderianPlayersInWater.add(player);
+                                    }
+                                } else {
+                                    if (player.isInWater() || material == Material.WATER_CAULDRON) {
+                                        enderianPlayersInAir.remove(player);
+                                        enderianPlayersInWater.add(player);
+                                    }
+                                }
+                            } else {
+                                enderianPlayersInAir.remove(player);
+                            }
+                        } else {
+                            enderianPlayersInAir.remove(player);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
+    }
+
+    /**
+     * Enderian ender particles.
      *
      * @param player the player
      */
-    public void enderianAirEnter(Player player) {
+    public void enderianEnderParticles(Player player) {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                World world = player.getWorld();
                 Location location = player.getLocation();
-                Block block = location.getBlock();
-                Material material = block.getType();
 
                 if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ENDERIAN) {
                     if (player.isOnline()) {
-                        if (player.getWorld().hasStorm()) {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                enderianWaterDamage(player);
-                                this.cancel();
-                            } else if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                enderianWaterDamage(player);
-                                this.cancel();
-                            }
-                        } else {
-                            if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                enderianWaterDamage(player);
-                                this.cancel();
-                            }
-                        }
+                        world.spawnParticle(Particle.PORTAL, location.add(0, 1, 0), 10);
                     } else {
                         this.cancel();
                     }
@@ -159,7 +215,7 @@ public class Enderian implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 20L);
     }
 
     /**

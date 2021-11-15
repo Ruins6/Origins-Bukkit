@@ -100,7 +100,6 @@ public class GhostFactory {
         validateState();
         if (!ghostTeam.hasPlayer(player)) {
             ghostTeam.addPlayer(player);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15, false, false));
         }
     }
 

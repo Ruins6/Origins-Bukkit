@@ -339,7 +339,7 @@ public class Merling implements Listener {
                                 bossBar.removePlayer(player);
                                 this.cancel();
                             } else {
-                                player.damage(Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
+                                damageMerling(player, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
                                 bossBar.addPlayer(player);
                             }
                         } else {
@@ -351,7 +351,7 @@ public class Merling implements Listener {
                                 this.cancel();
                             } else {
                                 if (!(location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY())) {
-                                    player.damage(Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
+                                    damageMerling(player, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
                                     bossBar.addPlayer(player);
                                 } else {
                                     if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
@@ -374,5 +374,22 @@ public class Merling implements Listener {
                 }
             }
         }.runTaskTimer(plugin, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_DELAY.toLong(), Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY.toLong());
+    }
+
+    /**
+     * Damage merling.
+     *
+     * @param player the player
+     * @param amount the amount
+     */
+    public void damageMerling(Player player, double amount) {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                player.damage(amount);
+            }
+        }.runTask(plugin);
     }
 }

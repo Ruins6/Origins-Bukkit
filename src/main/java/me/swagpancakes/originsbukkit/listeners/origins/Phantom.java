@@ -17,10 +17,13 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.libraryaddict.disguise.DisguiseAPI;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -50,6 +53,7 @@ public class Phantom implements Listener {
     public Phantom(Main plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.plugin = plugin;
+        registerPhantomInvisibilityPotionPacketListener();
     }
 
     /**
@@ -61,8 +65,8 @@ public class Phantom implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.PHANTOM) {
-            player.setHealthScale((10) * 2);
-            plugin.ghostFactory.addPlayer(player);
+            player.setHealthScale(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble());
+            plugin.ghostFactory.setGhost(player, true);
         }
     }
 
@@ -107,29 +111,6 @@ public class Phantom implements Listener {
     }
 
     /**
-     * Phantom switch state ability.
-     *
-     * @param player the player
-     */
-    public void phantomSwitchStateAbility(Player player) {
-        UUID playerUUID = player.getUniqueId();
-
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.PHANTOM) {
-            if (!DisguiseAPI.isDisguised(player) && DisguiseAPI.getDisguise(player).getType() != DisguiseType.PHANTOM) {
-                plugin.ghostFactory.setGhost(player, false);
-                DisguiseAPI.disguiseToAll(player, new MobDisguise(DisguiseType.PHANTOM).setViewSelfDisguise(true));
-                player.setAllowFlight(true);
-                player.setFlying(true);
-                player.setFlySpeed(0.05F);
-            } else if (DisguiseAPI.isDisguised(player) && DisguiseAPI.getDisguise(player).getType() == DisguiseType.PHANTOM) {
-                plugin.ghostFactory.setGhost(player, true);
-                DisguiseAPI.undisguiseToAll(player);
-                player.setFlySpeed(0.1F);
-            }
-        }
-    }
-
-    /**
      * Anti non phantom invisibility potion.
      *
      * @param event the event
@@ -151,5 +132,25 @@ public class Phantom implements Listener {
                 }
             }
         }
+    }
+
+    /**
+     * Register phantom invisibility potion packet listener.
+     */
+    public void registerPhantomInvisibilityPotionPacketListener() {
+        plugin.protocolManager.addPacketListener(
+                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EFFECT) {
+
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        PacketContainer packet = event.getPacket();
+                        byte effectType = packet.getBytes().read(0);
+
+                        if (effectType == 14) {
+                            event.setCancelled(true);
+                        }
+                    }
+                }
+        );
     }
 }

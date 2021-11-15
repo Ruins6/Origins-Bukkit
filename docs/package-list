@@ -5,9 +5,7 @@ me.swagpancakes.originsbukkit.commands
 me.swagpancakes.originsbukkit.commands.subcommands
 me.swagpancakes.originsbukkit.config
 me.swagpancakes.originsbukkit.enums
-me.swagpancakes.originsbukkit.items
 me.swagpancakes.originsbukkit.listeners
-me.swagpancakes.originsbukkit.listeners.itemabilitiesmanager
 me.swagpancakes.originsbukkit.listeners.origins
 me.swagpancakes.originsbukkit.metrics
 me.swagpancakes.originsbukkit.storage
