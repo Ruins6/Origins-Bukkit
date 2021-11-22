@@ -67,17 +67,17 @@ public class Update {
                 } else if (args.length == 3) {
                     Player target = Bukkit.getPlayer(args[1]);
                     String origin = args[2];
-                    List<String> origins = plugin.origins;
+                    List<String> origins = plugin.getOrigins();
 
                     if (target != null) {
                         UUID playerUUID = target.getUniqueId();
                         String playerName = target.getName();
 
                         if (origins.contains(origin)) {
-                            if (plugin.storageUtils.findOriginsPlayerData(playerUUID) != null) {
-                                if (!plugin.storageUtils.getPlayerOrigin(playerUUID).equals(origin)) {
-                                    plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, playerName, origin));
-                                    plugin.playerOriginChecker.checkPlayerOriginData(target);
+                            if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) != null) {
+                                if (!plugin.getStorageUtils().getPlayerOrigin(playerUUID).equals(origin)) {
+                                    plugin.getStorageUtils().updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, playerName, origin));
+                                    plugin.getPlayerOriginChecker().checkPlayerOriginData(target);
                                     ChatUtils.sendCommandSenderMessage(sender, "&aChanged " + playerName + "'s origin to " + origin);
                                 } else {
                                     ChatUtils.sendCommandSenderMessage(sender, "&cNothing changed. Player's origin is already " + origin);
@@ -105,17 +105,17 @@ public class Update {
             } else if (args.length == 3) {
                 Player target = Bukkit.getPlayer(args[1]);
                 String origin = args[2];
-                List<String> origins = plugin.origins;
+                List<String> origins = plugin.getOrigins();
 
                 if (target != null) {
                     UUID playerUUID = target.getUniqueId();
                     String playerName = target.getName();
 
                     if (origins.contains(origin)) {
-                        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) != null) {
-                            if (!plugin.storageUtils.getPlayerOrigin(playerUUID).equals(origin)) {
-                                plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, playerName, origin));
-                                plugin.playerOriginChecker.checkPlayerOriginData(target);
+                        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) != null) {
+                            if (!plugin.getStorageUtils().getPlayerOrigin(playerUUID).equals(origin)) {
+                                plugin.getStorageUtils().updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, playerName, origin));
+                                plugin.getPlayerOriginChecker().checkPlayerOriginData(target);
                                 ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Changed " + playerName + "'s origin to " + origin);
                             } else {
                                 ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] Nothing changed. Player's origin is already " + origin);
@@ -169,7 +169,7 @@ public class Update {
                 } else if (args.length == 3) {
                     if (args[0].equalsIgnoreCase("update")) {
                         List<String> originsList = new ArrayList<>();
-                        for (String origins : plugin.origins) {
+                        for (String origins : plugin.getOrigins()) {
                             if (origins.startsWith(args[2])) {
                                 originsList.add(origins);
                             }
@@ -199,7 +199,7 @@ public class Update {
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("update")) {
                     List<String> originsList = new ArrayList<>();
-                    for (String origins : plugin.origins) {
+                    for (String origins : plugin.getOrigins()) {
                         if (origins.startsWith(args[2])) {
                             originsList.add(origins);
                         }

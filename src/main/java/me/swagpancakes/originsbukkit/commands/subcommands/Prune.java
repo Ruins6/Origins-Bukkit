@@ -68,9 +68,9 @@ public class Prune {
                         String playerName = target.getName();
                         UUID playerUUID = target.getUniqueId();
 
-                        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) != null) {
-                            plugin.storageUtils.deleteOriginsPlayerData(playerUUID);
-                            plugin.playerOriginChecker.checkPlayerOriginData(target);
+                        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) != null) {
+                            plugin.getStorageUtils().deleteOriginsPlayerData(playerUUID);
+                            plugin.getPlayerOriginChecker().checkPlayerOriginData(target);
                             ChatUtils.sendCommandSenderMessage(sender, "&aSuccessfully pruned " + playerName + "'s data");
                         } else {
                             ChatUtils.sendCommandSenderMessage(sender, "&cCannot find " + playerName + "'s data");
@@ -94,9 +94,9 @@ public class Prune {
                     String playerName = target.getName();
                     UUID playerUUID = target.getUniqueId();
 
-                    if (plugin.storageUtils.findOriginsPlayerData(playerUUID) != null) {
-                        plugin.storageUtils.deleteOriginsPlayerData(playerUUID);
-                        plugin.playerOriginChecker.checkPlayerOriginData(target);
+                    if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) != null) {
+                        plugin.getStorageUtils().deleteOriginsPlayerData(playerUUID);
+                        plugin.getPlayerOriginChecker().checkPlayerOriginData(target);
                         ChatUtils.sendCommandSenderMessage(sender, "&a[Origins-Bukkit] Successfully pruned " + playerName + "'s data");
                     } else {
                         ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] Cannot find " + playerName + "'s data");

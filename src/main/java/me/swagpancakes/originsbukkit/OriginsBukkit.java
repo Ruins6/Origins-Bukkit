@@ -31,15 +31,18 @@ import me.swagpancakes.originsbukkit.util.GhostFactory;
 import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * The type Origins bukkit.
@@ -48,26 +51,197 @@ import java.util.UUID;
  */
 public final class OriginsBukkit extends JavaPlugin {
 
-    public List<String> origins = new ArrayList<>();
-    public List<Inventory> originsInventoryGUI = new ArrayList<>();
+    private final List<String> origins = new ArrayList<>();
+    private final List<Inventory> originsInventoryGUI = new ArrayList<>();
 
-    public ProtocolManager protocolManager;
-    public StorageUtils storageUtils;
-    public ConfigHandler configHandler;
-    public ServerVersionChecker serverVersionChecker;
-    public GhostFactory ghostFactory;
-    public Arachnid arachnid;
-    public Avian avian;
-    public Blazeborn blazeborn;
-    public Elytrian elytrian;
-    public Enderian enderian;
-    public Feline feline;
-    public Human human;
-    public Merling merling;
-    public Phantom phantom;
-    public Shulk shulk;
-    public NoOriginPlayerRestrict noOriginPlayerRestrict;
-    public PlayerOriginChecker playerOriginChecker;
+    private ProtocolManager protocolManager;
+    private StorageUtils storageUtils;
+    private ConfigHandler configHandler;
+    private ServerVersionChecker serverVersionChecker;
+    private GhostFactory ghostFactory;
+    private Arachnid arachnid;
+    private Avian avian;
+    private Blazeborn blazeborn;
+    private Elytrian elytrian;
+    private Enderian enderian;
+    private Feline feline;
+    private Human human;
+    private Merling merling;
+    private Phantom phantom;
+    private Shulk shulk;
+    private NoOriginPlayerRestrict noOriginPlayerRestrict;
+    private PlayerOriginChecker playerOriginChecker;
+
+    /**
+     * Gets origins.
+     *
+     * @return the origins
+     */
+    public List<String> getOrigins() {
+        return this.origins;
+    }
+
+    /**
+     * Gets origins inventory gui.
+     *
+     * @return the origins inventory gui
+     */
+    public List<Inventory> getOriginsInventoryGUI() {
+        return this.originsInventoryGUI;
+    }
+
+    /**
+     * Gets protocol manager.
+     *
+     * @return the protocol manager
+     */
+    public ProtocolManager getProtocolManager() {
+        return this.protocolManager;
+    }
+
+    /**
+     * Gets storage utils.
+     *
+     * @return the storage utils
+     */
+    public StorageUtils getStorageUtils() {
+        return this.storageUtils;
+    }
+
+    /**
+     * Gets config handler.
+     *
+     * @return the config handler
+     */
+    public ConfigHandler getConfigHandler() {
+        return this.configHandler;
+    }
+
+    /**
+     * Gets server version checker.
+     *
+     * @return the server version checker
+     */
+    public ServerVersionChecker getServerVersionChecker() {
+        return this.serverVersionChecker;
+    }
+
+    /**
+     * Gets ghost factory.
+     *
+     * @return the ghost factory
+     */
+    public GhostFactory getGhostFactory() {
+        return this.ghostFactory;
+    }
+
+    /**
+     * Gets arachnid.
+     *
+     * @return the arachnid
+     */
+    public Arachnid getArachnid() {
+        return this.arachnid;
+    }
+
+    /**
+     * Gets avian.
+     *
+     * @return the avian
+     */
+    public Avian getAvian() {
+        return this.avian;
+    }
+
+    /**
+     * Gets blazeborn.
+     *
+     * @return the blazeborn
+     */
+    public Blazeborn getBlazeborn() {
+        return this.blazeborn;
+    }
+
+    /**
+     * Gets elytrian.
+     *
+     * @return the elytrian
+     */
+    public Elytrian getElytrian() {
+        return this.elytrian;
+    }
+
+    /**
+     * Gets enderian.
+     *
+     * @return the enderian
+     */
+    public Enderian getEnderian() {
+        return this.enderian;
+    }
+
+    /**
+     * Gets feline.
+     *
+     * @return the feline
+     */
+    public Feline getFeline() {
+        return this.feline;
+    }
+
+    /**
+     * Gets human.
+     *
+     * @return the human
+     */
+    public Human getHuman() {
+        return this.human;
+    }
+
+    /**
+     * Gets merling.
+     *
+     * @return the merling
+     */
+    public Merling getMerling() {
+        return this.merling;
+    }
+
+    /**
+     * Gets phantom.
+     *
+     * @return the phantom
+     */
+    public Phantom getPhantom() {
+        return this.phantom;
+    }
+
+    /**
+     * Gets shulk.
+     *
+     * @return the shulk
+     */
+    public Shulk getShulk() {
+        return this.shulk;
+    }
+
+    /**
+     * Gets no origin player restrict.
+     *
+     * @return the no origin player restrict
+     */
+    public NoOriginPlayerRestrict getNoOriginPlayerRestrict() {
+        return this.noOriginPlayerRestrict;
+    }
+
+    /**
+     * Gets player origin checker.
+     *
+     * @return the player origin checker
+     */
+    public PlayerOriginChecker getPlayerOriginChecker() {
+        return this.playerOriginChecker;
+    }
 
     private static OriginsBukkit plugin;
 
@@ -130,7 +304,7 @@ public final class OriginsBukkit extends JavaPlugin {
     /**
      * Check server compatibility.
      */
-    public void checkServerCompatibility() {
+    private void checkServerCompatibility() {
         serverVersionChecker.checkServerSoftwareCompatibility();
         serverVersionChecker.checkServerVersionCompatibility();
     }
@@ -138,7 +312,7 @@ public final class OriginsBukkit extends JavaPlugin {
     /**
      * Check server dependencies.
      */
-    public void checkServerDependencies() {
+    private void checkServerDependencies() {
         if (plugin.isEnabled()) {
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] Checking dependencies...");
         }
@@ -190,7 +364,7 @@ public final class OriginsBukkit extends JavaPlugin {
     /**
      * Load files.
      */
-    public void loadFiles() {
+    private void loadFiles() {
         storageUtils = new StorageUtils(this);
         configHandler = new ConfigHandler(this);
         ghostFactory = new GhostFactory(this);
@@ -199,14 +373,14 @@ public final class OriginsBukkit extends JavaPlugin {
     /**
      * Register commands.
      */
-    public void registerCommands() {
+    private void registerCommands() {
         new MainCommand(this);
     }
 
     /**
      * Register listeners.
      */
-    public void registerListeners() {
+    private void registerListeners() {
         human = new Human(this);
         arachnid = new Arachnid(this);
         avian = new Avian(this);
@@ -225,14 +399,14 @@ public final class OriginsBukkit extends JavaPlugin {
     /**
      * Register items.
      */
-    public void registerItems() {
+    private void registerItems() {
         //ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all items.");
     }
 
     /**
      * Start metrics.
      */
-    public void startMetrics() {
+    private void startMetrics() {
         int serviceId = 13236;
 
         Metrics metrics = new Metrics(this, serviceId);
@@ -241,29 +415,65 @@ public final class OriginsBukkit extends JavaPlugin {
     /**
      * Check updates.
      */
-    public void checkUpdates() {
+    private void checkUpdates() {
 
     }
 
     /**
      * Register recipes.
      */
-    public void registerRecipes() {
+    private void registerRecipes() {
         //ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Registered all item recipes.");
     }
 
     /**
      * Unregister recipes.
      */
-    public void unregisterRecipes() {
+    private void unregisterRecipes() {
         //ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Unregistered all item recipes.");
     }
 
     /**
      * Close all player inventory.
      */
-    public void closeAllPlayerInventory() {
+    private void closeAllPlayerInventory() {
         playerOriginChecker.closeAllOriginPickerGui();
+
+        for (Player player : getShulk().getShulkInventoryViewers()) {
+            UUID playerUUID = player.getUniqueId();
+
+            if (player.getOpenInventory().getTitle().equals(player.getName() + "'s Vault")) {
+                Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
+
+                shulkPlayerStorageData.put(playerUUID, player.getOpenInventory().getTopInventory().getContents());
+                String s = File.separator;
+                File shulkPlayerStorageDataFile = new File(getDataFolder(), s + "cache" + s + "shulkdata" + s + "inventoriesdata" + s + playerUUID + ".yml");
+
+                if (!shulkPlayerStorageDataFile.getParentFile().exists()) {
+                    shulkPlayerStorageDataFile.getParentFile().mkdirs();
+                }
+                if (!shulkPlayerStorageDataFile.exists()) {
+                    try {
+                        shulkPlayerStorageDataFile.createNewFile();
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
+                FileConfiguration shulkPlayerStorageDataConf = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
+
+                for (Map.Entry<UUID, ItemStack[]> entry : shulkPlayerStorageData.entrySet()) {
+                    if (entry.getKey().equals(playerUUID)) {
+                        shulkPlayerStorageDataConf.set("data." + entry.getKey(), entry.getValue());
+                    }
+                }
+                try {
+                    shulkPlayerStorageDataConf.save(shulkPlayerStorageDataFile);
+                } catch (IOException event) {
+                    event.printStackTrace();
+                }
+            }
+            player.closeInventory();
+        }
     }
 
     /**

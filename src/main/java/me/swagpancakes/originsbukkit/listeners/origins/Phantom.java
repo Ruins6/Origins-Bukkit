@@ -24,10 +24,10 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -136,13 +136,13 @@ public class Phantom extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void phantomJoin(PlayerOriginInitiateEvent event) {
+    private void phantomJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
 
         if (Objects.equals(origin, Origins.PHANTOM.toString())) {
             player.setHealthScale(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble());
-            plugin.ghostFactory.setGhost(player, true);
+            plugin.getGhostFactory().setGhost(player, true);
         }
     }
 
@@ -152,12 +152,13 @@ public class Phantom extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNonPhantomJoin(PlayerJoinEvent event) {
+    private void onNonPhantomJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-        if (!Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
-            plugin.ghostFactory.addPlayer(player);
+        if (!Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
+            plugin.getGhostFactory().addPlayer(player);
         }
     }
 
@@ -167,16 +168,17 @@ public class Phantom extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void phantomAntiInvisibilityEffectRemove(EntityPotionEffectEvent event) {
+    private void phantomAntiInvisibilityEffectRemove(EntityPotionEffectEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
             PotionEffect oldEffect = event.getOldEffect();
             EntityPotionEffectEvent.Cause cause = event.getCause();
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
+            if (Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
                 if (oldEffect != null) {
                     if (oldEffect.getType().equals(PotionEffectType.INVISIBILITY) && cause != EntityPotionEffectEvent.Cause.PLUGIN) {
                         event.setCancelled(true);
@@ -192,15 +194,16 @@ public class Phantom extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void antiNonPhantomInvisibilityPotion(EntityPotionEffectEvent event) {
+    private void antiNonPhantomInvisibilityPotion(EntityPotionEffectEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
             PotionEffect newEffect = event.getNewEffect();
 
-            if (!Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
+            if (!Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
                 if (newEffect != null) {
                     if (newEffect.getType().equals(PotionEffectType.INVISIBILITY)) {
                         event.setCancelled(true);
@@ -213,8 +216,8 @@ public class Phantom extends Origin implements Listener {
     /**
      * Register phantom invisibility potion packet listener.
      */
-    public void registerPhantomInvisibilityPotionPacketListener() {
-        plugin.protocolManager.addPacketListener(
+    private void registerPhantomInvisibilityPotionPacketListener() {
+        plugin.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EFFECT) {
 
                     @Override
@@ -222,9 +225,10 @@ public class Phantom extends Origin implements Listener {
                         PacketContainer packet = event.getPacket();
                         Player player = event.getPlayer();
                         UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = Phantom.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                         byte effectType = packet.getBytes().read(0);
 
-                        if (Objects.equals(Phantom.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
+                        if (Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
                             if (effectType == 14) {
                                 event.setCancelled(true);
                             }

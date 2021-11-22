@@ -6,7 +6,7 @@
 
     <groupId>me.swagpancakes</groupId>
     <artifactId>originsbukkit</artifactId>
-    <version>Dev Build 16</version>
+    <version>Dev Build 17</version>
     <packaging>jar</packaging>
 
     <name>Origins-Bukkit</name>

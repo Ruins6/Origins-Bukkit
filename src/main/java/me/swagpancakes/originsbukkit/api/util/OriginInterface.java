@@ -1,4 +1,4 @@
-package me.swagpancakes.originsbukkit.util;
+package me.swagpancakes.originsbukkit.api.util;
 
 import org.bukkit.Material;
 import org.bukkit.event.Listener;

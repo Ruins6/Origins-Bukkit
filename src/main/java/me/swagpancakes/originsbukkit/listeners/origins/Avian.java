@@ -19,11 +19,11 @@ package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
-import me.swagpancakes.originsbukkit.util.Origin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
@@ -143,7 +143,7 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void avianJoin(PlayerOriginInitiateEvent event) {
+    private void avianJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
 
@@ -159,10 +159,11 @@ public class Avian extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void avianSlowFalling(Player player) {
+    private void avianSlowFalling(Player player) {
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             player.addPotionEffect(new PotionEffect(
                     PotionEffectType.SLOW_FALLING,
                     Integer.MAX_VALUE,
@@ -178,11 +179,12 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onAvianSlowFallingToggle(PlayerToggleSneakEvent event) {
+    private void onAvianSlowFallingToggle(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             if (player.isGliding()) {
                 if (!player.isSneaking()) {
                     player.setVelocity(player.getVelocity().setY(0));
@@ -217,14 +219,15 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onAvianSlowFallingElytraToggle(EntityToggleGlideEvent event) {
+    private void onAvianSlowFallingElytraToggle(EntityToggleGlideEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+            if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
                 if (!player.isGliding()) {
                     if (player.isSneaking()) {
                         player.setVelocity(player.getVelocity().setY(0));
@@ -260,14 +263,15 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onAvianSleep(PlayerBedEnterEvent event) {
+    private void onAvianSleep(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Block bed = event.getBed();
         Location bedLocation = bed.getLocation();
         double bedLocationY = bedLocation.getY();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             if (bedLocationY < 86) {
                 event.setCancelled(true);
             }
@@ -280,13 +284,14 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onAvianBedRespawnPointSet(PlayerInteractEvent event) {
+    private void onAvianBedRespawnPointSet(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Action action = event.getAction();
         Block clickedBlock = event.getClickedBlock();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             if (action == Action.RIGHT_CLICK_BLOCK) {
                 if (clickedBlock != null && clickedBlock.getLocation().getY() < 86 && Tag.BEDS.isTagged(clickedBlock.getType())) {
                     event.setCancelled(true);
@@ -301,15 +306,16 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onAvianEggLay(PlayerBedLeaveEvent event) {
+    private void onAvianEggLay(PlayerBedLeaveEvent event) {
         Player player = event.getPlayer();
         Location location = player.getLocation();
         PlayerInventory playerInventory = player.getInventory();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         World world = player.getWorld();
         long getWorldTime = world.getTime();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             if (getWorldTime == 0) {
                 if (playerInventory.firstEmpty() == -1) {
                     world.dropItem(location, new ItemStack(Material.EGG, 1));
@@ -328,16 +334,17 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void avianAntiSlowFallingEffectRemove(EntityPotionEffectEvent event) {
+    private void avianAntiSlowFallingEffectRemove(EntityPotionEffectEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
             PotionEffect oldEffect = event.getOldEffect();
             EntityPotionEffectEvent.Cause cause = event.getCause();
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+            if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
                 if (oldEffect != null) {
                     if (oldEffect.getType().equals(PotionEffectType.SLOW_FALLING) && cause != EntityPotionEffectEvent.Cause.PLUGIN) {
                         event.setCancelled(true);
@@ -353,9 +360,10 @@ public class Avian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void avianEatingDisabilities(PlayerItemConsumeEvent event) {
+    private void avianEatingDisabilities(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Material material = event.getItem().getType();
         List<Material> materials = Arrays.asList(
                 Material.COOKED_BEEF,
@@ -376,7 +384,7 @@ public class Avian extends Origin implements Listener {
                 Material.PUFFERFISH,
                 Material.ROTTEN_FLESH);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             if (materials.contains(material)) {
                 event.setCancelled(true);
             }

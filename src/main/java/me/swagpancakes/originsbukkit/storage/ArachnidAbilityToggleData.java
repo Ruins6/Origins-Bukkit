@@ -1,5 +1,7 @@
 package me.swagpancakes.originsbukkit.storage;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.UUID;
 
 /**
@@ -18,7 +20,7 @@ public class ArachnidAbilityToggleData {
      * @param playerUUID the player uuid
      * @param isToggled  the is toggled
      */
-    public ArachnidAbilityToggleData(UUID playerUUID, boolean isToggled) {
+    public ArachnidAbilityToggleData(@NotNull UUID playerUUID, @NotNull boolean isToggled) {
         this.playerUUID = playerUUID;
         this.isToggled = isToggled;
     }

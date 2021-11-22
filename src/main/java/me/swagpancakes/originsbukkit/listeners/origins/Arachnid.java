@@ -23,13 +23,14 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
-import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -148,7 +149,7 @@ public class Arachnid extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void arachnidJoin(PlayerOriginInitiateEvent event) {
+    private void arachnidJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
 
@@ -158,20 +159,36 @@ public class Arachnid extends Origin implements Listener {
     }
 
     /**
+     * Arachnid ability use.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void arachnidAbilityUse(PlayerOriginAbilityUseEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
+
+        if (Objects.equals(origin, Origins.ARACHNID.toString())) {
+            arachnidClimbToggleAbility(player);
+        }
+    }
+
+    /**
      * On arachnid climb toggle.
      *
      * @param event the event
      */
     @EventHandler
-    public void onArachnidClimbToggle(PlayerToggleSneakEvent event) {
+    private void onArachnidClimbToggle(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
-            if (plugin.storageUtils.findArachnidAbilityToggleData(playerUUID) == null) {
-                plugin.storageUtils.createArachnidAbilityToggleData(playerUUID, false);
+        if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
+            if (plugin.getStorageUtils().findArachnidAbilityToggleData(playerUUID) == null) {
+                plugin.getStorageUtils().createArachnidAbilityToggleData(playerUUID, false);
             }
-            if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
+            if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
                 if (!player.isSneaking()) {
                     arachnidClimb(player);
                 }
@@ -185,7 +202,7 @@ public class Arachnid extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onArachnidAttack(EntityDamageByEntityEvent event) {
+    private void onArachnidAttack(EntityDamageByEntityEvent event) {
         Entity entity = event.getEntity();
         Entity damager = event.getDamager();
         Location location = entity.getLocation();
@@ -193,8 +210,9 @@ public class Arachnid extends Origin implements Listener {
         if (damager instanceof Player) {
             Player player = (Player) event.getDamager();
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
+            if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
                 Location location1 = location.add(0, 1, 0);
                 Block block1 = location1.getBlock();
                 Material material1 = block1.getType();
@@ -213,7 +231,7 @@ public class Arachnid extends Origin implements Listener {
                             COOLDOWN.put(playerUUID, System.currentTimeMillis());
                             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                                     .toString()
-                                    .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+                                    .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
                         }
                     } else {
                         removeArachnidCobwebs(material1, block1);
@@ -221,7 +239,7 @@ public class Arachnid extends Origin implements Listener {
                         COOLDOWN.put(playerUUID, System.currentTimeMillis());
                         ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                                 .toString()
-                                .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+                                .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
                     }
                 }
             }
@@ -234,7 +252,7 @@ public class Arachnid extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onArachnidBaneOfArthropodsDamage(EntityDamageByEntityEvent event) {
+    private void onArachnidBaneOfArthropodsDamage(EntityDamageByEntityEvent event) {
         Entity target = event.getEntity();
         Entity damager = event.getDamager();
         double baseDamage = event.getDamage();
@@ -243,13 +261,14 @@ public class Arachnid extends Origin implements Listener {
             Player targetPlayer = (Player) target;
             LivingEntity livingDamager = (LivingEntity) damager;
             UUID targetPlayerUUID = targetPlayer.getUniqueId();
+            String targetPlayerOrigin = plugin.getStorageUtils().getPlayerOrigin(targetPlayerUUID);
             EntityEquipment entityEquipment = livingDamager.getEquipment();
 
             if (entityEquipment != null) {
                 ItemStack itemStack = livingDamager.getEquipment().getItemInMainHand();
                 ItemMeta itemMeta = itemStack.getItemMeta();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(targetPlayerUUID), Origins.ARACHNID.toString())) {
+                if (Objects.equals(targetPlayerOrigin, Origins.ARACHNID.toString())) {
                     if (itemMeta != null && itemMeta.hasEnchant(Enchantment.DAMAGE_ARTHROPODS)) {
                         int enchantLevel = itemMeta.getEnchantLevel(Enchantment.DAMAGE_ARTHROPODS);
 
@@ -265,19 +284,20 @@ public class Arachnid extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void arachnidClimb(Player player) {
+    private void arachnidClimb(Player player) {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 Location location = player.getLocation();
                 Block block = location.getBlock();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
+                if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
                     if (player.isOnline()) {
-                        if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
+                        if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
                             if (player.isSneaking() && !player.isGliding()) {
                                 if (nextToWall(player) && !block.isLiquid()) {
                                     player.setVelocity(player.getVelocity().setY(Config.ORIGINS_ARACHNID_ABILITY_CLIMBING_Y_VELOCITY.toDouble()));
@@ -303,20 +323,20 @@ public class Arachnid extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void arachnidClimbToggleAbility(Player player) {
+    private void arachnidClimbToggleAbility(Player player) {
         UUID playerUUID = player.getUniqueId();
         Location location = player.getLocation();
         Block block = location.getBlock();
 
-        if (plugin.storageUtils.findArachnidAbilityToggleData(playerUUID) == null) {
-            plugin.storageUtils.createArachnidAbilityToggleData(playerUUID, false);
+        if (plugin.getStorageUtils().findArachnidAbilityToggleData(playerUUID) == null) {
+            plugin.getStorageUtils().createArachnidAbilityToggleData(playerUUID, false);
             ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &cOFF");
         } else {
-            if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
-                plugin.storageUtils.updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, false));
+            if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
+                plugin.getStorageUtils().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, false));
                 ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &cOFF");
             } else {
-                plugin.storageUtils.updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, true));
+                plugin.getStorageUtils().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, true));
                 if (nextToWall(player) && !block.isLiquid()) {
                     arachnidClimb(player);
                 }
@@ -328,8 +348,8 @@ public class Arachnid extends Origin implements Listener {
     /**
      * Register arachnid cobweb move packet listener.
      */
-    public void registerArachnidCobwebMovePacketListener() {
-        plugin.protocolManager.addPacketListener(
+    private void registerArachnidCobwebMovePacketListener() {
+        plugin.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
 
             @Override
@@ -338,6 +358,7 @@ public class Arachnid extends Origin implements Listener {
                 Player player = event.getPlayer();
                 Location playerLocation = player.getLocation();
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = Arachnid.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 double x = packet.getDoubles().read(0);
                 double y = packet.getDoubles().read(1);
                 double z = packet.getDoubles().read(2);
@@ -350,7 +371,7 @@ public class Arachnid extends Origin implements Listener {
                 Material material1 = block1.getType();
                 Material material2 = block2.getType();
 
-                if (Objects.equals(Arachnid.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
+                if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
                     if (material == Material.COBWEB || material1 == Material.COBWEB || material2 == Material.COBWEB || nextToCobweb(player)) {
                         if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
                             if (!player.isFlying()) {
@@ -387,7 +408,7 @@ public class Arachnid extends Origin implements Listener {
      *
      * @return the boolean
      */
-    public boolean nextToWall(Player player) {
+    private boolean nextToWall(Player player) {
         World world = player.getWorld();
         double locX = player.getLocation().getX();
         double locY = player.getLocation().getY();
@@ -416,7 +437,7 @@ public class Arachnid extends Origin implements Listener {
      *
      * @return the boolean
      */
-    public boolean nextToCobweb(Player player) {
+    private boolean nextToCobweb(Player player) {
         World world = player.getWorld();
         double locX = player.getLocation().getX();
         double locY = player.getLocation().getY();
@@ -444,7 +465,7 @@ public class Arachnid extends Origin implements Listener {
      * @param material the material
      * @param block    the block
      */
-    public void removeArachnidCobwebs(Material material, Block block) {
+    private void removeArachnidCobwebs(Material material, Block block) {
 
         new BukkitRunnable() {
 
@@ -461,9 +482,10 @@ public class Arachnid extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void arachnidEatingDisabilities(PlayerItemConsumeEvent event) {
+    private void arachnidEatingDisabilities(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Material material = event.getItem().getType();
         List<Material> materials = Arrays.asList(
                 Material.COOKED_BEEF,
@@ -484,7 +506,7 @@ public class Arachnid extends Origin implements Listener {
                 Material.PUFFERFISH,
                 Material.ROTTEN_FLESH);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
+        if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
             if (!materials.contains(material)) {
                 event.setCancelled(true);
             }

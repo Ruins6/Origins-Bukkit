@@ -19,10 +19,10 @@ package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -141,13 +141,14 @@ public class Blazeborn extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void blazebornJoin(PlayerOriginInitiateEvent event) {
+    private void blazebornJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
 
         if (Objects.equals(origin, Origins.BLAZEBORN.toString())) {
             player.setHealthScale(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble());
             blazebornPlayersInWater.add(player);
+            blazebornNetherSpawn(player);
             blazebornFlameParticles(player);
         }
     }
@@ -155,7 +156,7 @@ public class Blazeborn extends Origin implements Listener {
     /**
      * Register blazeborn water damage listener.
      */
-    public void registerBlazebornWaterDamageListener() {
+    private void registerBlazebornWaterDamageListener() {
 
         new BukkitRunnable() {
 
@@ -165,11 +166,12 @@ public class Blazeborn extends Origin implements Listener {
                     for (int i = 0; i < blazebornPlayersInWater.size(); i++) {
                         Player player = blazebornPlayersInWater.get(i);
                         UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                         Location location = player.getLocation();
                         Block block = location.getBlock();
                         Material material = block.getType();
 
-                        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+                        if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                             if (player.isOnline()) {
                                 if (player.getWorld().hasStorm()) {
                                     if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -220,7 +222,7 @@ public class Blazeborn extends Origin implements Listener {
     /**
      * Register blazeborn air enter listener.
      */
-    public void registerBlazebornAirEnterListener() {
+    private void registerBlazebornAirEnterListener() {
 
         new BukkitRunnable() {
 
@@ -230,11 +232,12 @@ public class Blazeborn extends Origin implements Listener {
                     for (int i = 0; i < blazebornPlayersInAir.size(); i++) {
                         Player player = blazebornPlayersInAir.get(i);
                         UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                         Location location = player.getLocation();
                         Block block = location.getBlock();
                         Material material = block.getType();
 
-                        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+                        if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                             if (player.isOnline()) {
                                 if (player.getWorld().hasStorm()) {
                                     if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -267,17 +270,18 @@ public class Blazeborn extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void blazebornFlameParticles(Player player) {
+    private void blazebornFlameParticles(Player player) {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 World world = player.getWorld();
                 Location location = player.getLocation();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+                if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                     if (player.isOnline()) {
                         world.spawnParticle(Particle.SMALL_FLAME, location.add(0, 1, 0), 5);
                     } else {
@@ -296,15 +300,16 @@ public class Blazeborn extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void blazebornBurningWrath(EntityDamageByEntityEvent event) {
+    private void blazebornBurningWrath(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
         double baseDamage = event.getDamage();
 
         if (damager instanceof Player) {
             Player player = (Player) damager;
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+            if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                 if (player.getFireTicks() > 0) {
                     event.setDamage(baseDamage + 1.5);
                 }
@@ -318,7 +323,7 @@ public class Blazeborn extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void blazebornSnowBallDamage(EntityDamageByEntityEvent event) {
+    private void blazebornSnowBallDamage(EntityDamageByEntityEvent event) {
         Entity target = event.getEntity();
         Entity damager = event.getDamager();
         double baseDamage = event.getDamage();
@@ -326,8 +331,9 @@ public class Blazeborn extends Origin implements Listener {
         if (target instanceof Player && damager instanceof Snowball) {
             Player targetPlayer = (Player) target;
             UUID targetPlayerUUID = targetPlayer.getUniqueId();
+            String targetPlayerOrigin = plugin.getStorageUtils().getPlayerOrigin(targetPlayerUUID);
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(targetPlayerUUID), Origins.BLAZEBORN.toString())) {
+            if (Objects.equals(targetPlayerOrigin, Origins.BLAZEBORN.toString())) {
                 event.setDamage(baseDamage + 1.5);
             }
         }
@@ -339,7 +345,7 @@ public class Blazeborn extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void blazebornDamageImmunities(EntityDamageEvent event) {
+    private void blazebornDamageImmunities(EntityDamageEvent event) {
         Entity entity = event.getEntity();
         EntityDamageEvent.DamageCause damageCause = event.getCause();
 
@@ -348,8 +354,9 @@ public class Blazeborn extends Origin implements Listener {
 
             if (player != null) {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+                if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                     if (damageCause == EntityDamageEvent.DamageCause.LAVA || damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.HOT_FLOOR || damageCause == EntityDamageEvent.DamageCause.POISON || damageCause == EntityDamageEvent.DamageCause.STARVATION) {
                         event.setCancelled(true);
                     }
@@ -364,13 +371,14 @@ public class Blazeborn extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void blazebornPotionDrinkingDamage(PlayerItemConsumeEvent event) {
+    private void blazebornPotionDrinkingDamage(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         ItemStack itemStack = event.getItem();
         Material material = itemStack.getType();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
             if (material == Material.POTION) {
                 player.damage(2);
             }
@@ -383,15 +391,16 @@ public class Blazeborn extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void blazebornSplashPotionDamage(PotionSplashEvent event) {
+    private void blazebornSplashPotionDamage(PotionSplashEvent event) {
         Collection<LivingEntity> livingEntities = event.getAffectedEntities();
 
         for (LivingEntity livingEntity : livingEntities) {
             if (livingEntity instanceof Player) {
                 Player player = (Player) livingEntity;
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
+                if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                     player.damage(2);
                 }
             }
@@ -403,7 +412,9 @@ public class Blazeborn extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void blazebornNetherSpawn(Player player) {
-
+    private void blazebornNetherSpawn(Player player) {
+        World world = player.getWorld();
+        Location location = new Location(world, -77, 72, 238);
+        player.teleport(location);
     }
 }

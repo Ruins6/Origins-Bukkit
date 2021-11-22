@@ -31,17 +31,6 @@ import java.util.UUID;
  */
 public class OriginsBukkitAPI {
 
-    private final OriginsBukkit plugin;
-
-    /**
-     * Instantiates a new Origins bukkit api.
-     *
-     * @param plugin the plugin
-     */
-    public OriginsBukkitAPI(OriginsBukkit plugin) {
-        this.plugin = plugin;
-    }
-
     /**
      * Gets player origin.
      *
@@ -50,7 +39,7 @@ public class OriginsBukkitAPI {
      * @return the player origin
      */
     public String getPlayerOrigin(@NotNull UUID playerUUID) {
-        return plugin.storageUtils.getPlayerOrigin(playerUUID);
+        return OriginsBukkit.getPlugin().getStorageUtils().getPlayerOrigin(playerUUID);
     }
 
     /**
@@ -61,7 +50,7 @@ public class OriginsBukkitAPI {
      * @param origin     the origin
      */
     public void createOriginsPlayerData(@NotNull UUID playerUUID, @NotNull Player player, @NotNull String origin) {
-        plugin.storageUtils.createOriginsPlayerData(playerUUID, player, origin);
+        OriginsBukkit.getPlugin().getStorageUtils().createOriginsPlayerData(playerUUID, player, origin);
     }
 
     /**
@@ -72,7 +61,7 @@ public class OriginsBukkitAPI {
      * @return the origins player data
      */
     public OriginsPlayerData findOriginsPlayerData(@NotNull UUID playerUUID) {
-        return plugin.storageUtils.findOriginsPlayerData(playerUUID);
+        return OriginsBukkit.getPlugin().getStorageUtils().findOriginsPlayerData(playerUUID);
     }
 
     /**
@@ -81,7 +70,7 @@ public class OriginsBukkitAPI {
      * @param playerUUID the player uuid
      */
     public void deleteOriginsPlayerData(@NotNull UUID playerUUID) {
-        plugin.storageUtils.deleteOriginsPlayerData(playerUUID);
+        OriginsBukkit.getPlugin().getStorageUtils().deleteOriginsPlayerData(playerUUID);
     }
 
     /**
@@ -91,6 +80,6 @@ public class OriginsBukkitAPI {
      * @param newOriginsPlayerData the new origins player data
      */
     public void updateOriginsPlayerData(@NotNull UUID playerUUID, @NotNull OriginsPlayerData newOriginsPlayerData) {
-        plugin.storageUtils.updateOriginsPlayerData(playerUUID, newOriginsPlayerData);
+        OriginsBukkit.getPlugin().getStorageUtils().updateOriginsPlayerData(playerUUID, newOriginsPlayerData);
     }
 }

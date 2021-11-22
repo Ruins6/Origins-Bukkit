@@ -18,7 +18,8 @@
 package me.swagpancakes.originsbukkit.listeners;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
-import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,40 +59,20 @@ public class KeyListener implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onAbilityUse(PlayerSwapHandItemsEvent event) {
+    private void onAbilityUse(PlayerSwapHandItemsEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
         if (player.isSneaking()) {
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
-                switch (plugin.storageUtils.getPlayerOrigin(playerUUID)) {
-                    case "Human":
-                        ChatUtils.sendPlayerMessage(player, "&bHuman :D");
-                        break;
-                    case "Enderian":
-                        plugin.enderian.enderianEnderPearlThrow(player);
-                        break;
-                    case "Merling":
-                        break;
-                    case "Phantom":
-                        break;
-                    case "Elytrian":
-                        plugin.elytrian.elytrianLaunchIntoAir(player);
-                        break;
-                    case "Blazeborn":
-                        break;
-                    case "Avian":
-                        break;
-                    case "Arachnid":
-                        plugin.arachnid.arachnidClimbToggleAbility(player);
-                        break;
-                    case "Shulk":
-                        plugin.shulk.shulkInventoryAbility(player);
-                        break;
-                    case "Feline":
-                        break;
+            if (plugin.getOrigins().contains(playerOrigin)) {
+                for (String origin : plugin.getOrigins()) {
+                    if (origin.equals(plugin.getStorageUtils().getPlayerOrigin(playerUUID))) {
+                        PlayerOriginAbilityUseEvent playerOriginAbilityUseEvent = new PlayerOriginAbilityUseEvent(player, origin);
+                        Bukkit.getPluginManager().callEvent(playerOriginAbilityUseEvent);
+                        event.setCancelled(true);
+                    }
                 }
-                event.setCancelled(true);
             }
         }
     }

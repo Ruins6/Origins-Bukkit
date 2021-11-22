@@ -81,7 +81,7 @@ public class PlayerOriginChecker implements Listener {
 
             @Override
             public void run() {
-                if (plugin.storageUtils.isOriginsPlayerDataLoaded()) {
+                if (plugin.getStorageUtils().isOriginsPlayerDataLoaded()) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         checkPlayerOriginData(player);
                     }
@@ -97,12 +97,12 @@ public class PlayerOriginChecker implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onPlayerOriginCheck(PlayerJoinEvent event) {
+    private void onPlayerOriginCheck(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-            plugin.noOriginPlayerRestrict.restrictPlayerMovement(player);
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
+            plugin.getNoOriginPlayerRestrict().restrictPlayerMovement(player);
 
             new BukkitRunnable() {
 
@@ -124,9 +124,10 @@ public class PlayerOriginChecker implements Listener {
     public void checkPlayerOriginData(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        resetPlayer(player);
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             openOriginPickerGui(player);
-            plugin.noOriginPlayerRestrict.restrictPlayerMovement(player);
+            plugin.getNoOriginPlayerRestrict().restrictPlayerMovement(player);
         } else {
             initiatePlayerOrigin(player);
         }
@@ -140,17 +141,18 @@ public class PlayerOriginChecker implements Listener {
     public void initiatePlayerOrigin(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
-            if (plugin.origins.contains(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
-                for (String origin : plugin.origins) {
-                    if (origin.equals(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
+        resetPlayer(player);
+        if (plugin.getStorageUtils().getPlayerOrigin(playerUUID) != null) {
+            if (plugin.getOrigins().contains(plugin.getStorageUtils().getPlayerOrigin(playerUUID))) {
+                for (String origin : plugin.getOrigins()) {
+                    if (origin.equals(plugin.getStorageUtils().getPlayerOrigin(playerUUID))) {
                         PlayerOriginInitiateEvent playerOriginInitiateEvent = new PlayerOriginInitiateEvent(player, origin);
                         Bukkit.getPluginManager().callEvent(playerOriginInitiateEvent);
                     }
                 }
             } else {
-                ChatUtils.sendPlayerMessage(player, "&cYour origin (" + plugin.storageUtils.getPlayerOrigin(playerUUID) + ") doesn't exist so we pruned your player data.");
-                plugin.storageUtils.deleteOriginsPlayerData(playerUUID);
+                ChatUtils.sendPlayerMessage(player, "&cYour origin (" + plugin.getStorageUtils().getPlayerOrigin(playerUUID) + ") doesn't exist so we pruned your player data.");
+                plugin.getStorageUtils().deleteOriginsPlayerData(playerUUID);
                 checkPlayerOriginData(player);
             }
         }
@@ -160,8 +162,8 @@ public class PlayerOriginChecker implements Listener {
      * Origin picker gui.
      */
     public void originPickerGui() {
-        if (!plugin.originsInventoryGUI.isEmpty()) {
-            for (Inventory inv : plugin.originsInventoryGUI) {
+        if (!plugin.getOriginsInventoryGUI().isEmpty()) {
+            for (Inventory inv : plugin.getOriginsInventoryGUI()) {
                 ItemStack previous = new ItemStack(Material.ARROW, 1);
                 ItemMeta previousMeta = previous.getItemMeta();
                 if (previousMeta != null) {
@@ -198,7 +200,7 @@ public class PlayerOriginChecker implements Listener {
     public void openOriginPickerGui(HumanEntity humanEntity) {
         UUID playerUUID = humanEntity.getUniqueId();
 
-        humanEntity.openInventory(plugin.originsInventoryGUI.get(0));
+        humanEntity.openInventory(plugin.getOriginsInventoryGUI().get(0));
         originPickerGUIViewers.put(playerUUID, 0);
     }
 
@@ -208,31 +210,31 @@ public class PlayerOriginChecker implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onOriginPickerGuiClick(InventoryClickEvent event) {
+    private void onOriginPickerGuiClick(InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
 
-        if (plugin.originsInventoryGUI.contains(event.getClickedInventory())) {
+        if (plugin.getOriginsInventoryGUI().contains(event.getClickedInventory())) {
             if (clickedItem != null) {
                 if (!clickedItem.getType().isAir()) {
                     if (event.getRawSlot() == 48) {
-                        if (plugin.originsInventoryGUI.indexOf(event.getClickedInventory()) != 0) {
-                            player.openInventory(plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.indexOf(event.getClickedInventory()) - 1));
+                        if (plugin.getOriginsInventoryGUI().indexOf(event.getClickedInventory()) != 0) {
+                            player.openInventory(plugin.getOriginsInventoryGUI().get(plugin.getOriginsInventoryGUI().indexOf(event.getClickedInventory()) - 1));
                             if (originPickerGUIViewers.containsKey(player.getUniqueId())) {
                                 originPickerGUIViewers.put(player.getUniqueId(), originPickerGUIViewers.get(player.getUniqueId()) - 1);
                             }
                         }
                     }
                     if (event.getRawSlot() == 50) {
-                        if (!plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.indexOf(event.getClickedInventory())).equals(plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.size() - 1))) {
-                            player.openInventory(plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.indexOf(event.getClickedInventory()) + 1));
+                        if (!plugin.getOriginsInventoryGUI().get(plugin.getOriginsInventoryGUI().indexOf(event.getClickedInventory())).equals(plugin.getOriginsInventoryGUI().get(plugin.getOriginsInventoryGUI().size() - 1))) {
+                            player.openInventory(plugin.getOriginsInventoryGUI().get(plugin.getOriginsInventoryGUI().indexOf(event.getClickedInventory()) + 1));
                             if (originPickerGUIViewers.containsKey(player.getUniqueId())) {
                                 originPickerGUIViewers.put(player.getUniqueId(), originPickerGUIViewers.get(player.getUniqueId()) + 1);
                             }
                         }
                     }
                     if (event.getRawSlot() == 22){
-                        for (String origin : plugin.origins) {
+                        for (String origin : plugin.getOrigins()) {
                             if (clickedItem.getItemMeta() != null) {
                                 if (origin.equals(clickedItem.getItemMeta().getLocalizedName())) {
                                     executeOriginPickerGuiOriginOption(player, origin);
@@ -252,26 +254,26 @@ public class PlayerOriginChecker implements Listener {
      * @param player the player
      * @param origin the origin
      */
-    public void executeOriginPickerGuiOriginOption(Player player, String origin) {
+    private void executeOriginPickerGuiOriginOption(Player player, String origin) {
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-            plugin.storageUtils.createOriginsPlayerData(playerUUID, player, origin);
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
+            plugin.getStorageUtils().createOriginsPlayerData(playerUUID, player, origin);
             initiatePlayerOrigin(player);
             originPickerGUIViewers.remove(playerUUID);
             player.closeInventory();
-            plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-        } else if (plugin.storageUtils.getPlayerOrigin(playerUUID).equals(origin)) {
+            plugin.getNoOriginPlayerRestrict().unrestrictPlayerMovement(player);
+        } else if (plugin.getStorageUtils().getPlayerOrigin(playerUUID).equals(origin)) {
             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                     .toString()
-                    .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+                    .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
         } else {
-            plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), origin));
+            plugin.getStorageUtils().updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, player.getName(), origin));
             initiatePlayerOrigin(player);
             player.closeInventory();
             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_UPDATE
                     .toString()
-                    .replace("%player_selected_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+                    .replace("%player_selected_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
         }
     }
 
@@ -294,8 +296,8 @@ public class PlayerOriginChecker implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onInventoryClick(InventoryDragEvent event) {
-        if (plugin.originsInventoryGUI.contains(event.getInventory())) {
+    private void onInventoryClick(InventoryDragEvent event) {
+        if (plugin.getOriginsInventoryGUI().contains(event.getInventory())) {
             event.setCancelled(true);
         }
     }
@@ -306,20 +308,20 @@ public class PlayerOriginChecker implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
+    private void onInventoryClose(InventoryCloseEvent event) {
         HumanEntity player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
         Inventory inventory = event.getInventory();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-            if (plugin.originsInventoryGUI.contains(inventory)) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
+            if (plugin.getOriginsInventoryGUI().contains(inventory)) {
 
                 new BukkitRunnable() {
 
                     @Override
                     public void run() {
-                        if (!player.getOpenInventory().getTopInventory().equals(plugin.originsInventoryGUI.get(originPickerGUIViewers.get(playerUUID)))) {
-                            player.openInventory(plugin.originsInventoryGUI.get(originPickerGUIViewers.get(playerUUID)));
+                        if (!player.getOpenInventory().getTopInventory().equals(plugin.getOriginsInventoryGUI().get(originPickerGUIViewers.get(playerUUID)))) {
+                            player.openInventory(plugin.getOriginsInventoryGUI().get(originPickerGUIViewers.get(playerUUID)));
                         }
                     }
                 }.runTaskLater(plugin, 1L);
@@ -333,7 +335,7 @@ public class PlayerOriginChecker implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onPlayerOriginChange(OriginChangeEvent event) {
+    private void onPlayerOriginChange(OriginChangeEvent event) {
         Player player = event.getPlayer();
         String newOrigin = event.getNewOrigin();
 
@@ -375,6 +377,77 @@ public class PlayerOriginChecker implements Listener {
                     genericArmorAttribute.setBaseValue(modifiedBaseValue - 8);
                 }
             }
+        }
+    }
+
+    /**
+     * Reset player.
+     *
+     * @param player the player
+     */
+    private void resetPlayer(Player player) {
+        GameMode gameMode = player.getGameMode();
+        AttributeInstance genericArmor = player.getAttribute(Attribute.GENERIC_ARMOR);
+        AttributeInstance genericArmorToughness = player.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
+        AttributeInstance genericLuck = player.getAttribute(Attribute.GENERIC_LUCK);
+        AttributeInstance genericAttackDamage = player.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE);
+        AttributeInstance genericAttackKnockBack = player.getAttribute(Attribute.GENERIC_ATTACK_KNOCKBACK);
+        AttributeInstance genericAttackSpeed = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        AttributeInstance genericFlyingSpeed = player.getAttribute(Attribute.GENERIC_FLYING_SPEED);
+        AttributeInstance genericFollowRange = player.getAttribute(Attribute.GENERIC_FOLLOW_RANGE);
+        AttributeInstance genericKnockBackResistance = player.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+        AttributeInstance genericMaxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance genericMovementSpeed = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
+        AttributeInstance horseJumpStrength = player.getAttribute(Attribute.HORSE_JUMP_STRENGTH);
+        AttributeInstance zombieSpawnReinforcements = player.getAttribute(Attribute.ZOMBIE_SPAWN_REINFORCEMENTS);
+
+        if (genericArmor != null) {
+            genericArmor.setBaseValue(genericArmor.getDefaultValue());
+        }
+        if (genericArmorToughness != null) {
+            genericArmorToughness.setBaseValue(genericArmorToughness.getDefaultValue());
+        }
+        if (genericLuck != null) {
+            genericLuck.setBaseValue(genericLuck.getDefaultValue());
+        }
+        if (genericAttackDamage != null) {
+            genericAttackDamage.setBaseValue(genericAttackDamage.getDefaultValue());
+        }
+        if (genericAttackKnockBack != null) {
+            genericAttackKnockBack.setBaseValue(genericAttackKnockBack.getDefaultValue());
+        }
+        if (genericAttackSpeed != null) {
+            genericAttackSpeed.setBaseValue(genericAttackSpeed.getDefaultValue());
+        }
+        if (genericFlyingSpeed != null) {
+            genericFlyingSpeed.setBaseValue(genericFlyingSpeed.getDefaultValue());
+        }
+        if (genericFollowRange != null) {
+            genericFollowRange.setBaseValue(genericFollowRange.getDefaultValue());
+        }
+        if (genericKnockBackResistance != null) {
+            genericKnockBackResistance.setBaseValue(genericKnockBackResistance.getDefaultValue());
+        }
+        if (genericMaxHealth != null) {
+            genericMaxHealth.setBaseValue(genericMaxHealth.getDefaultValue());
+        }
+        if (genericMovementSpeed != null) {
+            genericMovementSpeed.setBaseValue(genericMovementSpeed.getDefaultValue());
+        }
+        if (horseJumpStrength != null) {
+            horseJumpStrength.setBaseValue(horseJumpStrength.getDefaultValue());
+        }
+        if (zombieSpawnReinforcements != null) {
+            zombieSpawnReinforcements.setBaseValue(zombieSpawnReinforcements.getDefaultValue());
+        }
+        player.setHealthScale(20);
+        player.setInvisible(false);
+        player.setGravity(true);
+        player.setWalkSpeed(0.2f);
+        player.setFlySpeed(0.1f);
+        if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
+            player.setAllowFlight(false);
+            player.setFlying(false);
         }
     }
 }

@@ -107,7 +107,7 @@ public class ConfigHandler {
         try {
             loadConfig();
             loadLang();
-            plugin.storageUtils.loadDataFiles();
+            plugin.getStorageUtils().loadDataFiles();
         } catch (Exception event) {
             event.printStackTrace();
             ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] There was an error loading the files.");
@@ -229,7 +229,7 @@ public class ConfigHandler {
         try {
             loadConfig();
             loadLang();
-            plugin.storageUtils.loadDataFiles();
+            plugin.getStorageUtils().loadDataFiles();
         } catch (Exception event) {
             event.printStackTrace();
         }

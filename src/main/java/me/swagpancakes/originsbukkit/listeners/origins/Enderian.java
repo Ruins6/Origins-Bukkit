@@ -18,12 +18,13 @@
 package me.swagpancakes.originsbukkit.listeners.origins;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
-import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -142,7 +143,7 @@ public class Enderian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void enderianJoin(PlayerOriginInitiateEvent event) {
+    private void enderianJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
 
@@ -154,9 +155,24 @@ public class Enderian extends Origin implements Listener {
     }
 
     /**
+     * Enderian ability use.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void enderianAbilityUse(PlayerOriginAbilityUseEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
+
+        if (Objects.equals(origin, Origins.ENDERIAN.toString())) {
+            enderianEnderPearlThrow(player);
+        }
+    }
+
+    /**
      * Register enderian water damage listener.
      */
-    public void registerEnderianWaterDamageListener() {
+    private void registerEnderianWaterDamageListener() {
 
         new BukkitRunnable() {
 
@@ -166,11 +182,12 @@ public class Enderian extends Origin implements Listener {
                     for (int i = 0; i < enderianPlayersInWater.size(); i++) {
                         Player player = enderianPlayersInWater.get(i);
                         UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                         Location location = player.getLocation();
                         Block block = location.getBlock();
                         Material material = block.getType();
 
-                        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+                        if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
                             if (player.isOnline()) {
                                 if (player.getWorld().hasStorm()) {
                                     if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -221,7 +238,7 @@ public class Enderian extends Origin implements Listener {
     /**
      * Register enderian air enter listener.
      */
-    public void registerEnderianAirEnterListener() {
+    private void registerEnderianAirEnterListener() {
 
         new BukkitRunnable() {
 
@@ -231,11 +248,12 @@ public class Enderian extends Origin implements Listener {
                     for (int i = 0; i < enderianPlayersInAir.size(); i++) {
                         Player player = enderianPlayersInAir.get(i);
                         UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                         Location location = player.getLocation();
                         Block block = location.getBlock();
                         Material material = block.getType();
 
-                        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+                        if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
                             if (player.isOnline()) {
                                 if (player.getWorld().hasStorm()) {
                                     if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -268,17 +286,18 @@ public class Enderian extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void enderianEnderParticles(Player player) {
+    private void enderianEnderParticles(Player player) {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 World world = player.getWorld();
                 Location location = player.getLocation();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+                if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
                     if (player.isOnline()) {
                         world.spawnParticle(Particle.PORTAL, location.add(0, 1, 0), 10);
                     } else {
@@ -296,7 +315,7 @@ public class Enderian extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void enderianEnderPearlThrow(Player player) {
+    private void enderianEnderPearlThrow(Player player) {
         UUID playerUUID = player.getUniqueId();
 
         if (COOLDOWN.containsKey(playerUUID)) {
@@ -311,14 +330,14 @@ public class Enderian extends Origin implements Listener {
                 COOLDOWN.put(playerUUID, System.currentTimeMillis());
                 ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                         .toString()
-                        .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+                        .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
             }
         } else {
             player.launchProjectile(EnderPearl.class);
             COOLDOWN.put(playerUUID, System.currentTimeMillis());
             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                     .toString()
-                    .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
+                    .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
         }
     }
 
@@ -328,13 +347,14 @@ public class Enderian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void enderianEnderPearlDamageImmunity(PlayerTeleportEvent event) {
+    private void enderianEnderPearlDamageImmunity(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         PlayerTeleportEvent.TeleportCause teleportCause = event.getCause();
         Location getTo = event.getTo();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
             if (teleportCause == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
                 event.setCancelled(true);
                 player.setNoDamageTicks(1);
@@ -351,12 +371,13 @@ public class Enderian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void enderianPumpkinPieEatingDisability(PlayerItemConsumeEvent event) {
+    private void enderianPumpkinPieEatingDisability(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Material material = event.getItem().getType();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
             if (material == Material.PUMPKIN_PIE) {
                 event.setCancelled(true);
             }
@@ -369,13 +390,14 @@ public class Enderian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void enderianPotionDrinkingDamage(PlayerItemConsumeEvent event) {
+    private void enderianPotionDrinkingDamage(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         ItemStack itemStack = event.getItem();
         Material material = itemStack.getType();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+        if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
             if (material == Material.POTION) {
                 player.damage(2);
             }
@@ -388,15 +410,16 @@ public class Enderian extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void enderianSplashPotionDamage(PotionSplashEvent event) {
+    private void enderianSplashPotionDamage(PotionSplashEvent event) {
         Collection<LivingEntity> livingEntities = event.getAffectedEntities();
 
         for (LivingEntity livingEntity : livingEntities) {
             if (livingEntity instanceof Player) {
                 Player player = (Player) livingEntity;
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ENDERIAN.toString())) {
+                if (Objects.equals(playerOrigin, Origins.ENDERIAN.toString())) {
                     player.damage(2);
                 }
             }

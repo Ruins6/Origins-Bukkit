@@ -1,6 +1,7 @@
-package me.swagpancakes.originsbukkit.util;
+package me.swagpancakes.originsbukkit.api.util;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -78,15 +79,15 @@ public abstract class Origin implements OriginInterface {
                         if (!containsSpecialChars(getAuthor())) {
                             if (getOriginIcon() != null) {
                                 if (getOriginIcon() != Material.AIR) {
-                                    if (!OriginsBukkit.getPlugin().origins.contains(origin)) {
-                                        OriginsBukkit.getPlugin().origins.add(origin);
+                                    if (!OriginsBukkit.getPlugin().getOrigins().contains(origin)) {
+                                        OriginsBukkit.getPlugin().getOrigins().add(origin);
                                         Inventory inventory = Bukkit.createInventory(null, 54, ChatUtils.format("&0Choose your Origin."));
                                         inventory.setItem(22, createGuiItem(getOriginIcon(), 1,
                                                 getOriginTitle(),
                                                 getOriginDescription()));
-                                        OriginsBukkit.getPlugin().originsInventoryGUI.add(inventory);
-                                        if (OriginsBukkit.getPlugin().playerOriginChecker != null) {
-                                            OriginsBukkit.getPlugin().playerOriginChecker.originPickerGui();
+                                        OriginsBukkit.getPlugin().getOriginsInventoryGUI().add(inventory);
+                                        if (OriginsBukkit.getPlugin().getPlayerOriginChecker() != null) {
+                                            OriginsBukkit.getPlugin().getPlayerOriginChecker().originPickerGui();
                                         }
                                         ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully registered &6" + origin + "&a origin by &e" + getAuthor());
                                     } else {
@@ -149,7 +150,7 @@ public abstract class Origin implements OriginInterface {
      *
      * @return the boolean
      */
-    public boolean containsSpecialChars(String toExamine) {
+    private boolean containsSpecialChars(String toExamine) {
         Pattern pattern = Pattern.compile("[^a-zA-Z0-9]");
         Matcher matcher = pattern.matcher(toExamine);
         return matcher.find();

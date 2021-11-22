@@ -25,11 +25,11 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
-import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -149,7 +149,7 @@ public class Merling extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void merlingJoin(PlayerOriginInitiateEvent event) {
+    private void merlingJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
 
@@ -167,7 +167,7 @@ public class Merling extends Origin implements Listener {
      *
      * @return the int
      */
-    public int calculatePercentage(int obtained, int total) {
+    private int calculatePercentage(int obtained, int total) {
         return obtained * 100 / total;
     }
 
@@ -177,14 +177,15 @@ public class Merling extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void merlingUnderwaterBreathing(EntityAirChangeEvent event) {
+    private void merlingUnderwaterBreathing(EntityAirChangeEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
             Player player = (Player) event.getEntity();
             UUID playerUUID = player.getUniqueId();
+            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
+            if (Objects.equals(playerOrigin, Origins.MERLING.toString())) {
                 event.setCancelled(true);
             }
         }
@@ -196,7 +197,7 @@ public class Merling extends Origin implements Listener {
      * @param player   the player
      * @param timeLeft the time left
      */
-    public void merlingAirBreathingTimer(Player player, int timeLeft) {
+    private void merlingAirBreathingTimer(Player player, int timeLeft) {
 
         new BukkitRunnable() {
             int merlingAirBreathingTime = timeLeft;
@@ -210,21 +211,22 @@ public class Merling extends Origin implements Listener {
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 Location location = player.getLocation();
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
+                if (Objects.equals(playerOrigin, Origins.MERLING.toString())) {
                     if (player.isOnline()) {
                         bossBar.setTitle(Lang.MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE
                                 .toString()
                                 .replace("%time-left%", String.valueOf(merlingAirBreathingTime)));
                         bossBar.setProgress(merlingAirBreathingTime / Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toDouble());
 
-                        if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) == null) {
-                            plugin.storageUtils.createMerlingTimerSessionData(playerUUID, merlingAirBreathingTime);
+                        if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) == null) {
+                            plugin.getStorageUtils().createMerlingTimerSessionData(playerUUID, merlingAirBreathingTime);
                         } else {
-                            plugin.storageUtils.updateMerlingTimerSessionData(playerUUID, new MerlingTimerSessionData(playerUUID, merlingAirBreathingTime));
+                            plugin.getStorageUtils().updateMerlingTimerSessionData(playerUUID, new MerlingTimerSessionData(playerUUID, merlingAirBreathingTime));
                         }
 
                         if (merlingAirBreathingTime <= 0) {
@@ -259,8 +261,8 @@ public class Merling extends Origin implements Listener {
                                         bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                         merlingAirBreathingTime+=2;
                                     } else {
-                                        if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
-                                            plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);
+                                        if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
+                                            plugin.getStorageUtils().deleteMerlingTimerSessionData(playerUUID);
                                         }
                                         merlingWaterBreathing(player);
                                         bossBar.setVisible(false);
@@ -278,8 +280,8 @@ public class Merling extends Origin implements Listener {
                                         bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                         merlingAirBreathingTime+=2;
                                     } else {
-                                        if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
-                                            plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);
+                                        if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
+                                            plugin.getStorageUtils().deleteMerlingTimerSessionData(playerUUID);
                                         }
                                         merlingWaterBreathing(player);
                                         bossBar.setVisible(false);
@@ -295,8 +297,8 @@ public class Merling extends Origin implements Listener {
                                             bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                             merlingAirBreathingTime+=2;
                                         } else {
-                                            if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
-                                                plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);
+                                            if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
+                                                plugin.getStorageUtils().deleteMerlingTimerSessionData(playerUUID);
                                             }
                                             merlingWaterBreathing(player);
                                             bossBar.setVisible(false);
@@ -311,8 +313,8 @@ public class Merling extends Origin implements Listener {
                         this.cancel();
                     }
                 } else {
-                    if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
-                        plugin.storageUtils.deleteMerlingTimerSessionData(playerUUID);
+                    if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
+                        plugin.getStorageUtils().deleteMerlingTimerSessionData(playerUUID);
                     }
                     bossBar.setVisible(false);
                     bossBar.removePlayer(player);
@@ -334,24 +336,25 @@ public class Merling extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void merlingWaterBreathing(Player player) {
+    private void merlingWaterBreathing(Player player) {
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 Location location = player.getLocation();
                 Block block = location.getBlock();
                 Material material = block.getType();
-                int timeLeft = plugin.storageUtils.getMerlingTimerSessionDataTimeLeft(playerUUID);
+                int timeLeft = plugin.getStorageUtils().getMerlingTimerSessionDataTimeLeft(playerUUID);
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
+                if (Objects.equals(playerOrigin, Origins.MERLING.toString())) {
                     if (player.isOnline()) {
                         if (!player.getWorld().hasStorm()) {
                             if (!(player.isInWater() || material == Material.WATER_CAULDRON)) {
-                                if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
-                                    if (plugin.storageUtils.getMerlingTimerSessionDataTimeLeft(playerUUID) != 0) {
+                                if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
+                                    if (plugin.getStorageUtils().getMerlingTimerSessionDataTimeLeft(playerUUID) != 0) {
                                         merlingAirBreathingTimer(player, timeLeft);
                                     } else {
                                         merlingAirDamage(player);
@@ -361,7 +364,7 @@ public class Merling extends Origin implements Listener {
                                 }
                                 this.cancel();
                             } else {
-                                if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
+                                if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
                                     merlingAirBreathingTimer(player, timeLeft);
                                     this.cancel();
                                 }
@@ -369,8 +372,8 @@ public class Merling extends Origin implements Listener {
                         } else {
                             if (!(player.isInWater() || material == Material.WATER_CAULDRON)) {
                                 if (!(location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY())) {
-                                    if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
-                                        if (plugin.storageUtils.getMerlingTimerSessionDataTimeLeft(playerUUID) != 0) {
+                                    if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
+                                        if (plugin.getStorageUtils().getMerlingTimerSessionDataTimeLeft(playerUUID) != 0) {
                                             merlingAirBreathingTimer(player, timeLeft);
                                         } else {
                                             merlingAirDamage(player);
@@ -380,7 +383,7 @@ public class Merling extends Origin implements Listener {
                                     }
                                     this.cancel();
                                 } else {
-                                    if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
+                                    if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
                                         merlingAirBreathingTimer(player, timeLeft);
                                         this.cancel();
                                     }
@@ -402,7 +405,7 @@ public class Merling extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void merlingAirDamage(Player player) {
+    private void merlingAirDamage(Player player) {
 
         new BukkitRunnable() {
             final BossBar bossBar = Bukkit.createBossBar(
@@ -413,17 +416,18 @@ public class Merling extends Origin implements Listener {
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 Location location = player.getLocation();
                 Block block = location.getBlock();
                 Material material = block.getType();
-                int timeLeft = plugin.storageUtils.getMerlingTimerSessionDataTimeLeft(playerUUID);
+                int timeLeft = plugin.getStorageUtils().getMerlingTimerSessionDataTimeLeft(playerUUID);
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
+                if (Objects.equals(playerOrigin, Origins.MERLING.toString())) {
                     if (player.isOnline()) {
                         bossBar.setProgress(0);
                         if (!player.getWorld().hasStorm()) {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
+                                if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
                                     merlingAirBreathingTimer(player, timeLeft);
                                 }
                                 bossBar.removePlayer(player);
@@ -434,7 +438,7 @@ public class Merling extends Origin implements Listener {
                             }
                         } else {
                             if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
+                                if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
                                     merlingAirBreathingTimer(player, timeLeft);
                                 }
                                 bossBar.removePlayer(player);
@@ -444,7 +448,7 @@ public class Merling extends Origin implements Listener {
                                     damageMerling(player, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_AMOUNT.toDouble());
                                     bossBar.addPlayer(player);
                                 } else {
-                                    if (plugin.storageUtils.findMerlingTimerSessionData(playerUUID) != null) {
+                                    if (plugin.getStorageUtils().findMerlingTimerSessionData(playerUUID) != null) {
                                         merlingAirBreathingTimer(player, timeLeft);
                                     }
                                     bossBar.removePlayer(player);
@@ -472,7 +476,7 @@ public class Merling extends Origin implements Listener {
      * @param player the player
      * @param amount the amount
      */
-    public void damageMerling(Player player, double amount) {
+    private void damageMerling(Player player, double amount) {
 
         new BukkitRunnable() {
 
@@ -489,7 +493,7 @@ public class Merling extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onMerlingImpalingDamage(EntityDamageByEntityEvent event) {
+    private void onMerlingImpalingDamage(EntityDamageByEntityEvent event) {
         Entity target = event.getEntity();
         Entity damager = event.getDamager();
         double baseDamage = event.getDamage();
@@ -498,13 +502,14 @@ public class Merling extends Origin implements Listener {
             Player targetPlayer = (Player) target;
             LivingEntity livingDamager = (LivingEntity) damager;
             UUID targetPlayerUUID = targetPlayer.getUniqueId();
+            String targetPlayerOrigin = plugin.getStorageUtils().getPlayerOrigin(targetPlayerUUID);
             EntityEquipment entityEquipment = livingDamager.getEquipment();
 
             if (entityEquipment != null) {
                 ItemStack itemStack = livingDamager.getEquipment().getItemInMainHand();
                 ItemMeta itemMeta = itemStack.getItemMeta();
 
-                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(targetPlayerUUID), Origins.MERLING.toString())) {
+                if (Objects.equals(targetPlayerOrigin, Origins.MERLING.toString())) {
                     if (itemMeta != null && itemMeta.hasEnchant(Enchantment.IMPALING)) {
                         int enchantLevel = itemMeta.getEnchantLevel(Enchantment.IMPALING);
 
@@ -518,8 +523,8 @@ public class Merling extends Origin implements Listener {
     /**
      * Register merling block digging packet listener.
      */
-    public void registerMerlingBlockDiggingPacketListener() {
-        plugin.protocolManager.addPacketListener(
+    private void registerMerlingBlockDiggingPacketListener() {
+        plugin.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.BLOCK_DIG) {
 
             @Override
@@ -528,9 +533,10 @@ public class Merling extends Origin implements Listener {
                 EnumWrappers.PlayerDigType digType = packet.getPlayerDigTypes().getValues().get(0);
                 Player player = event.getPlayer();
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = Merling.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 Location playerLocation = player.getLocation();
 
-                if (Objects.equals(Merling.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
+                if (Objects.equals(playerOrigin, Origins.MERLING.toString())) {
                     if (playerLocation.getBlock().isLiquid() && playerLocation.add(0, 1, 0).getBlock().isLiquid()) {
                         if (digType == EnumWrappers.PlayerDigType.START_DESTROY_BLOCK) {
                             new BukkitRunnable() {
@@ -566,34 +572,33 @@ public class Merling extends Origin implements Listener {
     /**
      * Register merling move packet listener.
      */
-    public void registerMerlingMovePacketListener() {
-        plugin.protocolManager.addPacketListener(
+    private void registerMerlingMovePacketListener() {
+        plugin.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
 
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 Player player = event.getPlayer();
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = Merling.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-                if (Merling.this.plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
-                    if (Merling.this.plugin.storageUtils.getPlayerOrigin(playerUUID).equals(Origins.MERLING.toString())) {
-                        if (player.isInWater()) {
-                            new BukkitRunnable() {
+                if (Objects.equals(playerOrigin, Origins.MERLING.toString())) {
+                    if (player.isInWater()) {
+                        new BukkitRunnable() {
 
-                                @Override
-                                public void run() {
-                                    player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0 , false, false));
-                                }
-                            }.runTask(plugin);
-                        } else {
-                            new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0 , false, false));
+                            }
+                        }.runTask(plugin);
+                    } else {
+                        new BukkitRunnable() {
 
-                                @Override
-                                public void run() {
-                                    player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-                                }
-                            }.runTask(plugin);
-                        }
+                            @Override
+                            public void run() {
+                                player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+                            }
+                        }.runTask(plugin);
                     }
                 }
             }

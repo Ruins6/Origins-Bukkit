@@ -25,11 +25,12 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -56,10 +57,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The type Shulk.
@@ -69,6 +67,16 @@ import java.util.UUID;
 public class Shulk extends Origin implements Listener {
 
     private final OriginsBukkit plugin;
+    private final List<Player> shulkInventoryViewers = new ArrayList<>();
+
+    /**
+     * Gets shulk inventory viewers.
+     *
+     * @return the shulk inventory viewers
+     */
+    public List<Player> getShulkInventoryViewers() {
+        return this.shulkInventoryViewers;
+    }
 
     /**
      * Instantiates a new Shulk.
@@ -156,7 +164,7 @@ public class Shulk extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void shulkJoin(PlayerOriginInitiateEvent event) {
+    private void shulkJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
         String origin = event.getOrigin();
@@ -171,13 +179,28 @@ public class Shulk extends Origin implements Listener {
                 genericArmorAttribute.setBaseValue(defaultBaseValue + 8);
             }
             player.setHealthScale(Config.ORIGINS_SHULK_MAX_HEALTH.toDouble());
-            if (!plugin.storageUtils.getShulkPlayerStorageData().containsKey(playerUUID)) {
+            if (!plugin.getStorageUtils().getShulkPlayerStorageData().containsKey(playerUUID)) {
                 try {
-                    plugin.storageUtils.loadShulkPlayerStorageData(playerUUID);
+                    plugin.getStorageUtils().loadShulkPlayerStorageData(playerUUID);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    /**
+     * Shulk ability use.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void shulkAbilityUse(PlayerOriginAbilityUseEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
+
+        if (Objects.equals(origin, Origins.SHULK.toString())) {
+            shulkInventoryAbility(player);
         }
     }
 
@@ -187,9 +210,10 @@ public class Shulk extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void shulkShieldDisability(PlayerInteractEvent event) {
+    private void shulkShieldDisability(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Action action = event.getAction();
         ItemStack itemStack = event.getItem();
         World world = player.getWorld();
@@ -197,7 +221,7 @@ public class Shulk extends Origin implements Listener {
         EquipmentSlot equipmentSlot = event.getHand();
         PlayerInventory playerInventory = player.getInventory();
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK.toString())) {
+        if (Objects.equals(playerOrigin, Origins.SHULK.toString())) {
             if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
                 if (itemStack != null) {
                     Material material = itemStack.getType();
@@ -223,12 +247,13 @@ public class Shulk extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void shulkFastExhaustion(FoodLevelChangeEvent event) {
+    private void shulkFastExhaustion(FoodLevelChangeEvent event) {
         HumanEntity humanEntity = event.getEntity();
         Player player = (Player) humanEntity;
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK.toString())) {
+        if (Objects.equals(playerOrigin, Origins.SHULK.toString())) {
             event.setFoodLevel(event.getFoodLevel() - 1);
         }
     }
@@ -238,12 +263,15 @@ public class Shulk extends Origin implements Listener {
      *
      * @param player the player
      */
-    public void shulkInventoryAbility(Player player) {
+    private void shulkInventoryAbility(Player player) {
         UUID playerUUID = player.getUniqueId();
         Inventory inv = Bukkit.createInventory(player, InventoryType.DROPPER, player.getName() + "'s Vault");
 
-        if (plugin.storageUtils.getShulkPlayerStorageData().containsKey(playerUUID)) {
-            inv.setContents(plugin.storageUtils.getShulkPlayerStorageData().get(playerUUID));
+        if (plugin.getStorageUtils().getShulkPlayerStorageData().containsKey(playerUUID)) {
+            inv.setContents(plugin.getStorageUtils().getShulkPlayerStorageData().get(playerUUID));
+        }
+        if (!shulkInventoryViewers.contains(player)) {
+            shulkInventoryViewers.add(player);
         }
         player.openInventory(inv);
     }
@@ -254,18 +282,20 @@ public class Shulk extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onShulkCustomInventoryClose(InventoryCloseEvent event) {
-        HumanEntity player = event.getPlayer();
+    private void onShulkCustomInventoryClose(InventoryCloseEvent event) {
+        HumanEntity humanEntity = event.getPlayer();
+        Player player = (Player) humanEntity;
         UUID playerUUID = player.getUniqueId();
 
         if (event.getView().getTitle().contains(player.getName() + "'s Vault")) {
-            plugin.storageUtils.getShulkPlayerStorageData().remove(playerUUID);
-            plugin.storageUtils.getShulkPlayerStorageData().put(playerUUID, event.getInventory().getContents());
+            plugin.getStorageUtils().getShulkPlayerStorageData().remove(playerUUID);
+            plugin.getStorageUtils().getShulkPlayerStorageData().put(playerUUID, event.getInventory().getContents());
             try {
-                plugin.storageUtils.saveShulkPlayerStorageData(playerUUID);
+                plugin.getStorageUtils().saveShulkPlayerStorageData(playerUUID);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            shulkInventoryViewers.remove(player);
         }
     }
 
@@ -275,9 +305,10 @@ public class Shulk extends Origin implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void shulkBlockBreak(BlockBreakEvent event) {
+    private void shulkBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
         Block block = event.getBlock();
         Material material = block.getType();
         Material mainHandItemType = player.getInventory().getItemInMainHand().getType();
@@ -289,7 +320,7 @@ public class Shulk extends Origin implements Listener {
                 Material.DIAMOND_PICKAXE,
                 Material.NETHERITE_PICKAXE);
 
-        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK.toString())) {
+        if (Objects.equals(playerOrigin, Origins.SHULK.toString())) {
             if (!tools.contains(mainHandItemType)) {
                 if (material == Material.STONE || material == Material.NETHERRACK) {
                     block.breakNaturally();
@@ -301,8 +332,8 @@ public class Shulk extends Origin implements Listener {
     /**
      * Register shulk block digging packet listener.
      */
-    public void registerShulkBlockDiggingPacketListener() {
-        plugin.protocolManager.addPacketListener(
+    private void registerShulkBlockDiggingPacketListener() {
+        plugin.getProtocolManager().addPacketListener(
                 new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.BLOCK_DIG) {
 
             @Override
@@ -316,6 +347,7 @@ public class Shulk extends Origin implements Listener {
                 Player player = event.getPlayer();
                 World world = player.getWorld();
                 UUID playerUUID = player.getUniqueId();
+                String playerOrigin = Shulk.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
                 Location location = new Location(world, x, y, z);
                 Block block = location.getBlock();
                 Material material = block.getType();
@@ -333,7 +365,7 @@ public class Shulk extends Origin implements Listener {
                         Material.DIAMOND_PICKAXE,
                         Material.NETHERITE_PICKAXE);
 
-                if (Objects.equals(Shulk.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.SHULK.toString())) {
+                if (Objects.equals(playerOrigin, Origins.SHULK.toString())) {
                     if (blocks.contains(material)) {
                         if (digType == EnumWrappers.PlayerDigType.START_DESTROY_BLOCK) {
                             if (!tools.contains(mainHandItemType)) {

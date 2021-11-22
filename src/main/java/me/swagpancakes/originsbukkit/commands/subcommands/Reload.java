@@ -60,7 +60,7 @@ public class Reload {
                 if (args.length == 1) {
                     ChatUtils.sendCommandSenderMessage(sender, "&3Reloading the plugin files...");
                     try {
-                        plugin.configHandler.reloadFiles();
+                        plugin.getConfigHandler().reloadFiles();
                     } catch (Exception event) {
                         event.printStackTrace();
                     }
@@ -75,7 +75,7 @@ public class Reload {
             if (args.length == 1) {
                 ChatUtils.sendCommandSenderMessage(sender, "&3[Origins-Bukkit] Reloading the plugin files...");
                 try {
-                    plugin.configHandler.reloadFiles();
+                    plugin.getConfigHandler().reloadFiles();
                 } catch (Exception event) {
                     event.printStackTrace();
                 }

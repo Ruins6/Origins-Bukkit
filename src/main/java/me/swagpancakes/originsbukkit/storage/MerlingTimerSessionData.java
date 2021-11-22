@@ -17,6 +17,8 @@
  */
 package me.swagpancakes.originsbukkit.storage;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.UUID;
 
 /**
@@ -35,7 +37,7 @@ public class MerlingTimerSessionData {
      * @param playerUUID the player uuid
      * @param timeLeft   the time left
      */
-    public MerlingTimerSessionData(UUID playerUUID, int timeLeft) {
+    public MerlingTimerSessionData(@NotNull UUID playerUUID, @NotNull int timeLeft) {
         this.playerUUID = playerUUID;
         this.timeLeft = timeLeft;
     }

@@ -17,6 +17,8 @@
  */
 package me.swagpancakes.originsbukkit.storage;
 
+import com.sun.istack.internal.NotNull;
+
 import java.util.UUID;
 
 /**
@@ -37,7 +39,7 @@ public class OriginsPlayerData {
      * @param playerName the player name
      * @param origin     the origin
      */
-    public OriginsPlayerData(UUID playerUUID, String playerName, String origin) {
+    public OriginsPlayerData(@NotNull UUID playerUUID, @NotNull String playerName, @NotNull String origin) {
         this.playerUUID = playerUUID;
         this.playerName = playerName;
         this.origin = origin;

@@ -514,7 +514,7 @@ public class StorageUtils {
                 }
                 FileConfiguration shulkPlayerStorageData = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
 
-                for (Map.Entry<UUID, ItemStack[]> entry : plugin.storageUtils.shulkPlayerStorageData.entrySet()) {
+                for (Map.Entry<UUID, ItemStack[]> entry : plugin.getStorageUtils().shulkPlayerStorageData.entrySet()) {
                     if (entry.getKey().equals(playerUUID)) {
                         shulkPlayerStorageData.set("data." + entry.getKey(), entry.getValue());
                     }
@@ -559,7 +559,7 @@ public class StorageUtils {
                     shulkPlayerStorageData.getConfigurationSection("data").getKeys(false).forEach(key ->{
                         @SuppressWarnings("unchecked")
                         ItemStack[] contents = ((List<ItemStack>) shulkPlayerStorageData.get("data." + key)).toArray(new ItemStack[0]);
-                        plugin.storageUtils.shulkPlayerStorageData.put(UUID.fromString(key), contents);
+                        plugin.getStorageUtils().shulkPlayerStorageData.put(UUID.fromString(key), contents);
                     });
                 }
             }

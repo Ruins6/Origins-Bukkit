@@ -86,7 +86,7 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerDamage(EntityDamageEvent event) {
+    private void onNoOriginPlayerDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
@@ -94,7 +94,7 @@ public class NoOriginPlayerRestrict implements Listener {
             assert player != null;
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+            if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
                 event.setCancelled(true);
             }
         }
@@ -107,12 +107,12 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerDeath(PlayerDeathEvent event) {
+    private void onNoOriginPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity().getPlayer();
         assert player != null;
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             player.spigot().respawn();
         }
     }
@@ -123,12 +123,12 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerRespawn(PlayerRespawnEvent event) {
+    private void onNoOriginPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-            plugin.playerOriginChecker.openOriginPickerGui(player);
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
+            plugin.getPlayerOriginChecker().openOriginPickerGui(player);
             restrictPlayerMovement(player);
         }
     }
@@ -139,7 +139,7 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerItemPickup(EntityPickupItemEvent event) {
+    private void onNoOriginPlayerItemPickup(EntityPickupItemEvent event) {
         Entity entity = event.getEntity();
 
         if (entity instanceof Player) {
@@ -147,7 +147,7 @@ public class NoOriginPlayerRestrict implements Listener {
             assert player != null;
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+            if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
                 event.setCancelled(true);
             }
         }
@@ -159,11 +159,11 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerBlockBreak(BlockBreakEvent event) {
+    private void onNoOriginPlayerBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
@@ -174,11 +174,11 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerBlockPlace(BlockPlaceEvent event) {
+    private void onNoOriginPlayerBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
@@ -189,11 +189,11 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerInteract(PlayerInteractEvent event) {
+    private void onNoOriginPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
@@ -204,11 +204,11 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+    private void onNoOriginPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
@@ -219,11 +219,11 @@ public class NoOriginPlayerRestrict implements Listener {
      * @param event the event
      */
     @EventHandler
-    public void onNoOriginPlayerInteractEntity(PlayerInteractEntityEvent event) {
+    private void onNoOriginPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+        if (plugin.getStorageUtils().findOriginsPlayerData(playerUUID) == null) {
             event.setCancelled(true);
         }
     }
