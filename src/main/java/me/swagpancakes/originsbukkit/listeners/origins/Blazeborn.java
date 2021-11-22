@@ -17,9 +17,12 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
+import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -38,19 +41,16 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The type Blazeborn.
  *
  * @author SwagPannekaker
  */
-public class Blazeborn implements Listener {
+public class Blazeborn extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final List<Player> blazebornPlayersInWater = new ArrayList<>();
     private final List<Player> blazebornPlayersInAir = new ArrayList<>();
 
@@ -59,9 +59,78 @@ public class Blazeborn implements Listener {
      *
      * @param plugin the plugin
      */
-    public Blazeborn(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Blazeborn(OriginsBukkit plugin) {
+        super(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Blazeborn";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.BLAZE_POWDER;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.BLAZEBORN_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.BLAZEBORN_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
         registerBlazebornWaterDamageListener();
         registerBlazebornAirEnterListener();
     }
@@ -69,12 +138,14 @@ public class Blazeborn implements Listener {
     /**
      * Blazeborn join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void blazebornJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void blazebornJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+        if (Objects.equals(origin, Origins.BLAZEBORN.toString())) {
             player.setHealthScale(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble());
             blazebornPlayersInWater.add(player);
             blazebornFlameParticles(player);
@@ -98,7 +169,7 @@ public class Blazeborn implements Listener {
                         Block block = location.getBlock();
                         Material material = block.getType();
 
-                        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
                             if (player.isOnline()) {
                                 if (player.getWorld().hasStorm()) {
                                     if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -163,7 +234,7 @@ public class Blazeborn implements Listener {
                         Block block = location.getBlock();
                         Material material = block.getType();
 
-                        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
                             if (player.isOnline()) {
                                 if (player.getWorld().hasStorm()) {
                                     if (player.isInWater() || material == Material.WATER_CAULDRON) {
@@ -206,7 +277,7 @@ public class Blazeborn implements Listener {
                 World world = player.getWorld();
                 Location location = player.getLocation();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
                     if (player.isOnline()) {
                         world.spawnParticle(Particle.SMALL_FLAME, location.add(0, 1, 0), 5);
                     } else {
@@ -233,7 +304,7 @@ public class Blazeborn implements Listener {
             Player player = (Player) damager;
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
                 if (player.getFireTicks() > 0) {
                     event.setDamage(baseDamage + 1.5);
                 }
@@ -256,7 +327,7 @@ public class Blazeborn implements Listener {
             Player targetPlayer = (Player) target;
             UUID targetPlayerUUID = targetPlayer.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(targetPlayerUUID) == Origins.BLAZEBORN) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(targetPlayerUUID), Origins.BLAZEBORN.toString())) {
                 event.setDamage(baseDamage + 1.5);
             }
         }
@@ -278,7 +349,7 @@ public class Blazeborn implements Listener {
             if (player != null) {
                 UUID playerUUID = player.getUniqueId();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
                     if (damageCause == EntityDamageEvent.DamageCause.LAVA || damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.HOT_FLOOR || damageCause == EntityDamageEvent.DamageCause.POISON || damageCause == EntityDamageEvent.DamageCause.STARVATION) {
                         event.setCancelled(true);
                     }
@@ -299,7 +370,7 @@ public class Blazeborn implements Listener {
         ItemStack itemStack = event.getItem();
         Material material = itemStack.getType();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
             if (material == Material.POTION) {
                 player.damage(2);
             }
@@ -320,7 +391,7 @@ public class Blazeborn implements Listener {
                 Player player = (Player) livingEntity;
                 UUID playerUUID = player.getUniqueId();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.BLAZEBORN) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.BLAZEBORN.toString())) {
                     player.damage(2);
                 }
             }

@@ -18,7 +18,7 @@
 package me.swagpancakes.originsbukkit.config;
 
 import com.tchristofferson.configupdater.ConfigUpdater;
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -37,7 +37,7 @@ import java.io.InputStreamReader;
  */
 public class ConfigHandler {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private YamlConfiguration CONFIG;
     private File CONFIG_FILE;
     private YamlConfiguration LANG;
@@ -48,8 +48,16 @@ public class ConfigHandler {
      *
      * @param plugin the plugin
      */
-    public ConfigHandler(Main plugin) {
+    public ConfigHandler(OriginsBukkit plugin) {
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        loadConfigurationFiles();
     }
 
     /**
@@ -89,9 +97,9 @@ public class ConfigHandler {
     }
 
     /**
-     * Load files.
+     * Load configuration files.
      */
-    public void loadFiles() {
+    public void loadConfigurationFiles() {
         if (!plugin.getDataFolder().exists()) {
             plugin.getDataFolder().mkdir();
         }

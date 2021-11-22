@@ -17,22 +17,26 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -42,6 +46,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -49,35 +54,105 @@ import java.util.UUID;
  *
  * @author SwagPannekaker
  */
-public class Elytrian implements Listener {
+public class Elytrian extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
     private final int COOLDOWNTIME = Config.ORIGINS_ELYTRIAN_ABILITY_COOLDOWN.toInt();
 
-    public ItemStack elytra;
+    public static ItemStack elytra;
 
     /**
      * Instantiates a new Elytrian.
      *
      * @param plugin the plugin
      */
-    public Elytrian(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Elytrian(OriginsBukkit plugin) {
+        super(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
 
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Elytrian";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.ELYTRA;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.ELYTRIAN_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.ELYTRIAN_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
         createElytra();
     }
 
     /**
      * Elytrian join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void elytrianJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void elytrianJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
+        if (Objects.equals(origin, Origins.ELYTRIAN.toString())) {
             player.setHealthScale(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble());
             elytrianElytra(player);
             elytrianClaustrophobiaTimer(player);
@@ -94,7 +169,7 @@ public class Elytrian implements Listener {
         itemMeta.setDisplayName(ChatUtils.format("&dElytra"));
         itemMeta.setUnbreakable(true);
         itemMeta.addEnchant(Enchantment.BINDING_CURSE, 1, false);
-        itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE, ItemFlag.HIDE_ENCHANTS);
+        itemMeta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
         itemStack.setItemMeta(itemMeta);
 
         elytra = itemStack;
@@ -112,7 +187,7 @@ public class Elytrian implements Listener {
         PlayerInventory playerInventory = player.getInventory();
         ItemStack prevChestplate = playerInventory.getChestplate();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN.toString())) {
             if (prevChestplate != null && !prevChestplate.equals(elytra)) {
                 if (playerInventory.firstEmpty() == -1) {
                     world.dropItem(location, prevChestplate);
@@ -121,6 +196,31 @@ public class Elytrian implements Listener {
                 }
             }
             playerInventory.setChestplate(elytra);
+        }
+    }
+
+    /**
+     * Elytrian armor equip.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void elytrianArmorEquip(InventoryClickEvent event) {
+        HumanEntity humanEntity = event.getWhoClicked();
+        Player player = (Player) humanEntity;
+        UUID playerUUID = player.getUniqueId();
+        int clickedSlot = event.getRawSlot();
+        ItemStack cursorItemStack = event.getCursor();
+        ItemStack clickedItemStack = event.getCurrentItem();
+
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN.toString())) {
+            if (clickedSlot == 6) {
+                if (clickedItemStack != null && clickedItemStack.isSimilar(elytra)) {
+                    if (cursorItemStack != null && cursorItemStack.getItemMeta() != null) {
+                        ChatUtils.sendPlayerMessage(player, "&dpeek-a-boo!");
+                    }
+                }
+            }
         }
     }
 
@@ -170,7 +270,7 @@ public class Elytrian implements Listener {
             UUID playerUUID = player.getUniqueId();
             double additionalDamage = baseDamage * 0.5;
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN.toString())) {
                 if (player.isGliding()) {
                     event.setDamage(baseDamage + additionalDamage);
                 }
@@ -191,7 +291,7 @@ public class Elytrian implements Listener {
             Player player = (Player) entity;
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN.toString())) {
                 EntityDamageEvent.DamageCause damageCause = event.getCause();
 
                 if (damageCause == EntityDamageEvent.DamageCause.FALL || damageCause == EntityDamageEvent.DamageCause.FLY_INTO_WALL) {
@@ -215,7 +315,7 @@ public class Elytrian implements Listener {
         UUID playerUUID = player.getUniqueId();
         ItemStack prevChestplate = player.getInventory().getChestplate();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) != Origins.ELYTRIAN) {
+        if (!Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN.toString())) {
             if (prevChestplate != null && prevChestplate.equals(elytra)) {
                 player.getInventory().setChestplate(new ItemStack(Material.AIR));
             }
@@ -239,7 +339,7 @@ public class Elytrian implements Listener {
                 double y = location.getY();
                 Block block = location.getBlock();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ELYTRIAN) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ELYTRIAN.toString())) {
                 }
             }
         }.runTaskTimer(plugin, 0L, 20L);

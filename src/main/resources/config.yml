@@ -38,7 +38,7 @@ Config:
       Max-Health: 20
       Air-Breathing:
         # The maximum amount of time the player can breathe when not in water.
-        # In seconds, 1 = 1 second
+        # In seconds, increment/decrement = 1 second
         Max-Time: 120
         Damage:
           # The amount of damage dealt when they're not in water.
@@ -117,6 +117,11 @@ Config:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
       Max-Health: 20
+      Ability:
+        # The speed when player breaks stone or netherrack without tools.
+        # Max Speed: 127 (Tested)
+        # Default: 27 (Almost Equivalent to Wooden Pickaxe)
+        Digging-Speed: 27
     Feline:
       # The amount of health for this origin.
       # 1 = 0.5 hearts

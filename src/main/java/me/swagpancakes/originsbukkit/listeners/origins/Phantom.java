@@ -22,9 +22,13 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
+import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.util.Origin;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,6 +38,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -41,30 +46,101 @@ import java.util.UUID;
  *
  * @author SwagPannekaker
  */
-public class Phantom implements Listener {
+public class Phantom extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Phantom.
      *
      * @param plugin the plugin
      */
-    public Phantom(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Phantom(OriginsBukkit plugin) {
+        super(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Phantom";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.PHANTOM_MEMBRANE;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.PHANTOM_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.PHANTOM_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
         registerPhantomInvisibilityPotionPacketListener();
     }
 
     /**
      * Phantom join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void phantomJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void phantomJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.PHANTOM) {
+        if (Objects.equals(origin, Origins.PHANTOM.toString())) {
             player.setHealthScale(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble());
             plugin.ghostFactory.setGhost(player, true);
         }
@@ -80,7 +156,7 @@ public class Phantom implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) != Origins.PHANTOM) {
+        if (!Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
             plugin.ghostFactory.addPlayer(player);
         }
     }
@@ -100,7 +176,7 @@ public class Phantom implements Listener {
             PotionEffect oldEffect = event.getOldEffect();
             EntityPotionEffectEvent.Cause cause = event.getCause();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.PHANTOM) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
                 if (oldEffect != null) {
                     if (oldEffect.getType().equals(PotionEffectType.INVISIBILITY) && cause != EntityPotionEffectEvent.Cause.PLUGIN) {
                         event.setCancelled(true);
@@ -124,7 +200,7 @@ public class Phantom implements Listener {
             UUID playerUUID = player.getUniqueId();
             PotionEffect newEffect = event.getNewEffect();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) != Origins.PHANTOM) {
+            if (!Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
                 if (newEffect != null) {
                     if (newEffect.getType().equals(PotionEffectType.INVISIBILITY)) {
                         event.setCancelled(true);
@@ -144,10 +220,14 @@ public class Phantom implements Listener {
                     @Override
                     public void onPacketSending(PacketEvent event) {
                         PacketContainer packet = event.getPacket();
+                        Player player = event.getPlayer();
+                        UUID playerUUID = player.getUniqueId();
                         byte effectType = packet.getBytes().read(0);
 
-                        if (effectType == 14) {
-                            event.setCancelled(true);
+                        if (Objects.equals(Phantom.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.PHANTOM.toString())) {
+                            if (effectType == 14) {
+                                event.setCancelled(true);
+                            }
                         }
                     }
                 }

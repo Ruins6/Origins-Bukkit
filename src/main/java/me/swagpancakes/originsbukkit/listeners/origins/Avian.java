@@ -17,10 +17,13 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
+import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.util.Origin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Location;
@@ -43,6 +46,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -50,29 +54,100 @@ import java.util.UUID;
  *
  * @author SwagPannekaker
  */
-public class Avian implements Listener {
+public class Avian extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Avian.
      *
      * @param plugin the plugin
      */
-    public Avian(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Avian(OriginsBukkit plugin) {
+        super(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble(), 0.25f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Avian";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.FEATHER;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.AVIAN_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.AVIAN_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
     }
 
     /**
      * Avian join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void avianJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void avianJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(origin, Origins.AVIAN.toString())) {
             player.setHealthScale(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble());
             player.setWalkSpeed(0.25F);
             avianSlowFalling(player);
@@ -87,7 +162,7 @@ public class Avian implements Listener {
     public void avianSlowFalling(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
             player.addPotionEffect(new PotionEffect(
                     PotionEffectType.SLOW_FALLING,
                     Integer.MAX_VALUE,
@@ -107,7 +182,7 @@ public class Avian implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
             if (player.isGliding()) {
                 if (!player.isSneaking()) {
                     player.setVelocity(player.getVelocity().setY(0));
@@ -149,7 +224,7 @@ public class Avian implements Listener {
             Player player = (Player) entity;
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
                 if (!player.isGliding()) {
                     if (player.isSneaking()) {
                         player.setVelocity(player.getVelocity().setY(0));
@@ -192,7 +267,7 @@ public class Avian implements Listener {
         Location bedLocation = bed.getLocation();
         double bedLocationY = bedLocation.getY();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
             if (bedLocationY < 86) {
                 event.setCancelled(true);
             }
@@ -211,7 +286,7 @@ public class Avian implements Listener {
         Action action = event.getAction();
         Block clickedBlock = event.getClickedBlock();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
             if (action == Action.RIGHT_CLICK_BLOCK) {
                 if (clickedBlock != null && clickedBlock.getLocation().getY() < 86 && Tag.BEDS.isTagged(clickedBlock.getType())) {
                     event.setCancelled(true);
@@ -234,7 +309,7 @@ public class Avian implements Listener {
         World world = player.getWorld();
         long getWorldTime = world.getTime();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
             if (getWorldTime == 0) {
                 if (playerInventory.firstEmpty() == -1) {
                     world.dropItem(location, new ItemStack(Material.EGG, 1));
@@ -262,7 +337,7 @@ public class Avian implements Listener {
             PotionEffect oldEffect = event.getOldEffect();
             EntityPotionEffectEvent.Cause cause = event.getCause();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
                 if (oldEffect != null) {
                     if (oldEffect.getType().equals(PotionEffectType.SLOW_FALLING) && cause != EntityPotionEffectEvent.Cause.PLUGIN) {
                         event.setCancelled(true);
@@ -301,7 +376,7 @@ public class Avian implements Listener {
                 Material.PUFFERFISH,
                 Material.ROTTEN_FLESH);
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.AVIAN) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.AVIAN.toString())) {
             if (materials.contains(material)) {
                 event.setCancelled(true);
             }

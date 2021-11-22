@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.listeners;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,16 +43,23 @@ import java.util.UUID;
  */
 public class NoOriginPlayerRestrict implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new No origin player restrict.
      *
      * @param plugin the plugin
      */
-    public NoOriginPlayerRestrict(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public NoOriginPlayerRestrict(OriginsBukkit plugin) {
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**

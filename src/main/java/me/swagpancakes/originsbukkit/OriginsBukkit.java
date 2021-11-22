@@ -31,21 +31,31 @@ import me.swagpancakes.originsbukkit.util.GhostFactory;
 import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
 import me.swagpancakes.originsbukkit.util.StorageUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * The type Main.
+ * The type Origins bukkit.
  *
  * @author SwagPannekaker
  */
-public final class Main extends JavaPlugin {
+public final class OriginsBukkit extends JavaPlugin {
+
+    public List<String> origins = new ArrayList<>();
+    public List<Inventory> originsInventoryGUI = new ArrayList<>();
 
     public ProtocolManager protocolManager;
+    public StorageUtils storageUtils;
+    public ConfigHandler configHandler;
+    public ServerVersionChecker serverVersionChecker;
     public GhostFactory ghostFactory;
-    public ConfigHandler configHandler = new ConfigHandler(this);
-    public StorageUtils storageUtils = new StorageUtils(this);
-    public ServerVersionChecker serverVersionChecker = new ServerVersionChecker(this);
     public Arachnid arachnid;
     public Avian avian;
     public Blazeborn blazeborn;
@@ -59,14 +69,14 @@ public final class Main extends JavaPlugin {
     public NoOriginPlayerRestrict noOriginPlayerRestrict;
     public PlayerOriginChecker playerOriginChecker;
 
-    private Main plugin;
+    private static OriginsBukkit plugin;
 
     /**
      * Gets plugin.
      *
      * @return the plugin
      */
-    public Main getPlugin() {
+    public static OriginsBukkit getPlugin() {
         return plugin;
     }
 
@@ -76,6 +86,8 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         plugin = this;
+
+        serverVersionChecker = new ServerVersionChecker(this);
 
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &4   ___       _       _                 ____        _    _    _ _");
         ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &c  / _ \\ _ __(_) __ _(_)_ __  ___      | __ ) _   _| | _| | _(_) |_");
@@ -89,15 +101,8 @@ public final class Main extends JavaPlugin {
 
         if (plugin.isEnabled()) {
             protocolManager = ProtocolLibrary.getProtocolManager();
-            ghostFactory = new GhostFactory(this);
 
-            loadFiles();
-            registerCommands();
-            registerListeners();
-            registerItems();
-            registerRecipes();
-            startMetrics();
-            checkUpdates();
+            init();
 
             ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Plugin has been enabled!");
         }
@@ -109,9 +114,14 @@ public final class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         unregisterRecipes();
+        closeAllPlayerInventory();
 
-        if (plugin.isEnabled()) {
-            closeAllPlayerInventory();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            UUID playerUUID = player.getUniqueId();
+
+            if (storageUtils.findOriginsPlayerData(playerUUID) == null) {
+                player.removePotionEffect(PotionEffectType.SLOW);
+            }
         }
 
         ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Plugin has been disabled!");
@@ -165,10 +175,25 @@ public final class Main extends JavaPlugin {
     }
 
     /**
+     * Init.
+     */
+    private void init() {
+        loadFiles();
+        registerCommands();
+        registerListeners();
+        registerItems();
+        registerRecipes();
+        startMetrics();
+        checkUpdates();
+    }
+
+    /**
      * Load files.
      */
     public void loadFiles() {
-        configHandler.loadFiles();
+        storageUtils = new StorageUtils(this);
+        configHandler = new ConfigHandler(this);
+        ghostFactory = new GhostFactory(this);
     }
 
     /**

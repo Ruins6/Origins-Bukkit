@@ -25,7 +25,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher.WrappedDataWatcherObject;
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,7 +38,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class AirController extends BukkitRunnable implements PacketListener {
 
     // our variables
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final WrappedDataWatcherObject ADDRESS;
     private final Player target;
     private int airticks;
@@ -49,7 +49,7 @@ public class AirController extends BukkitRunnable implements PacketListener {
      * @param plugin the plugin
      * @param target the target
      */
-    public AirController(Main plugin, Player target) {
+    public AirController(OriginsBukkit plugin, Player target) {
         this.plugin = plugin;
         // set the target
         this.target = target;

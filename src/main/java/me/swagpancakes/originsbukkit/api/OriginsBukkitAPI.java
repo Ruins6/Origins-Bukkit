@@ -18,8 +18,7 @@
 package me.swagpancakes.originsbukkit.api;
 
 import com.sun.istack.internal.NotNull;
-import me.swagpancakes.originsbukkit.Main;
-import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import org.bukkit.entity.Player;
 
@@ -32,14 +31,14 @@ import java.util.UUID;
  */
 public class OriginsBukkitAPI {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Origins bukkit api.
      *
      * @param plugin the plugin
      */
-    public OriginsBukkitAPI(Main plugin) {
+    public OriginsBukkitAPI(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -50,7 +49,7 @@ public class OriginsBukkitAPI {
      *
      * @return the player origin
      */
-    public Origins getPlayerOrigin(@NotNull UUID playerUUID) {
+    public String getPlayerOrigin(@NotNull UUID playerUUID) {
         return plugin.storageUtils.getPlayerOrigin(playerUUID);
     }
 
@@ -61,7 +60,7 @@ public class OriginsBukkitAPI {
      * @param player     the player
      * @param origin     the origin
      */
-    public void createOriginsPlayerData(@NotNull UUID playerUUID, @NotNull Player player, @NotNull Origins origin) {
+    public void createOriginsPlayerData(@NotNull UUID playerUUID, @NotNull Player player, @NotNull String origin) {
         plugin.storageUtils.createOriginsPlayerData(playerUUID, player, origin);
     }
 

@@ -18,7 +18,7 @@
 package me.swagpancakes.originsbukkit.config;
 
 import com.google.common.io.ByteStreams;
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 public class YamlManager {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final String internalName;
     private final String internalLocation;
     private final String externalName;
@@ -53,7 +53,7 @@ public class YamlManager {
      * @param plugin the plugin
      * @param name   the name
      */
-    public YamlManager(Main plugin, String name) {
+    public YamlManager(OriginsBukkit plugin, String name) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = name;
@@ -69,7 +69,7 @@ public class YamlManager {
      * @param name     the name
      * @param location the location
      */
-    public YamlManager(Main plugin, String name, String location) {
+    public YamlManager(OriginsBukkit plugin, String name, String location) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = name;
@@ -86,7 +86,7 @@ public class YamlManager {
      * @param location the location
      * @param newName  the new name
      */
-    public YamlManager(Main plugin, String name, String location, String newName) {
+    public YamlManager(OriginsBukkit plugin, String name, String location, String newName) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = newName;
@@ -104,7 +104,7 @@ public class YamlManager {
      * @param newName     the new name
      * @param newLocation the new location
      */
-    public YamlManager(Main plugin, String name, String location, String newName, String newLocation) {
+    public YamlManager(OriginsBukkit plugin, String name, String location, String newName, String newLocation) {
         this.plugin = plugin;
         this.internalName = name;
         this.externalName = newName;

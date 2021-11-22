@@ -17,18 +17,18 @@
  */
 package me.swagpancakes.originsbukkit.commands;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.commands.subcommands.Help;
 import me.swagpancakes.originsbukkit.commands.subcommands.Prune;
 import me.swagpancakes.originsbukkit.commands.subcommands.Reload;
 import me.swagpancakes.originsbukkit.commands.subcommands.Update;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * The type Main command.
@@ -37,7 +37,7 @@ import java.util.Objects;
  */
 public class MainCommand implements TabExecutor {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final Help help;
     private final Prune prune;
     private final Reload reload;
@@ -48,13 +48,24 @@ public class MainCommand implements TabExecutor {
      *
      * @param plugin the plugin
      */
-    public MainCommand(Main plugin) {
-        Objects.requireNonNull(plugin.getCommand("origins")).setExecutor(this);
+    public MainCommand(OriginsBukkit plugin) {
         this.plugin = plugin;
         this.help = new Help(plugin);
         this.prune = new Prune(plugin);
         this.reload = new Reload(plugin);
         this.update = new Update(plugin);
+        init();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        PluginCommand pluginMainCommand = plugin.getCommand("origins");
+
+        if (pluginMainCommand != null) {
+            pluginMainCommand.setExecutor(this);
+        }
     }
 
     /**

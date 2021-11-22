@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.util;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public class GhostFactory {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private static final String GHOST_TEAM_NAME = "Ghosts";
     private static final long UPDATE_DELAY = 20L;
 
@@ -58,9 +58,15 @@ public class GhostFactory {
      *
      * @param plugin the plugin
      */
-    public GhostFactory(Main plugin) {
+    public GhostFactory(OriginsBukkit plugin) {
         this.plugin = plugin;
-        // Initialize
+        init();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
         createGetTeam();
     }
 

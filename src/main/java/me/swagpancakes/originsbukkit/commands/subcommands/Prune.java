@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.commands.subcommands;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Permissions;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -37,14 +37,14 @@ import java.util.UUID;
  */
 public class Prune {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Prune.
      *
      * @param plugin the plugin
      */
-    public Prune(Main plugin) {
+    public Prune(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 

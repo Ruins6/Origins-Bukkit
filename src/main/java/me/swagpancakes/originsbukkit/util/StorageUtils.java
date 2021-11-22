@@ -18,9 +18,8 @@
 package me.swagpancakes.originsbukkit.util;
 
 import com.google.gson.Gson;
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
-import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
@@ -41,7 +40,7 @@ import java.util.*;
  */
 public class StorageUtils {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private List<OriginsPlayerData> originsPlayerData = new ArrayList<>();
     private List<MerlingTimerSessionData> merlingTimerSessionData = new ArrayList<>();
     private Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
@@ -156,7 +155,7 @@ public class StorageUtils {
      *
      * @param plugin the plugin
      */
-    public StorageUtils(Main plugin) {
+    public StorageUtils(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -167,12 +166,12 @@ public class StorageUtils {
      * @param player     the player
      * @param origin     the origin
      */
-    public void createOriginsPlayerData(UUID playerUUID, Player player, Origins origin) {
+    public void createOriginsPlayerData(UUID playerUUID, Player player, String origin) {
         String playerName = player.getName();
 
         if (findOriginsPlayerData(playerUUID) == null) {
             OriginsPlayerData originsPlayerData = new OriginsPlayerData(playerUUID, playerName, origin);
-            Origins newOrigin = originsPlayerData.getOrigin();
+            String newOrigin = originsPlayerData.getOrigin();
 
             this.originsPlayerData.add(originsPlayerData);
             OriginChangeEvent originChangeEvent = new OriginChangeEvent(player, null, newOrigin);
@@ -208,7 +207,7 @@ public class StorageUtils {
      *
      * @return the player origin
      */
-    public Origins getPlayerOrigin(UUID playerUUID) {
+    public String getPlayerOrigin(UUID playerUUID) {
         for (OriginsPlayerData originsPlayerData : originsPlayerData) {
             if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
                 return originsPlayerData.getOrigin();
@@ -228,7 +227,7 @@ public class StorageUtils {
         if (findOriginsPlayerData(playerUUID) != null) {
             for (OriginsPlayerData originsPlayerData : originsPlayerData) {
                 if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
-                    Origins oldOrigin = originsPlayerData.getOrigin();
+                    String oldOrigin = originsPlayerData.getOrigin();
 
                     this.originsPlayerData.remove(originsPlayerData);
                     OriginChangeEvent originChangeEvent = new OriginChangeEvent(player, oldOrigin, null);
@@ -256,7 +255,7 @@ public class StorageUtils {
         if (findOriginsPlayerData(playerUUID) != null) {
             for (OriginsPlayerData originsPlayerData : originsPlayerData) {
                 if (originsPlayerData.getPlayerUUID().equals(playerUUID)) {
-                    Origins oldOrigin = originsPlayerData.getOrigin();
+                    String oldOrigin = originsPlayerData.getOrigin();
 
                     originsPlayerData.setPlayerName(newOriginsPlayerData.getPlayerName());
                     originsPlayerData.setOrigin(newOriginsPlayerData.getOrigin());

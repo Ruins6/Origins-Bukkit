@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.commands.subcommands;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.enums.Permissions;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.command.Command;
@@ -34,14 +34,14 @@ import java.util.List;
  */
 public class Help {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Help.
      *
      * @param plugin the plugin
      */
-    public Help(Main plugin) {
+    public Help(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 

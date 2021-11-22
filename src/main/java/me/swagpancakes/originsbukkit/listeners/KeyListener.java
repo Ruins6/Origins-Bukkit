@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.listeners;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,16 +33,23 @@ import java.util.UUID;
  */
 public class KeyListener implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Key listener.
      *
      * @param plugin the plugin
      */
-    public KeyListener(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public KeyListener(OriginsBukkit plugin) {
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     /**
@@ -58,30 +65,30 @@ public class KeyListener implements Listener {
         if (player.isSneaking()) {
             if (plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
                 switch (plugin.storageUtils.getPlayerOrigin(playerUUID)) {
-                    case HUMAN:
+                    case "Human":
                         ChatUtils.sendPlayerMessage(player, "&bHuman :D");
                         break;
-                    case ENDERIAN:
+                    case "Enderian":
                         plugin.enderian.enderianEnderPearlThrow(player);
                         break;
-                    case MERLING:
+                    case "Merling":
                         break;
-                    case PHANTOM:
+                    case "Phantom":
                         break;
-                    case ELYTRIAN:
+                    case "Elytrian":
                         plugin.elytrian.elytrianLaunchIntoAir(player);
                         break;
-                    case BLAZEBORN:
+                    case "Blazeborn":
                         break;
-                    case AVIAN:
+                    case "Avian":
                         break;
-                    case ARACHNID:
+                    case "Arachnid":
                         plugin.arachnid.arachnidClimbToggleAbility(player);
                         break;
-                    case SHULK:
+                    case "Shulk":
                         plugin.shulk.shulkInventoryAbility(player);
                         break;
-                    case FELINE:
+                    case "Feline":
                         break;
                 }
                 event.setCancelled(true);

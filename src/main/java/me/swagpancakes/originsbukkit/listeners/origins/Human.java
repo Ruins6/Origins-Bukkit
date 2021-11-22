@@ -17,41 +17,117 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.util.Origin;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.UUID;
+import java.util.Objects;
 
 /**
  * The type Human.
  *
  * @author SwagPannekaker
  */
-public class Human implements Listener {
+public class Human extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Human.
      *
      * @param plugin the plugin
      */
-    public Human(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Human(OriginsBukkit plugin) {
+        super(20, 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Human";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.PLAYER_HEAD;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.HUMAN_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.HUMAN_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
     }
 
     /**
      * Human join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void humanJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void humanJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.HUMAN) {
+        if (Objects.equals(origin, Origins.HUMAN.toString())) {
             player.setHealthScale((10) * 2);
         }
     }

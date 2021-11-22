@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.util;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.Bukkit;
 
 /**
@@ -27,14 +27,14 @@ import org.bukkit.Bukkit;
  */
 public class ServerVersionChecker {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Server version checker.
      *
      * @param plugin the plugin
      */
-    public ServerVersionChecker(Main plugin) {
+    public ServerVersionChecker(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 

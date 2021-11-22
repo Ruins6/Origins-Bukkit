@@ -21,7 +21,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -40,7 +40,7 @@ import java.util.UUID;
  */
 public class GhostMaker {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final Set<UUID> ghosts = new HashSet<>(); //Keeps track of players who should be semi-transparent
 
     /**
@@ -48,9 +48,18 @@ public class GhostMaker {
      *
      * @param plugin the plugin
      */
-    public GhostMaker(Main plugin) {
+    public GhostMaker(OriginsBukkit plugin) {
         this.plugin = plugin;
-        plugin.protocolManager.addPacketListener(new PacketAdapter(plugin, PacketType.Play.Server.SPAWN_ENTITY) { //Listen for anytime a player may see another entity
+        init();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.protocolManager.addPacketListener(
+                new PacketAdapter(plugin, PacketType.Play.Server.SPAWN_ENTITY) { //Listen for anytime a player may see another entity
+
             @Override
             public void onPacketSending(PacketEvent event) {
                 Entity entity = event.getPacket().getEntityModifier(event).read(0);

@@ -17,13 +17,16 @@
  */
 package me.swagpancakes.originsbukkit.listeners;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.listeners.origins.Elytrian;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -42,7 +45,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -53,18 +57,24 @@ import java.util.UUID;
  */
 public class PlayerOriginChecker implements Listener {
 
-    private final Main plugin;
-    private Inventory inv;
+    private final OriginsBukkit plugin;
+    private final Map<UUID, Integer> originPickerGUIViewers = new HashMap<>();
 
     /**
      * Instantiates a new Player origin checker.
      *
      * @param plugin the plugin
      */
-    public PlayerOriginChecker(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public PlayerOriginChecker(OriginsBukkit plugin) {
         this.plugin = plugin;
+        init();
+    }
 
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
         originPickerGui();
 
         new BukkitRunnable() {
@@ -131,37 +141,17 @@ public class PlayerOriginChecker implements Listener {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
-            switch (plugin.storageUtils.getPlayerOrigin(playerUUID)) {
-                case HUMAN:
-                    plugin.human.humanJoin(player);
-                    break;
-                case ENDERIAN:
-                    plugin.enderian.enderianJoin(player);
-                    break;
-                case MERLING:
-                    plugin.merling.merlingJoin(player);
-                    break;
-                case PHANTOM:
-                    plugin.phantom.phantomJoin(player);
-                    break;
-                case ELYTRIAN:
-                    plugin.elytrian.elytrianJoin(player);
-                    break;
-                case BLAZEBORN:
-                    plugin.blazeborn.blazebornJoin(player);
-                    break;
-                case AVIAN:
-                    plugin.avian.avianJoin(player);
-                    break;
-                case ARACHNID:
-                    plugin.arachnid.arachnidJoin(player);
-                    break;
-                case SHULK:
-                    plugin.shulk.shulkJoin(player);
-                    break;
-                case FELINE:
-                    plugin.feline.felineJoin(player);
-                    break;
+            if (plugin.origins.contains(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
+                for (String origin : plugin.origins) {
+                    if (origin.equals(plugin.storageUtils.getPlayerOrigin(playerUUID))) {
+                        PlayerOriginInitiateEvent playerOriginInitiateEvent = new PlayerOriginInitiateEvent(player, origin);
+                        Bukkit.getPluginManager().callEvent(playerOriginInitiateEvent);
+                    }
+                }
+            } else {
+                ChatUtils.sendPlayerMessage(player, "&cYour origin (" + plugin.storageUtils.getPlayerOrigin(playerUUID) + ") doesn't exist so we pruned your player data.");
+                plugin.storageUtils.deleteOriginsPlayerData(playerUUID);
+                checkPlayerOriginData(player);
             }
         }
     }
@@ -170,71 +160,34 @@ public class PlayerOriginChecker implements Listener {
      * Origin picker gui.
      */
     public void originPickerGui() {
-        inv = Bukkit.createInventory(null, 54, ChatUtils.format("&0Choose your Origin."));
+        if (!plugin.originsInventoryGUI.isEmpty()) {
+            for (Inventory inv : plugin.originsInventoryGUI) {
+                ItemStack previous = new ItemStack(Material.ARROW, 1);
+                ItemMeta previousMeta = previous.getItemMeta();
+                if (previousMeta != null) {
+                    previousMeta.setDisplayName(ChatColor.GOLD + "<< Previous Page");
+                    previous.setItemMeta(previousMeta);
+                }
 
-        initializeItems();
-    }
+                ItemStack close = new ItemStack(Material.BARRIER, 1);
+                ItemMeta closeMeta = close.getItemMeta();
+                if (closeMeta != null) {
+                    closeMeta.setDisplayName(ChatColor.RED + "Close Menu");
+                    close.setItemMeta(closeMeta);
+                }
 
-    /**
-     * Initialize items.
-     */
-    public void initializeItems() {
-        inv.setItem(13, createGuiItem(Material.PLAYER_HEAD, 1,
-                Lang.HUMAN_TITLE.toString(),
-                Lang.HUMAN_DESCRIPTION.toStringList()));
-        inv.setItem(19, createGuiItem(Material.ENDER_PEARL, 1,
-                Lang.ENDERIAN_TITLE.toString(),
-                Lang.ENDERIAN_DESCRIPTION.toStringList()));
-        inv.setItem(22, createGuiItem(Material.COD, 1,
-                Lang.MERLING_TITLE.toString(),
-                Lang.MERLING_DESCRIPTION.toStringList()));
-        inv.setItem(25, createGuiItem(Material.PHANTOM_MEMBRANE, 1,
-                Lang.PHANTOM_TITLE.toString(),
-                Lang.PHANTOM_DESCRIPTION.toStringList()));
-        inv.setItem(28, createGuiItem(Material.ELYTRA, 1,
-                Lang.ELYTRIAN_TITLE.toString(),
-                Lang.ELYTRIAN_DESCRIPTION.toStringList()));
-        inv.setItem(31, createGuiItem(Material.BLAZE_POWDER, 1,
-                Lang.BLAZEBORN_TITLE.toString(),
-                Lang.BLAZEBORN_DESCRIPTION.toStringList()));
-        inv.setItem(34, createGuiItem(Material.FEATHER, 1,
-                Lang.AVIAN_TITLE.toString(),
-                Lang.AVIAN_DESCRIPTION.toStringList()));
-        inv.setItem(37, createGuiItem(Material.COBWEB, 1,
-                Lang.ARACHNID_TITLE.toString(),
-                Lang.ARACHNID_DESCRIPTION.toStringList()));
-        inv.setItem(40, createGuiItem(Material.SHULKER_SHELL, 1,
-                Lang.SHULK_TITLE.toString(),
-                Lang.SHULK_DESCRIPTION.toStringList()));
-        inv.setItem(43, createGuiItem(Material.ORANGE_WOOL, 1,
-                Lang.FELINE_TITLE.toString(),
-                Lang.FELINE_DESCRIPTION.toStringList()));
-        inv.setItem(49, createGuiItem(Material.BARRIER, 1,
-                ChatUtils.format("&cQuit Game"),
-                ChatUtils.format("&7Logs you off the game"),
-                ChatUtils.format(""),
-                ChatUtils.format("&eClick to log out")));
-    }
+                ItemStack next = new ItemStack(Material.ARROW, 1);
+                ItemMeta nextMeta = next.getItemMeta();
+                if (nextMeta != null) {
+                    nextMeta.setDisplayName(ChatColor.GOLD + "Next Page >>");
+                    next.setItemMeta(nextMeta);
+                }
 
-    /**
-     * Create gui item item stack.
-     *
-     * @param material the material
-     * @param amount   the amount
-     * @param itemName the item name
-     * @param itemLore the item lore
-     *
-     * @return the item stack
-     */
-    ItemStack createGuiItem(Material material, Integer amount, String itemName, String... itemLore) {
-        ItemStack itemStack = new ItemStack(material, amount);
-        ItemMeta itemMeta = itemStack.getItemMeta();
-        assert itemMeta != null;
-        itemMeta.setDisplayName(itemName);
-        itemMeta.setLore(Arrays.asList(itemLore));
-        itemStack.setItemMeta(itemMeta);
-
-        return itemStack;
+                inv.setItem(48, previous);
+                inv.setItem(49, close);
+                inv.setItem(50, next);
+            }
+        }
     }
 
     /**
@@ -243,7 +196,10 @@ public class PlayerOriginChecker implements Listener {
      * @param humanEntity the human entity
      */
     public void openOriginPickerGui(HumanEntity humanEntity) {
-        humanEntity.openInventory(inv);
+        UUID playerUUID = humanEntity.getUniqueId();
+
+        humanEntity.openInventory(plugin.originsInventoryGUI.get(0));
+        originPickerGUIViewers.put(playerUUID, 0);
     }
 
     /**
@@ -253,48 +209,40 @@ public class PlayerOriginChecker implements Listener {
      */
     @EventHandler
     public void onOriginPickerGuiClick(InventoryClickEvent event) {
-        if (event.getInventory() != inv) return;
-        event.setCancelled(true);
-
+        Player player = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
 
-        if (clickedItem == null || clickedItem.getType().isAir()) return;
-
-        Player player = (Player) event.getWhoClicked();
-
-        switch (event.getRawSlot()) {
-            case 13:
-                executeOriginPickerGuiOriginOption(player, Origins.HUMAN);
-                break;
-            case 19:
-                executeOriginPickerGuiOriginOption(player, Origins.ENDERIAN);
-                break;
-            case 22:
-                executeOriginPickerGuiOriginOption(player, Origins.MERLING);
-                break;
-            case 25:
-                executeOriginPickerGuiOriginOption(player, Origins.PHANTOM);
-                break;
-            case 28:
-                executeOriginPickerGuiOriginOption(player, Origins.ELYTRIAN);
-                break;
-            case 31:
-                executeOriginPickerGuiOriginOption(player, Origins.BLAZEBORN);
-                break;
-            case 34:
-                executeOriginPickerGuiOriginOption(player, Origins.AVIAN);
-                break;
-            case 37:
-                executeOriginPickerGuiOriginOption(player, Origins.ARACHNID);
-                break;
-            case 40:
-                executeOriginPickerGuiOriginOption(player, Origins.SHULK);
-                break;
-            case 43:
-                executeOriginPickerGuiOriginOption(player, Origins.FELINE);
-                break;
-            case 49:
-                player.kickPlayer(ChatUtils.format("&7You logged out of the game."));
+        if (plugin.originsInventoryGUI.contains(event.getClickedInventory())) {
+            if (clickedItem != null) {
+                if (!clickedItem.getType().isAir()) {
+                    if (event.getRawSlot() == 48) {
+                        if (plugin.originsInventoryGUI.indexOf(event.getClickedInventory()) != 0) {
+                            player.openInventory(plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.indexOf(event.getClickedInventory()) - 1));
+                            if (originPickerGUIViewers.containsKey(player.getUniqueId())) {
+                                originPickerGUIViewers.put(player.getUniqueId(), originPickerGUIViewers.get(player.getUniqueId()) - 1);
+                            }
+                        }
+                    }
+                    if (event.getRawSlot() == 50) {
+                        if (!plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.indexOf(event.getClickedInventory())).equals(plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.size() - 1))) {
+                            player.openInventory(plugin.originsInventoryGUI.get(plugin.originsInventoryGUI.indexOf(event.getClickedInventory()) + 1));
+                            if (originPickerGUIViewers.containsKey(player.getUniqueId())) {
+                                originPickerGUIViewers.put(player.getUniqueId(), originPickerGUIViewers.get(player.getUniqueId()) + 1);
+                            }
+                        }
+                    }
+                    if (event.getRawSlot() == 22){
+                        for (String origin : plugin.origins) {
+                            if (clickedItem.getItemMeta() != null) {
+                                if (origin.equals(clickedItem.getItemMeta().getLocalizedName())) {
+                                    executeOriginPickerGuiOriginOption(player, origin);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            event.setCancelled(true);
         }
     }
 
@@ -304,15 +252,16 @@ public class PlayerOriginChecker implements Listener {
      * @param player the player
      * @param origin the origin
      */
-    public void executeOriginPickerGuiOriginOption(Player player, Origins origin) {
+    public void executeOriginPickerGuiOriginOption(Player player, String origin) {
         UUID playerUUID = player.getUniqueId();
 
         if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
             plugin.storageUtils.createOriginsPlayerData(playerUUID, player, origin);
             initiatePlayerOrigin(player);
+            originPickerGUIViewers.remove(playerUUID);
             player.closeInventory();
             plugin.noOriginPlayerRestrict.unrestrictPlayerMovement(player);
-        } else if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), origin)) {
+        } else if (plugin.storageUtils.getPlayerOrigin(playerUUID).equals(origin)) {
             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ALREADY_SELECTED
                     .toString()
                     .replace("%player_current_origin%", String.valueOf(plugin.storageUtils.getPlayerOrigin(playerUUID))));
@@ -331,7 +280,11 @@ public class PlayerOriginChecker implements Listener {
      */
     public void closeAllOriginPickerGui() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.closeInventory();
+            UUID playerUUID = player.getUniqueId();
+
+            if (originPickerGUIViewers.containsKey(playerUUID)) {
+                player.closeInventory();
+            }
         }
     }
 
@@ -342,7 +295,7 @@ public class PlayerOriginChecker implements Listener {
      */
     @EventHandler
     public void onInventoryClick(InventoryDragEvent event) {
-        if (event.getInventory().equals(inv)) {
+        if (plugin.originsInventoryGUI.contains(event.getInventory())) {
             event.setCancelled(true);
         }
     }
@@ -356,10 +309,20 @@ public class PlayerOriginChecker implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         HumanEntity player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
+        Inventory inventory = event.getInventory();
 
-        if (event.getInventory().equals(inv)) {
-            if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
-                Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> player.openInventory(inv), 0L);
+        if (plugin.storageUtils.findOriginsPlayerData(playerUUID) == null) {
+            if (plugin.originsInventoryGUI.contains(inventory)) {
+
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+                        if (!player.getOpenInventory().getTopInventory().equals(plugin.originsInventoryGUI.get(originPickerGUIViewers.get(playerUUID)))) {
+                            player.openInventory(plugin.originsInventoryGUI.get(originPickerGUIViewers.get(playerUUID)));
+                        }
+                    }
+                }.runTaskLater(plugin, 1L);
             }
         }
     }
@@ -372,13 +335,13 @@ public class PlayerOriginChecker implements Listener {
     @EventHandler
     public void onPlayerOriginChange(OriginChangeEvent event) {
         Player player = event.getPlayer();
-        Origins newOrigin = event.getNewOrigin();
+        String newOrigin = event.getNewOrigin();
 
-        if (newOrigin != Origins.AVIAN) {
+        if (!Objects.equals(newOrigin, Origins.AVIAN.toString())) {
             player.removePotionEffect(PotionEffectType.SLOW_FALLING);
             player.setWalkSpeed(0.2F);
         }
-        if (newOrigin != Origins.ARACHNID) {
+        if (!Objects.equals(newOrigin, Origins.ARACHNID.toString())) {
             if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
                 player.setFlySpeed(0.1F);
                 player.setAllowFlight(false);
@@ -388,21 +351,21 @@ public class PlayerOriginChecker implements Listener {
                 player.setAllowFlight(true);
             }
         }
-        if (newOrigin != Origins.ELYTRIAN) {
+        if (!Objects.equals(newOrigin, Origins.ELYTRIAN.toString())) {
             ItemStack prevChestplate = player.getInventory().getChestplate();
 
-            if (prevChestplate != null && prevChestplate.equals(plugin.elytrian.elytra)) {
+            if (prevChestplate != null && prevChestplate.equals(Elytrian.elytra)) {
                 player.getInventory().setChestplate(new ItemStack(Material.AIR));
             }
         }
-        if (newOrigin != Origins.FELINE) {
+        if (!Objects.equals(newOrigin, Origins.FELINE.toString())) {
             player.removePotionEffect(PotionEffectType.JUMP);
         }
-        if (newOrigin != Origins.PHANTOM) {
+        if (!Objects.equals(newOrigin, Origins.PHANTOM.toString())) {
             player.removePotionEffect(PotionEffectType.INVISIBILITY);
             //plugin.ghostFactory.setGhost(player, false);
         }
-        if (newOrigin != Origins.SHULK) {
+        if (!Objects.equals(newOrigin, Origins.SHULK.toString())) {
             AttributeInstance genericArmorAttribute = player.getAttribute(Attribute.GENERIC_ARMOR);
 
             if (genericArmorAttribute != null) {

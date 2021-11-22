@@ -17,23 +17,40 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
+import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.boss.BossBar;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityAirChangeEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -41,29 +58,102 @@ import java.util.UUID;
  *
  * @author SwagPannekaker
  */
-public class Merling implements Listener {
+public class Merling extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Merling.
      *
      * @param plugin the plugin
      */
-    public Merling(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Merling(OriginsBukkit plugin) {
+        super(Config.ORIGINS_MERLING_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Merling";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.COD;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.MERLING_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.MERLING_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
+        registerMerlingBlockDiggingPacketListener();
+        registerMerlingMovePacketListener();
     }
 
     /**
      * Merling join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void merlingJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void merlingJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.MERLING) {
+        if (Objects.equals(origin, Origins.MERLING.toString())) {
             player.setHealthScale(Config.ORIGINS_MERLING_MAX_HEALTH.toDouble());
             merlingWaterBreathing(player);
         }
@@ -94,7 +184,7 @@ public class Merling implements Listener {
             Player player = (Player) event.getEntity();
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.MERLING) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
                 event.setCancelled(true);
             }
         }
@@ -124,7 +214,7 @@ public class Merling implements Listener {
                 Block block = location.getBlock();
                 Material material = block.getType();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.MERLING) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
                     if (player.isOnline()) {
                         bossBar.setTitle(Lang.MERLING_BOSSBAR_AIR_BREATHING_TIMER_TITLE
                                 .toString()
@@ -164,7 +254,7 @@ public class Merling implements Listener {
                         } else {
                             if (!player.getWorld().hasStorm()) {
                                 if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                    if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                    if (merlingAirBreathingTime < Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt()) {
                                         bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                         bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                         merlingAirBreathingTime+=2;
@@ -183,7 +273,7 @@ public class Merling implements Listener {
                                 }
                             } else {
                                 if (player.isInWater() || material == Material.WATER_CAULDRON) {
-                                    if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                    if (merlingAirBreathingTime < Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt()) {
                                         bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                         bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                         merlingAirBreathingTime+=2;
@@ -200,7 +290,7 @@ public class Merling implements Listener {
                                     bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_DECREASE.toBarColor());
                                     bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_DECREASE.toBarStyle());
                                     if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
-                                        if (merlingAirBreathingTime <= Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt() - 1) {
+                                        if (merlingAirBreathingTime < Config.ORIGINS_MERLING_AIR_BREATHING_MAX_TIME.toInt()) {
                                             bossBar.setColor(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARCOLOR_ON_INCREASE.toBarColor());
                                             bossBar.setStyle(Config.ORIGINS_MERLING_BOSSBAR_AIR_BREATHING_BARSTYLE_ON_INCREASE.toBarStyle());
                                             merlingAirBreathingTime+=2;
@@ -256,7 +346,7 @@ public class Merling implements Listener {
                 Material material = block.getType();
                 int timeLeft = plugin.storageUtils.getMerlingTimerSessionDataTimeLeft(playerUUID);
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.MERLING) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
                     if (player.isOnline()) {
                         if (!player.getWorld().hasStorm()) {
                             if (!(player.isInWater() || material == Material.WATER_CAULDRON)) {
@@ -328,7 +418,7 @@ public class Merling implements Listener {
                 Material material = block.getType();
                 int timeLeft = plugin.storageUtils.getMerlingTimerSessionDataTimeLeft(playerUUID);
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.MERLING) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
                     if (player.isOnline()) {
                         bossBar.setProgress(0);
                         if (!player.getWorld().hasStorm()) {
@@ -373,7 +463,7 @@ public class Merling implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_DELAY.toLong(), Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY.toLong());
+        }.runTaskTimerAsynchronously(plugin, Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_DELAY.toLong(), Config.ORIGINS_MERLING_AIR_BREATHING_DAMAGE_PERIOD_DELAY.toLong());
     }
 
     /**
@@ -391,5 +481,122 @@ public class Merling implements Listener {
                 player.damage(amount);
             }
         }.runTask(plugin);
+    }
+
+    /**
+     * On merling impaling damage.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    public void onMerlingImpalingDamage(EntityDamageByEntityEvent event) {
+        Entity target = event.getEntity();
+        Entity damager = event.getDamager();
+        double baseDamage = event.getDamage();
+
+        if (target instanceof Player && damager instanceof LivingEntity) {
+            Player targetPlayer = (Player) target;
+            LivingEntity livingDamager = (LivingEntity) damager;
+            UUID targetPlayerUUID = targetPlayer.getUniqueId();
+            EntityEquipment entityEquipment = livingDamager.getEquipment();
+
+            if (entityEquipment != null) {
+                ItemStack itemStack = livingDamager.getEquipment().getItemInMainHand();
+                ItemMeta itemMeta = itemStack.getItemMeta();
+
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(targetPlayerUUID), Origins.MERLING.toString())) {
+                    if (itemMeta != null && itemMeta.hasEnchant(Enchantment.IMPALING)) {
+                        int enchantLevel = itemMeta.getEnchantLevel(Enchantment.IMPALING);
+
+                        event.setDamage(baseDamage + (2.5 * enchantLevel));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Register merling block digging packet listener.
+     */
+    public void registerMerlingBlockDiggingPacketListener() {
+        plugin.protocolManager.addPacketListener(
+                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.BLOCK_DIG) {
+
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                EnumWrappers.PlayerDigType digType = packet.getPlayerDigTypes().getValues().get(0);
+                Player player = event.getPlayer();
+                UUID playerUUID = player.getUniqueId();
+                Location playerLocation = player.getLocation();
+
+                if (Objects.equals(Merling.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.MERLING.toString())) {
+                    if (playerLocation.getBlock().isLiquid() && playerLocation.add(0, 1, 0).getBlock().isLiquid()) {
+                        if (digType == EnumWrappers.PlayerDigType.START_DESTROY_BLOCK) {
+                            new BukkitRunnable() {
+
+                                @Override
+                                public void run() {
+                                    player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 20, false, false));
+                                }
+                            }.runTask(plugin);
+                        } else if (digType == EnumWrappers.PlayerDigType.ABORT_DESTROY_BLOCK) {
+                            new BukkitRunnable() {
+
+                                @Override
+                                public void run() {
+                                    player.removePotionEffect(PotionEffectType.FAST_DIGGING);
+                                }
+                            }.runTask(plugin);
+                        } else if (digType == EnumWrappers.PlayerDigType.STOP_DESTROY_BLOCK) {
+                            new BukkitRunnable() {
+
+                                @Override
+                                public void run() {
+                                    player.removePotionEffect(PotionEffectType.FAST_DIGGING);
+                                }
+                            }.runTask(plugin);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * Register merling move packet listener.
+     */
+    public void registerMerlingMovePacketListener() {
+        plugin.protocolManager.addPacketListener(
+                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
+
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                Player player = event.getPlayer();
+                UUID playerUUID = player.getUniqueId();
+
+                if (Merling.this.plugin.storageUtils.getPlayerOrigin(playerUUID) != null) {
+                    if (Merling.this.plugin.storageUtils.getPlayerOrigin(playerUUID).equals(Origins.MERLING.toString())) {
+                        if (player.isInWater()) {
+                            new BukkitRunnable() {
+
+                                @Override
+                                public void run() {
+                                    player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0 , false, false));
+                                }
+                            }.runTask(plugin);
+                        } else {
+                            new BukkitRunnable() {
+
+                                @Override
+                                public void run() {
+                                    player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+                                }
+                            }.runTask(plugin);
+                        }
+                    }
+                }
+            }
+        });
     }
 }

@@ -17,8 +17,6 @@
  */
 package me.swagpancakes.originsbukkit.storage;
 
-import me.swagpancakes.originsbukkit.enums.Origins;
-
 import java.util.UUID;
 
 /**
@@ -30,7 +28,7 @@ public class OriginsPlayerData {
 
     private UUID playerUUID;
     private String playerName;
-    private Origins origin;
+    private String origin;
 
     /**
      * Instantiates a new Origins player data.
@@ -39,7 +37,7 @@ public class OriginsPlayerData {
      * @param playerName the player name
      * @param origin     the origin
      */
-    public OriginsPlayerData(UUID playerUUID, String playerName, Origins origin) {
+    public OriginsPlayerData(UUID playerUUID, String playerName, String origin) {
         this.playerUUID = playerUUID;
         this.playerName = playerName;
         this.origin = origin;
@@ -86,7 +84,7 @@ public class OriginsPlayerData {
      *
      * @return the origin
      */
-    public Origins getOrigin() {
+    public String getOrigin() {
         return origin;
     }
 
@@ -95,7 +93,7 @@ public class OriginsPlayerData {
      *
      * @param origin the origin
      */
-    public void setOrigin(Origins origin) {
+    public void setOrigin(String origin) {
         this.origin = origin;
     }
 }

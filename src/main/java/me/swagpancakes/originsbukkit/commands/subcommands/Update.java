@@ -17,9 +17,8 @@
  */
 package me.swagpancakes.originsbukkit.commands.subcommands;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.enums.Lang;
-import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.enums.Permissions;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -29,7 +28,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,14 +38,14 @@ import java.util.UUID;
  */
 public class Update {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Update.
      *
      * @param plugin the plugin
      */
-    public Update(Main plugin) {
+    public Update(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 
@@ -68,8 +66,8 @@ public class Update {
                     ChatUtils.sendCommandSenderMessage(sender, "&cNot Enough Arguments. Usage: /origins update " + args[1] + " <new origin>");
                 } else if (args.length == 3) {
                     Player target = Bukkit.getPlayer(args[1]);
-                    Origins origin = Origins.valueOf(args[2]);
-                    EnumSet<Origins> origins = EnumSet.allOf(Origins.class);
+                    String origin = args[2];
+                    List<String> origins = plugin.origins;
 
                     if (target != null) {
                         UUID playerUUID = target.getUniqueId();
@@ -77,7 +75,7 @@ public class Update {
 
                         if (origins.contains(origin)) {
                             if (plugin.storageUtils.findOriginsPlayerData(playerUUID) != null) {
-                                if (plugin.storageUtils.getPlayerOrigin(playerUUID) != origin) {
+                                if (!plugin.storageUtils.getPlayerOrigin(playerUUID).equals(origin)) {
                                     plugin.storageUtils.updateOriginsPlayerData(playerUUID, new OriginsPlayerData(playerUUID, playerName, origin));
                                     plugin.playerOriginChecker.checkPlayerOriginData(target);
                                     ChatUtils.sendCommandSenderMessage(sender, "&aChanged " + playerName + "'s origin to " + origin);
@@ -106,8 +104,8 @@ public class Update {
                 ChatUtils.sendCommandSenderMessage(sender, "&c[Origins-Bukkit] Not Enough Arguments. Usage: /origins update " + args[1] + " <new origin>");
             } else if (args.length == 3) {
                 Player target = Bukkit.getPlayer(args[1]);
-                Origins origin = Origins.valueOf(args[2]);
-                EnumSet<Origins> origins = EnumSet.allOf(Origins.class);
+                String origin = args[2];
+                List<String> origins = plugin.origins;
 
                 if (target != null) {
                     UUID playerUUID = target.getUniqueId();
@@ -171,9 +169,9 @@ public class Update {
                 } else if (args.length == 3) {
                     if (args[0].equalsIgnoreCase("update")) {
                         List<String> originsList = new ArrayList<>();
-                        for (Origins origins : Origins.values()) {
-                            if (origins.toString().startsWith(args[2].toUpperCase())) {
-                                originsList.add(origins.toString().toUpperCase());
+                        for (String origins : plugin.origins) {
+                            if (origins.startsWith(args[2])) {
+                                originsList.add(origins);
                             }
                         }
 
@@ -201,9 +199,9 @@ public class Update {
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("update")) {
                     List<String> originsList = new ArrayList<>();
-                    for (Origins origins : Origins.values()) {
-                        if (origins.toString().startsWith(args[2].toUpperCase())) {
-                            originsList.add(origins.toString().toUpperCase());
+                    for (String origins : plugin.origins) {
+                        if (origins.startsWith(args[2])) {
+                            originsList.add(origins);
                         }
                     }
 

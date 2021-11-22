@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.commands.subcommands;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Permissions;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
@@ -35,14 +35,14 @@ import java.util.List;
  */
 public class Reload {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Reload.
      *
      * @param plugin the plugin
      */
-    public Reload(Main plugin) {
+    public Reload(OriginsBukkit plugin) {
         this.plugin = plugin;
     }
 

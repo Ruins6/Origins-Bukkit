@@ -54,6 +54,8 @@ public enum Config {
     ORIGINS_ARACHNID_MAX_HEALTH("Config.Origins.Arachnid.Max-Health", 14),
     ORIGINS_ARACHNID_ABILITY_SPIDER_WEB_COOLDOWN("Config.Origins.Arachnid.Ability.Spider-Web.Cooldown", 5),
     ORIGINS_ARACHNID_ABILITY_CLIMBING_Y_VELOCITY("Config.Origins.Arachnid.Ability.Climbing.Y-Velocity", 0.175),
+    ORIGINS_SHULK_MAX_HEALTH("Config.Origins.Shulk.Max-Health", 20),
+    ORIGINS_SHULK_ABILITY_DIGGING_SPEED("Config.Origins.Shulk.Ability.Digging-Speed", 27),
     ORIGINS_FELINE_MAX_HEALTH("Config.Origins.Feline.Max-Health", 18);
 
     private static YamlConfiguration CONFIG;

@@ -17,12 +17,19 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
+import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,26 +43,22 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * The type Arachnid.
  *
  * @author SwagPannekaker
  */
-public class Arachnid implements Listener {
+public class Arachnid extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
     private final int COOLDOWNTIME = Config.ORIGINS_ARACHNID_ABILITY_SPIDER_WEB_COOLDOWN.toInt();
 
@@ -64,21 +67,93 @@ public class Arachnid implements Listener {
      *
      * @param plugin the plugin
      */
-    public Arachnid(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Arachnid(OriginsBukkit plugin) {
+        super(Config.ORIGINS_ARACHNID_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Arachnid";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.COBWEB;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.ARACHNID_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.ARACHNID_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
+        registerArachnidCobwebMovePacketListener();
     }
 
     /**
      * Arachnid join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void arachnidJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void arachnidJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
-            player.setHealthScale(Config.ORIGINS_ARACHNID_MAX_HEALTH.toDouble());
+        if (Objects.equals(origin, Origins.ARACHNID.toString())) {
+            player.setHealthScale(getMaxHealth());
         }
     }
 
@@ -92,7 +167,7 @@ public class Arachnid implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
             if (plugin.storageUtils.findArachnidAbilityToggleData(playerUUID) == null) {
                 plugin.storageUtils.createArachnidAbilityToggleData(playerUUID, false);
             }
@@ -119,7 +194,7 @@ public class Arachnid implements Listener {
             Player player = (Player) event.getDamager();
             UUID playerUUID = player.getUniqueId();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
                 Location location1 = location.add(0, 1, 0);
                 Block block1 = location1.getBlock();
                 Material material1 = block1.getType();
@@ -164,7 +239,6 @@ public class Arachnid implements Listener {
         Entity damager = event.getDamager();
         double baseDamage = event.getDamage();
 
-
         if (target instanceof Player && damager instanceof LivingEntity) {
             Player targetPlayer = (Player) target;
             LivingEntity livingDamager = (LivingEntity) damager;
@@ -175,7 +249,7 @@ public class Arachnid implements Listener {
                 ItemStack itemStack = livingDamager.getEquipment().getItemInMainHand();
                 ItemMeta itemMeta = itemStack.getItemMeta();
 
-                if (plugin.storageUtils.getPlayerOrigin(targetPlayerUUID) == Origins.ARACHNID) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(targetPlayerUUID), Origins.ARACHNID.toString())) {
                     if (itemMeta != null && itemMeta.hasEnchant(Enchantment.DAMAGE_ARTHROPODS)) {
                         int enchantLevel = itemMeta.getEnchantLevel(Enchantment.DAMAGE_ARTHROPODS);
 
@@ -201,7 +275,7 @@ public class Arachnid implements Listener {
                 Location location = player.getLocation();
                 Block block = location.getBlock();
 
-                if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
+                if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
                     if (player.isOnline()) {
                         if (plugin.storageUtils.getArachnidAbilityToggleData(playerUUID)) {
                             if (player.isSneaking() && !player.isGliding()) {
@@ -221,7 +295,7 @@ public class Arachnid implements Listener {
                     this.cancel();
                 }
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }.runTaskTimerAsynchronously(plugin, 0L, 1L);
     }
 
     /**
@@ -252,42 +326,58 @@ public class Arachnid implements Listener {
     }
 
     /**
-     * On arachnid cobweb enter.
-     *
-     * @param event the event
+     * Register arachnid cobweb move packet listener.
      */
-    @EventHandler
-    public void onArachnidCobwebEnter(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        Location location = player.getLocation();
-        Block block = location.getBlock();
-        Block block1 = location.add(0, 1, 0).getBlock();
-        Block block2 = location.subtract(0, 1, 0).getBlock();
-        Material material = block.getType();
-        Material material1 = block1.getType();
-        Material material2 = block2.getType();
+    public void registerArachnidCobwebMovePacketListener() {
+        plugin.protocolManager.addPacketListener(
+                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
-            if (material == Material.COBWEB || material1 == Material.COBWEB || material2 == Material.COBWEB || nextToCobweb(player)) {
-                if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
-                    if (!player.isFlying()) {
-                        player.teleport(location.add(0, 0.00001, 0));
+            @Override
+            public void onPacketReceiving(PacketEvent event) {
+                PacketContainer packet = event.getPacket();
+                Player player = event.getPlayer();
+                Location playerLocation = player.getLocation();
+                UUID playerUUID = player.getUniqueId();
+                double x = packet.getDoubles().read(0);
+                double y = packet.getDoubles().read(1);
+                double z = packet.getDoubles().read(2);
+                World world = player.getWorld();
+                Location location = new Location(world, x, y, z);
+                Block block = location.getBlock();
+                Block block1 = location.add(0, 1, 0).getBlock();
+                Block block2 = location.subtract(0, 1, 0).getBlock();
+                Material material = block.getType();
+                Material material1 = block1.getType();
+                Material material2 = block2.getType();
+
+                if (Objects.equals(Arachnid.this.plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
+                    if (material == Material.COBWEB || material1 == Material.COBWEB || material2 == Material.COBWEB || nextToCobweb(player)) {
+                        if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                            if (!player.isFlying()) {
+                                new BukkitRunnable() {
+
+                                    @Override
+                                    public void run() {
+                                        player.teleport(playerLocation.add(0, 0.00001, 0));
+                                    }
+                                }.runTask(plugin);
+                            }
+                            player.setFlySpeed(0.04F);
+                            player.setAllowFlight(true);
+                            player.setFlying(true);
+                        } else {
+                            player.setFlySpeed(0.1F);
+                        }
+                    } else {
+                        if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                            player.setFlySpeed(0.1F);
+                            player.setAllowFlight(false);
+                            player.setFlying(false);
+                        }
                     }
-                    player.setFlySpeed(0.04F);
-                    player.setAllowFlight(true);
-                    player.setFlying(true);
-                } else {
-                    player.setFlySpeed(0.1F);
-                }
-            } else {
-                if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
-                    player.setFlySpeed(0.1F);
-                    player.setAllowFlight(false);
-                    player.setFlying(false);
                 }
             }
-        }
+        });
     }
 
     /**
@@ -394,7 +484,7 @@ public class Arachnid implements Listener {
                 Material.PUFFERFISH,
                 Material.ROTTEN_FLESH);
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.ARACHNID) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.ARACHNID.toString())) {
             if (!materials.contains(material)) {
                 event.setCancelled(true);
             }

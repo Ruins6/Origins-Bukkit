@@ -17,9 +17,12 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.Main;
+import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Config;
+import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.util.Origin;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -34,6 +37,7 @@ import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -41,29 +45,100 @@ import java.util.UUID;
  *
  * @author SwagPannekaker
  */
-public class Feline implements Listener {
+public class Feline extends Origin implements Listener {
 
-    private final Main plugin;
+    private final OriginsBukkit plugin;
 
     /**
      * Instantiates a new Feline.
      *
      * @param plugin the plugin
      */
-    public Feline(Main plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    public Feline(OriginsBukkit plugin) {
+        super(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
         this.plugin = plugin;
+        init();
+    }
+
+    /**
+     * Gets origin identifier.
+     *
+     * @return the origin identifier
+     */
+    @Override
+    public String getOriginIdentifier() {
+        return "Feline";
+    }
+
+    /**
+     * Gets author.
+     *
+     * @return the author
+     */
+    @Override
+    public String getAuthor() {
+        return "SwagPannekaker";
+    }
+
+    /**
+     * Gets origin icon.
+     *
+     * @return the origin icon
+     */
+    @Override
+    public Material getOriginIcon() {
+        return Material.ORANGE_WOOL;
+    }
+
+    /**
+     * Is origin icon glowing boolean.
+     *
+     * @return the boolean
+     */
+    @Override
+    public boolean isOriginIconGlowing() {
+        return false;
+    }
+
+    /**
+     * Gets origin title.
+     *
+     * @return the origin title
+     */
+    @Override
+    public String getOriginTitle() {
+        return Lang.FELINE_TITLE.toString();
+    }
+
+    /**
+     * Get origin description string [ ].
+     *
+     * @return the string [ ]
+     */
+    @Override
+    public String[] getOriginDescription() {
+        return Lang.FELINE_DESCRIPTION.toStringList();
+    }
+
+    /**
+     * Init.
+     */
+    private void init() {
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        registerOrigin(getOriginIdentifier());
     }
 
     /**
      * Feline join.
      *
-     * @param player the player
+     * @param event the event
      */
-    public void felineJoin(Player player) {
-        UUID playerUUID = player.getUniqueId();
+    @EventHandler
+    public void felineJoin(PlayerOriginInitiateEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.FELINE) {
+        if (Objects.equals(origin, Origins.FELINE.toString())) {
             player.setHealthScale(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble());
         }
     }
@@ -82,7 +157,7 @@ public class Feline implements Listener {
             UUID playerUUID = player.getUniqueId();
             EntityDamageEvent.DamageCause damageCause = event.getCause();
 
-            if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.FELINE) {
+            if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.FELINE.toString())) {
                 if (damageCause == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
                 }
@@ -101,7 +176,7 @@ public class Feline implements Listener {
         UUID playerUUID = player.getUniqueId();
         Block block = event.getBlock();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.FELINE) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.FELINE.toString())) {
             if (player.getGameMode() == GameMode.SURVIVAL) {
                 if (block.getType() == Material.STONE) {
                     if (!player.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
@@ -161,7 +236,7 @@ public class Feline implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.storageUtils.getPlayerOrigin(playerUUID) == Origins.FELINE) {
+        if (Objects.equals(plugin.storageUtils.getPlayerOrigin(playerUUID), Origins.FELINE.toString())) {
             if (!player.isSprinting()) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 1, false, false));
             } else {
