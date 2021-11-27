@@ -1,28 +1,25 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.listeners;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
-import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.enums.Lang;
-import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.listeners.origins.Elytrian;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Bukkit;
@@ -42,12 +39,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -214,7 +209,7 @@ public class PlayerOriginChecker implements Listener {
         Player player = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
 
-        if (plugin.getOriginsInventoryGUI().contains(event.getClickedInventory())) {
+        if (plugin.getOriginsInventoryGUI().contains(event.getInventory())) {
             if (clickedItem != null) {
                 if (!clickedItem.getType().isAir()) {
                     if (event.getRawSlot() == 48) {
@@ -325,57 +320,6 @@ public class PlayerOriginChecker implements Listener {
                         }
                     }
                 }.runTaskLater(plugin, 1L);
-            }
-        }
-    }
-
-    /**
-     * On player origin change.
-     *
-     * @param event the event
-     */
-    @EventHandler
-    private void onPlayerOriginChange(OriginChangeEvent event) {
-        Player player = event.getPlayer();
-        String newOrigin = event.getNewOrigin();
-
-        if (!Objects.equals(newOrigin, Origins.AVIAN.toString())) {
-            player.removePotionEffect(PotionEffectType.SLOW_FALLING);
-            player.setWalkSpeed(0.2F);
-        }
-        if (!Objects.equals(newOrigin, Origins.ARACHNID.toString())) {
-            if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
-                player.setFlySpeed(0.1F);
-                player.setAllowFlight(false);
-                player.setFlying(false);
-            } else {
-                player.setFlySpeed(0.1F);
-                player.setAllowFlight(true);
-            }
-        }
-        if (!Objects.equals(newOrigin, Origins.ELYTRIAN.toString())) {
-            ItemStack prevChestplate = player.getInventory().getChestplate();
-
-            if (prevChestplate != null && prevChestplate.equals(Elytrian.elytra)) {
-                player.getInventory().setChestplate(new ItemStack(Material.AIR));
-            }
-        }
-        if (!Objects.equals(newOrigin, Origins.FELINE.toString())) {
-            player.removePotionEffect(PotionEffectType.JUMP);
-        }
-        if (!Objects.equals(newOrigin, Origins.PHANTOM.toString())) {
-            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-            //plugin.ghostFactory.setGhost(player, false);
-        }
-        if (!Objects.equals(newOrigin, Origins.SHULK.toString())) {
-            AttributeInstance genericArmorAttribute = player.getAttribute(Attribute.GENERIC_ARMOR);
-
-            if (genericArmorAttribute != null) {
-                double modifiedBaseValue = genericArmorAttribute.getBaseValue();
-
-                if (modifiedBaseValue == 8) {
-                    genericArmorAttribute.setBaseValue(modifiedBaseValue - 8);
-                }
             }
         }
     }

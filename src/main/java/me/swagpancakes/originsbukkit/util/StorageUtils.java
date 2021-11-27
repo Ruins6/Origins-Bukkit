@@ -1,19 +1,19 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.util;
 
@@ -23,6 +23,7 @@ import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
 import me.swagpancakes.originsbukkit.storage.MerlingTimerSessionData;
 import me.swagpancakes.originsbukkit.storage.OriginsPlayerData;
+import me.swagpancakes.originsbukkit.storage.PhantomAbilityToggleData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -45,6 +46,7 @@ public class StorageUtils {
     private List<MerlingTimerSessionData> merlingTimerSessionData = new ArrayList<>();
     private Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
     private List<ArachnidAbilityToggleData> arachnidAbilityToggleData = new ArrayList<>();
+    private List<PhantomAbilityToggleData> phantomAbilityToggleData = new ArrayList<>();
     private boolean isOriginsPlayerDataLoaded = false;
 
     /**
@@ -120,6 +122,24 @@ public class StorageUtils {
     }
 
     /**
+     * Gets phantom ability toggle data.
+     *
+     * @return the phantom ability toggle data
+     */
+    public List<PhantomAbilityToggleData> getPhantomAbilityToggleData() {
+        return phantomAbilityToggleData;
+    }
+
+    /**
+     * Sets phantom ability toggle data.
+     *
+     * @param phantomAbilityToggleData the phantom ability toggle data
+     */
+    public void setPhantomAbilityToggleData(List<PhantomAbilityToggleData> phantomAbilityToggleData) {
+        this.phantomAbilityToggleData = phantomAbilityToggleData;
+    }
+
+    /**
      * Is origins player data loaded boolean.
      *
      * @return the boolean
@@ -145,6 +165,7 @@ public class StorageUtils {
             loadOriginsPlayerData();
             loadMerlingTimerSessionData();
             loadArachnidAbilityToggleData();
+            loadPhantomAbilityToggleData();
         } catch (IOException event) {
             event.printStackTrace();
         }
@@ -708,6 +729,156 @@ public class StorageUtils {
                         Reader reader = new FileReader(file);
                         ArachnidAbilityToggleData[] n = gson.fromJson(reader, ArachnidAbilityToggleData[].class);
                         arachnidAbilityToggleData = new ArrayList<>(Arrays.asList(n));
+                    } catch (FileNotFoundException event) {
+                        event.printStackTrace();
+                    }
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Create phantom ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     * @param isToggled  the is toggled
+     */
+    public void createPhantomAbilityToggleData(UUID playerUUID, boolean isToggled) {
+        phantomAbilityToggleData.add(new PhantomAbilityToggleData(playerUUID, isToggled));
+        try {
+            savePhantomAbilityToggleData();
+        } catch (IOException event) {
+            event.printStackTrace();
+        }
+    }
+
+    /**
+     * Find phantom ability toggle data phantom ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     *
+     * @return the phantom ability toggle data
+     */
+    public PhantomAbilityToggleData findPhantomAbilityToggleData(UUID playerUUID) {
+        for (PhantomAbilityToggleData phantomAbilityToggleData : phantomAbilityToggleData) {
+            if (phantomAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                return phantomAbilityToggleData;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets phantom ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     *
+     * @return the phantom ability toggle data
+     */
+    public boolean getPhantomAbilityToggleData(UUID playerUUID) {
+        for (PhantomAbilityToggleData phantomAbilityToggleData : phantomAbilityToggleData) {
+            if (phantomAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                return phantomAbilityToggleData.isToggled();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Update phantom ability toggle data.
+     *
+     * @param playerUUID                  the player uuid
+     * @param newPhantomAbilityToggleData the new phantom ability toggle data
+     */
+    public void updatePhantomAbilityToggleData(UUID playerUUID, PhantomAbilityToggleData newPhantomAbilityToggleData) {
+        if (findPhantomAbilityToggleData(playerUUID) != null) {
+            for (PhantomAbilityToggleData phantomAbilityToggleData : phantomAbilityToggleData) {
+                if (phantomAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                    phantomAbilityToggleData.setToggled(newPhantomAbilityToggleData.isToggled());
+                    try {
+                        savePhantomAbilityToggleData();
+                    } catch (IOException event) {
+                        event.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete phantom ability toggle data.
+     *
+     * @param playerUUID the player uuid
+     */
+    public void deletePhantomAbilityToggleData(UUID playerUUID) {
+        if (findPhantomAbilityToggleData(playerUUID) != null) {
+            for (PhantomAbilityToggleData phantomAbilityToggleData : phantomAbilityToggleData) {
+                if (phantomAbilityToggleData.getPlayerUUID().equals(playerUUID)) {
+                    this.phantomAbilityToggleData.remove(phantomAbilityToggleData);
+                    break;
+                }
+            }
+            try {
+                savePhantomAbilityToggleData();
+            } catch (IOException event) {
+                event.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Save phantom ability toggle data.
+     *
+     * @throws IOException the io exception
+     */
+    public void savePhantomAbilityToggleData() throws IOException {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                Gson gson = new Gson();
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "phantomdata" + s + "phantomabilitytoggledata" + s + "phantomabilitytoggledata.json");
+
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+                try {
+                    Writer writer = new FileWriter(file, false);
+                    gson.toJson(phantomAbilityToggleData, writer);
+                    writer.flush();
+                    writer.close();
+                } catch (IOException event) {
+                    event.printStackTrace();
+                }
+            }
+        }.runTaskAsynchronously(plugin);
+    }
+
+    /**
+     * Load phantom ability toggle data.
+     *
+     * @throws IOException the io exception
+     */
+    public void loadPhantomAbilityToggleData() throws IOException {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                Gson gson = new Gson();
+                String s = File.separator;
+                File file = new File(plugin.getDataFolder().getAbsolutePath() + s + "cache" + s + "phantomdata" + s + "phantomabilitytoggledata" + s + "phantomabilitytoggledata.json");
+
+                if (!file.getParentFile().exists()) {
+                    file.getParentFile().mkdirs();
+                }
+                if (file.exists()) {
+                    try {
+                        Reader reader = new FileReader(file);
+                        PhantomAbilityToggleData[] n = gson.fromJson(reader, PhantomAbilityToggleData[].class);
+                        phantomAbilityToggleData = new ArrayList<>(Arrays.asList(n));
                     } catch (FileNotFoundException event) {
                         event.printStackTrace();
                     }

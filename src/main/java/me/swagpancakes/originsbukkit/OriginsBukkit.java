@@ -1,19 +1,19 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit;
 
@@ -26,6 +26,7 @@ import me.swagpancakes.originsbukkit.listeners.NoOriginPlayerRestrict;
 import me.swagpancakes.originsbukkit.listeners.PlayerOriginChecker;
 import me.swagpancakes.originsbukkit.listeners.origins.*;
 import me.swagpancakes.originsbukkit.metrics.Metrics;
+import me.swagpancakes.originsbukkit.nms.NMSHandler;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import me.swagpancakes.originsbukkit.util.GhostFactory;
 import me.swagpancakes.originsbukkit.util.ServerVersionChecker;
@@ -54,6 +55,7 @@ public final class OriginsBukkit extends JavaPlugin {
     private final List<String> origins = new ArrayList<>();
     private final List<Inventory> originsInventoryGUI = new ArrayList<>();
 
+    private NMSHandler nmsHandler;
     private ProtocolManager protocolManager;
     private StorageUtils storageUtils;
     private ConfigHandler configHandler;
@@ -88,6 +90,15 @@ public final class OriginsBukkit extends JavaPlugin {
      */
     public List<Inventory> getOriginsInventoryGUI() {
         return this.originsInventoryGUI;
+    }
+
+    /**
+     * Gets nms handler.
+     *
+     * @return the nms handler
+     */
+    public NMSHandler getNMSHandler() {
+        return nmsHandler;
     }
 
     /**
@@ -365,6 +376,7 @@ public final class OriginsBukkit extends JavaPlugin {
      * Load files.
      */
     private void loadFiles() {
+        nmsHandler = new NMSHandler(this);
         storageUtils = new StorageUtils(this);
         configHandler = new ConfigHandler(this);
         ghostFactory = new GhostFactory(this);

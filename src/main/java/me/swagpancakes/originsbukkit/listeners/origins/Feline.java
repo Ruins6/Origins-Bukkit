@@ -1,22 +1,26 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
@@ -24,18 +28,23 @@ import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -126,6 +135,7 @@ public class Feline extends Origin implements Listener {
     private void init() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         registerOrigin(getOriginIdentifier());
+        registerFelineMovePacketListener();
     }
 
     /**
@@ -140,6 +150,9 @@ public class Feline extends Origin implements Listener {
 
         if (Objects.equals(origin, Origins.FELINE.toString())) {
             player.setHealthScale(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble());
+        } else {
+            player.removePotionEffect(PotionEffectType.JUMP);
+            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         }
     }
 
@@ -246,5 +259,79 @@ public class Feline extends Origin implements Listener {
                 player.removePotionEffect(PotionEffectType.JUMP);
             }
         }
+    }
+
+    /**
+     * Feline creeper spawn event.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void felineCreeperSpawnEvent(CreatureSpawnEvent event) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Creeper) {
+            Location location = entity.getLocation();
+
+            if (!(plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().isModifiedCreeper(location, entity))) {
+                plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().summonModifiedCreeper(location);
+                entity.remove();
+            }
+        }
+    }
+
+    /**
+     * Feline creeper aggro event.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void felineCreeperAggroEvent(EntityTargetLivingEntityEvent event) {
+        Entity entity = event.getEntity();
+
+        if (entity instanceof Creeper) {
+            Location location = entity.getLocation();
+
+            if (!(plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().isModifiedCreeper(location, entity))) {
+                plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().summonModifiedCreeper(location);
+                entity.remove();
+            }
+        }
+    }
+
+    /**
+     * Register feline move packet listener.
+     */
+    private void registerFelineMovePacketListener() {
+        plugin.getProtocolManager().addPacketListener(
+                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
+
+                    @Override
+                    public void onPacketReceiving(PacketEvent event) {
+                        Player player = event.getPlayer();
+                        UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = Feline.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+
+                        if (Objects.equals(playerOrigin, Origins.FELINE.toString())) {
+                            if (!player.isInWater()) {
+                                new BukkitRunnable() {
+
+                                    @Override
+                                    public void run() {
+                                        player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 0 , false, false));
+                                    }
+                                }.runTask(plugin);
+                            } else {
+                                new BukkitRunnable() {
+
+                                    @Override
+                                    public void run() {
+                                        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+                                    }
+                                }.runTask(plugin);
+                            }
+                        }
+                    }
+                });
     }
 }

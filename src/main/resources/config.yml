@@ -10,10 +10,22 @@
 # Version 1
 ##
 Config:
+  ############################################################
+  # +------------------------------------------------------+ #
+  # |            BUILT-IN ORIGINS CONFIGURATION            | #
+  # +------------------------------------------------------+ #
+  ############################################################
   Origins:
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |      ENDERIAN (BUILT-IN) ORIGIN CONFIGURATION        | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Enderian:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 20 (For this origin)
       Max-Health: 20
       Water-Damage:
         # The amount of damage dealt when they're in water.
@@ -32,9 +44,16 @@ Config:
         # In seconds, 1 = 1 second
         # No decimals allowed.
         Cooldown: 1
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |       MERLING (BUILT-IN) ORIGIN CONFIGURATION        | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Merling:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 20 (For this origin)
       Max-Health: 20
       Air-Breathing:
         # The maximum amount of time the player can breathe when not in water.
@@ -66,13 +85,27 @@ Config:
             On-Decrease: SOLID
             On-Increase: SOLID
             On-Drowning: SOLID
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |       PHANTOM (BUILT-IN) ORIGIN CONFIGURATION        | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Phantom:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 14 (For this origin)
       Max-Health: 14
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |       ELYTRIAN (BUILT-IN) ORIGIN CONFIGURATION       | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Elytrian:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 20 (For this origin)
       Max-Health: 20
       Ability:
         Y-Velocity: 2.1
@@ -80,9 +113,16 @@ Config:
         # In seconds, 1 = 1 second
         # No decimals allowed.
         Cooldown: 30
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |      BLAZEBORN (BUILT-IN) ORIGIN CONFIGURATION       | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Blazeborn:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 20 (For this origin)
       Max-Health: 20
       Water-Damage:
         # The amount of damage dealt when they're in water.
@@ -96,33 +136,61 @@ Config:
         # In ticks, 1 tick = 0.05 second
         # 20 ticks = 1 second
         Period-Delay: 20
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |         AVIAN (BUILT-IN) ORIGIN CONFIGURATION        | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Avian:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 20 (For this origin)
       Max-Health: 20
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |       ARACHNID (BUILT-IN) ORIGIN CONFIGURATION       | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Arachnid:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 14 (For this origin)
       Max-Health: 14
       Ability:
         Climbing:
-          # Determines how fast the player could climb walls.
+          # Determines how fast the player can climb walls.
           Y-Velocity: 0.175
         Spider-Web:
           # Determines how long the player can perform this ability again.
           # In seconds, 1 = 1 second
           # No decimals allowed.
           Cooldown: 5
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |         SHULK (BUILT-IN) ORIGIN CONFIGURATION        | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Shulk:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 20 (For this origin)
       Max-Health: 20
       Ability:
         # The speed when player breaks stone or netherrack without tools.
         # Max Speed: 127 (Tested)
         # Default: 27 (Almost Equivalent to Wooden Pickaxe)
         Digging-Speed: 27
+
+    ############################################################
+    # +------------------------------------------------------+ #
+    # |        FELINE (BUILT-IN) ORIGIN CONFIGURATION        | #
+    # +------------------------------------------------------+ #
+    ############################################################
     Feline:
       # The amount of health for this origin.
       # 1 = 0.5 hearts
+      # Default: 18 (For this origin)
       Max-Health: 18

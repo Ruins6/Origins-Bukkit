@@ -1,19 +1,19 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
@@ -23,21 +23,31 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
+import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
+import me.swagpancakes.originsbukkit.storage.PhantomAbilityToggleData;
+import me.swagpancakes.originsbukkit.util.ChatUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -49,6 +59,7 @@ import java.util.UUID;
 public class Phantom extends Origin implements Listener {
 
     private final OriginsBukkit plugin;
+    private final List<Player> phantomPlayers = new ArrayList<>();
 
     /**
      * Instantiates a new Phantom.
@@ -127,6 +138,7 @@ public class Phantom extends Origin implements Listener {
     private void init() {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         registerOrigin(getOriginIdentifier());
+        registerPhantomSunlightDamageListener();
         registerPhantomInvisibilityPotionPacketListener();
     }
 
@@ -138,11 +150,134 @@ public class Phantom extends Origin implements Listener {
     @EventHandler
     private void phantomJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
+        UUID playerUUID = player.getUniqueId();
         String origin = event.getOrigin();
+        boolean isToggled = plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID);
 
         if (Objects.equals(origin, Origins.PHANTOM.toString())) {
             player.setHealthScale(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble());
-            plugin.getGhostFactory().setGhost(player, true);
+            if (!isToggled) {
+                plugin.getGhostFactory().setGhost(player, true);
+            }
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 255, false, false));
+            phantomPlayers.add(player);
+        } else {
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+            player.setInvisible(false);
+        }
+    }
+
+    /**
+     * Phantom ability use.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void phantomAbilityUse(PlayerOriginAbilityUseEvent event) {
+        Player player = event.getPlayer();
+        String origin = event.getOrigin();
+
+        if (Objects.equals(origin, Origins.PHANTOM.toString())) {
+            phantomSwitchToggleAbility(player);
+        }
+    }
+
+    /**
+     * Register phantom sunlight damage listener.
+     */
+    private void registerPhantomSunlightDamageListener() {
+
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if (!phantomPlayers.isEmpty()) {
+                    for (int i = 0; i < phantomPlayers.size(); i++) {
+                        Player player = phantomPlayers.get(i);
+                        UUID playerUUID = player.getUniqueId();
+                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                        boolean isToggled = plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID);
+                        World world = player.getWorld();
+                        Location location = player.getLocation();
+
+                        if (Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
+                            if (!isToggled) {
+                                if (world.getTime() > 0 && world.getTime() < 13000) {
+                                    if (location.getBlockY() > player.getWorld().getHighestBlockAt(location).getLocation().getBlockY()) {
+                                        player.setFireTicks(20);
+                                    }
+                                }
+                            }
+                        } else {
+                            phantomPlayers.remove(player);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(plugin, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
+    }
+
+    /**
+     * Phantom switch toggle ability.
+     *
+     * @param player the player
+     */
+    private void phantomSwitchToggleAbility(Player player) {
+        UUID playerUUID = player.getUniqueId();
+
+        if (plugin.getStorageUtils().findPhantomAbilityToggleData(playerUUID) == null) {
+            if (!(player.getFoodLevel() < 4)) {
+                plugin.getStorageUtils().createPhantomAbilityToggleData(playerUUID, true);
+                ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &aON");
+                plugin.getGhostFactory().removePlayer(player);
+                player.setAllowFlight(true);
+                player.setFlying(true);
+                player.setFlySpeed(0.05f);
+            }
+        } else {
+            if (plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID)) {
+                plugin.getStorageUtils().updatePhantomAbilityToggleData(playerUUID, new PhantomAbilityToggleData(playerUUID, false));
+                ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &cOFF");
+                plugin.getGhostFactory().addPlayer(player);
+                player.setAllowFlight(false);
+                player.setFlying(false);
+                player.setFlySpeed(0.1f);
+            } else {
+                if (!(player.getFoodLevel() < 4)) {
+                    plugin.getStorageUtils().updatePhantomAbilityToggleData(playerUUID, new PhantomAbilityToggleData(playerUUID, true));
+                    plugin.getGhostFactory().removePlayer(player);
+                    player.setAllowFlight(true);
+                    player.setFlying(true);
+                    player.setFlySpeed(0.05f);
+                    ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &aON");
+                } else {
+                    ChatUtils.sendPlayerMessage(player, "&cCannot use ability because your hunger level is less than 4 levels.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Phantom fast exhaustion.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void phantomFastExhaustion(FoodLevelChangeEvent event) {
+        HumanEntity humanEntity = event.getEntity();
+        Player player = (Player) humanEntity;
+        UUID playerUUID = player.getUniqueId();
+        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        boolean isToggled = plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID);
+
+        if (Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
+            if (isToggled) {
+                if (player.getFoodLevel() < 4) {
+                    phantomSwitchToggleAbility(player);
+                    ChatUtils.sendPlayerMessage(player, "&cToggled your ability because your hunger level is less than 4 levels");
+                }
+                event.setFoodLevel(event.getFoodLevel() - 2);
+            }
         }
     }
 

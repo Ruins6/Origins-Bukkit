@@ -1,19 +1,19 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.util;
 
@@ -44,25 +44,7 @@ public class ServerVersionChecker {
      * @return the server software
      */
     public String getServerSoftware() {
-        String serverSoftware = Bukkit.getVersion().toUpperCase();
-
-        if (serverSoftware.contains("BUKKIT")) {
-            return "Bukkit";
-        } else if (serverSoftware.contains("SPIGOT")) {
-            return "Spigot";
-        } else if (serverSoftware.contains("PAPER")) {
-            return "Paper";
-        } else if (serverSoftware.contains("TUINITY")) {
-            return "Tuinity";
-        } else if (serverSoftware.contains("PURPUR")) {
-            return "Purpur";
-        } else if (serverSoftware.contains("YATOPIA")) {
-            return "Yatopia";
-        } else if (serverSoftware.contains("AIRPLANE")) {
-            return "Airplane";
-        } else {
-            return "Custom";
-        }
+        return Bukkit.getVersion().split("-")[1];
     }
 
     /**
@@ -73,24 +55,19 @@ public class ServerVersionChecker {
     public boolean isServerSoftwareSafe() {
         String serverSoftware = getServerSoftware().toUpperCase();
 
-        if (serverSoftware.contains("BUKKIT")) {
-            return true;
-        } else if (serverSoftware.contains("SPIGOT")) {
-            return true;
-        } else if (serverSoftware.contains("PAPER")) {
-            return true;
-        } else if (serverSoftware.contains("TUINITY")) {
-            return true;
-        } else if (serverSoftware.contains("PURPUR")) {
-            return true;
-        } else if (serverSoftware.contains("AIRPLANE")) {
-            return true;
-        } else if (serverSoftware.contains("YATOPIA")) {
-            return false;
-        } else if (serverSoftware.contains("CUSTOM")) {
-            return false;
+        switch (serverSoftware) {
+            case "BUKKIT":
+            case "SPIGOT":
+            case "PAPER":
+            case "TUINITY":
+            case "PURPUR":
+            case "AIRPLANE":
+                return true;
+            case "YATOPIA":
+            case "CUSTOM":
+            default:
+                return false;
         }
-        return false;
     }
 
     /**
@@ -122,95 +99,14 @@ public class ServerVersionChecker {
      * @return the server version
      */
     public String getServerVersion() {
-        String serverVersion = Bukkit.getBukkitVersion().toUpperCase();
-
-        if (serverVersion.contains("1.17.1")) {
-            return "1.17.1";
-        } else if (serverVersion.contains("1.17")) {
-            return "1.17";
-        } else if (serverVersion.contains("1.16.5")) {
-            return "1.16.5";
-        } else if (serverVersion.contains("1.16.4")) {
-            return "1.16.4";
-        } else if (serverVersion.contains("1.16.3")) {
-            return "1.16.3";
-        } else if (serverVersion.contains("1.16.2")) {
-            return "1.16.2";
-        } else if (serverVersion.contains("1.16.1")) {
-            return "1.16.1";
-        } else if (serverVersion.contains("1.16")) {
-            return "1.16";
-        } else if (serverVersion.contains("1.15.2")) {
-            return "1.15.2";
-        } else if (serverVersion.contains("1.15.1")) {
-            return "1.15.1";
-        } else if (serverVersion.contains("1.15")) {
-            return "1.15";
-        } else if (serverVersion.contains("1.14.4")) {
-            return "1.14.4";
-        } else if (serverVersion.contains("1.14.3")) {
-            return "1.14.3";
-        } else if (serverVersion.contains("1.14.2")) {
-            return "1.14.2";
-        } else if (serverVersion.contains("1.14.1")) {
-            return "1.14.1";
-        } else if (serverVersion.contains("1.14")) {
-            return "1.14";
-        } else if (serverVersion.contains("1.13.2")) {
-            return "1.13.2";
-        } else if (serverVersion.contains("1.13.1")) {
-            return "1.13.1";
-        } else if (serverVersion.contains("1.13")) {
-            return "1.13";
-        } else {
-            return "Unknown/Unsupported Version";
-        }
-    }
-
-    /**
-     * Gets simplified server version.
-     *
-     * @return the simplified server version
-     */
-    public String getSimplifiedServerVersion() {
-        String serverVersion = Bukkit.getBukkitVersion().toUpperCase();
-
-        if (serverVersion.contains("1.17")) {
-            return "1.17.x";
-        } else if (serverVersion.contains("1.16")) {
-            return "1.16.x";
-        } else if (serverVersion.contains("1.15")) {
-            return "1.15.x";
-        } else if (serverVersion.contains("1.14")) {
-            return "1.14.x";
-        } else if (serverVersion.contains("1.13")) {
-            return "1.13.x";
-        } else if (serverVersion.contains("1.12")) {
-            return "1.12.x";
-        } else if (serverVersion.contains("1.11")) {
-            return "1.11.x";
-        } else if (serverVersion.contains("1.10")) {
-            return "1.10.x";
-        } else if (serverVersion.contains("1.9")) {
-            return "1.9.x";
-        } else if (serverVersion.contains("1.8")) {
-            return "1.8.x";
-        } else if (serverVersion.contains("1.7")) {
-            return "1.7.x";
-        } else {
-            return "Unknown/Unsupported Version";
-        }
+        return Bukkit.getServer().getBukkitVersion().split("-")[0];
     }
 
     /**
      * Check server version compatibility.
      */
     public void checkServerVersionCompatibility() {
-        if (getSimplifiedServerVersion().equals("1.17.x") ||
-                getSimplifiedServerVersion().equals("1.16.x") ||
-                getSimplifiedServerVersion().equals("1.15.x") ||
-                getSimplifiedServerVersion().equals("1.14.x") ||
-                getSimplifiedServerVersion().equals("1.13.x")) {
+        if (getServerVersion().equals("1.17") || getServerVersion().equals("1.17.1")) {
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit]");
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &dSupported Server Version Detected. Initializing!");
         } else {

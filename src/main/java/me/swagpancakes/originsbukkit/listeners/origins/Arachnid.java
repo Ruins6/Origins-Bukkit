@@ -1,19 +1,19 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
@@ -155,6 +155,15 @@ public class Arachnid extends Origin implements Listener {
 
         if (Objects.equals(origin, Origins.ARACHNID.toString())) {
             player.setHealthScale(getMaxHealth());
+        } else {
+            if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                player.setFlySpeed(0.1F);
+                player.setAllowFlight(false);
+                player.setFlying(false);
+            } else {
+                player.setFlySpeed(0.1F);
+                player.setAllowFlight(true);
+            }
         }
     }
 
@@ -330,17 +339,17 @@ public class Arachnid extends Origin implements Listener {
 
         if (plugin.getStorageUtils().findArachnidAbilityToggleData(playerUUID) == null) {
             plugin.getStorageUtils().createArachnidAbilityToggleData(playerUUID, false);
-            ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &cOFF");
+            ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &cOFF");
         } else {
             if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
                 plugin.getStorageUtils().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, false));
-                ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &cOFF");
+                ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &cOFF");
             } else {
                 plugin.getStorageUtils().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, true));
                 if (nextToWall(player) && !block.isLiquid()) {
                     arachnidClimb(player);
                 }
-                ChatUtils.sendPlayerMessage(player, "&3Arachnid Climbing Ability Toggled &aON");
+                ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &aON");
             }
         }
     }

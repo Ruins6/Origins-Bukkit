@@ -1,19 +1,19 @@
 /*
- *     Origins-Bukkit
- *     Copyright (C) 2021 SwagPannekaker
+ * Origins-Bukkit - Origins for Bukkit and forks of Bukkit.
+ * Copyright (C) 2021 SwagPannekaker
  *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *     You should have received a copy of the GNU General Public License
- *     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package me.swagpancakes.originsbukkit.util;
 
@@ -25,6 +25,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
@@ -74,16 +75,20 @@ public class GhostFactory {
      * Create get team.
      */
     private void createGetTeam() {
-        Scoreboard board = Bukkit.getServer().getScoreboardManager().getMainScoreboard();
+        ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
 
-        ghostTeam = board.getTeam(GHOST_TEAM_NAME);
+        if (scoreboardManager != null) {
+            Scoreboard board = scoreboardManager.getMainScoreboard();
 
-        // Create a new ghost team if needed
-        if (ghostTeam == null) {
-            ghostTeam = board.registerNewTeam(GHOST_TEAM_NAME);
+            ghostTeam = board.getTeam(GHOST_TEAM_NAME);
+
+            // Create a new ghost team if needed
+            if (ghostTeam == null) {
+                ghostTeam = board.registerNewTeam(GHOST_TEAM_NAME);
+            }
+            // Thanks to Rprrr for noticing a bug here
+            ghostTeam.setCanSeeFriendlyInvisibles(true);
         }
-        // Thanks to Rprrr for noticing a bug here
-        ghostTeam.setCanSeeFriendlyInvisibles(true);
     }
 
     /**
@@ -145,7 +150,7 @@ public class GhostFactory {
 
         if (isGhost) {
             ghosts.add(player.getName());
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 255, false, false));
         } else {
             ghosts.remove(player.getName());
             player.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -159,9 +164,7 @@ public class GhostFactory {
      */
     public void removePlayer(Player player) {
         validateState();
-        if (ghostTeam.removePlayer(player)) {
-            player.removePotionEffect(PotionEffectType.INVISIBILITY);
-        }
+        ghostTeam.removePlayer(player);
     }
 
     /**

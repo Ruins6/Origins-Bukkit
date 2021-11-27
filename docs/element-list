@@ -1,0 +1,17 @@
+me.swagpancakes.originsbukkit
+me.swagpancakes.originsbukkit.api
+me.swagpancakes.originsbukkit.api.events
+me.swagpancakes.originsbukkit.api.util
+me.swagpancakes.originsbukkit.api.wrappers
+me.swagpancakes.originsbukkit.commands
+me.swagpancakes.originsbukkit.commands.subcommands
+me.swagpancakes.originsbukkit.config
+me.swagpancakes.originsbukkit.enums
+me.swagpancakes.originsbukkit.listeners
+me.swagpancakes.originsbukkit.listeners.origins
+me.swagpancakes.originsbukkit.metrics
+me.swagpancakes.originsbukkit.nms
+me.swagpancakes.originsbukkit.nms.mobs
+me.swagpancakes.originsbukkit.nms.mobs.modifiedcreeper
+me.swagpancakes.originsbukkit.storage
+me.swagpancakes.originsbukkit.util
