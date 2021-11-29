@@ -63,7 +63,7 @@ public class ModifiedCreeper_1_17_R1 extends EntityCreeper implements ModifiedCr
         Player player = new CraftPlayer((CraftServer) Bukkit.getServer(), entityPlayer);
         UUID playerUUID = player.getUniqueId();
 
-        return Objects.equals(OriginsBukkit.getPlugin().getStorageUtils().getPlayerOrigin(playerUUID), OriginsBukkit.getPlugin().getFeline().getOriginIdentifier());
+        return Objects.equals(OriginsBukkit.getPlugin().getStorageHandler().getOriginsPlayerData().getPlayerOrigin(playerUUID), OriginsBukkit.getPlugin().getListenerHandler().getOriginListenerHandler().getFeline().getOriginIdentifier());
     }
 
     /**

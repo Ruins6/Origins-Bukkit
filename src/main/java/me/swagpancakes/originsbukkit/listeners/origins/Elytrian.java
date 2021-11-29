@@ -17,10 +17,10 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
+import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
@@ -57,20 +57,29 @@ import java.util.UUID;
  */
 public class Elytrian extends Origin implements Listener {
 
-    private final OriginsBukkit plugin;
+    private final OriginListenerHandler originListenerHandler;
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
     private final int COOLDOWNTIME = Config.ORIGINS_ELYTRIAN_ABILITY_COOLDOWN.toInt();
 
     public static ItemStack elytra;
 
     /**
+     * Gets origin listener handler.
+     *
+     * @return the origin listener handler
+     */
+    public OriginListenerHandler getOriginListenerHandler() {
+        return originListenerHandler;
+    }
+
+    /**
      * Instantiates a new Elytrian.
      *
-     * @param plugin the plugin
+     * @param originListenerHandler the origin listener handler
      */
-    public Elytrian(OriginsBukkit plugin) {
+    public Elytrian(OriginListenerHandler originListenerHandler) {
         super(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
-        this.plugin = plugin;
+        this.originListenerHandler = originListenerHandler;
         init();
     }
 
@@ -138,8 +147,8 @@ public class Elytrian extends Origin implements Listener {
      * Init.
      */
     private void init() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        registerOrigin(getOriginIdentifier());
+        getOriginListenerHandler().getListenerHandler().getPlugin().getServer().getPluginManager().registerEvents(this, getOriginListenerHandler().getListenerHandler().getPlugin());
+        registerOrigin(this);
         createElytra();
     }
 
@@ -204,8 +213,8 @@ public class Elytrian extends Origin implements Listener {
      * @param player the player
      */
     private void elytrianElytra(Player player) {
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         Location location = player.getLocation();
         World world = player.getWorld();
         PlayerInventory playerInventory = player.getInventory();
@@ -232,8 +241,8 @@ public class Elytrian extends Origin implements Listener {
     private void elytrianArmorEquip(InventoryClickEvent event) {
         HumanEntity humanEntity = event.getWhoClicked();
         Player player = (Player) humanEntity;
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         int clickedSlot = event.getRawSlot();
         ItemStack cursorItemStack = event.getCursor();
         ItemStack clickedItemStack = event.getCurrentItem();
@@ -256,6 +265,8 @@ public class Elytrian extends Origin implements Listener {
      */
     private void elytrianLaunchIntoAir(Player player) {
         UUID playerUUID = player.getUniqueId();
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
 
         if (COOLDOWN.containsKey(playerUUID)) {
             long secondsLeft = ((COOLDOWN.get(playerUUID) / 1000) + COOLDOWNTIME - (System.currentTimeMillis() / 1000));
@@ -269,14 +280,14 @@ public class Elytrian extends Origin implements Listener {
                 COOLDOWN.put(playerUUID, System.currentTimeMillis());
                 ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                         .toString()
-                        .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
+                        .replace("%player_current_origin%", playerOrigin));
             }
         } else {
             player.setVelocity(new Vector(0, Config.ORIGINS_ELYTRIAN_ABILITY_Y_VELOCITY.toDouble(), 0));
             COOLDOWN.put(playerUUID, System.currentTimeMillis());
             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                     .toString()
-                    .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
+                    .replace("%player_current_origin%", playerOrigin));
         }
     }
 
@@ -292,8 +303,8 @@ public class Elytrian extends Origin implements Listener {
 
         if (damager instanceof Player) {
             Player player = (Player) damager;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
             double additionalDamage = baseDamage * 0.5;
 
             if (Objects.equals(playerOrigin, Origins.ELYTRIAN.toString())) {
@@ -315,8 +326,8 @@ public class Elytrian extends Origin implements Listener {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
 
             if (Objects.equals(playerOrigin, Origins.ELYTRIAN.toString())) {
                 EntityDamageEvent.DamageCause damageCause = event.getCause();
@@ -339,8 +350,8 @@ public class Elytrian extends Origin implements Listener {
     @EventHandler
     private void elytrianCheckPlayer(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         ItemStack prevChestplate = player.getInventory().getChestplate();
 
         if (!Objects.equals(playerOrigin, Origins.ELYTRIAN.toString())) {
@@ -362,8 +373,8 @@ public class Elytrian extends Origin implements Listener {
 
             @Override
             public void run() {
-                UUID playerUUID = player.getUniqueId();
-                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                OriginPlayer originPlayer = new OriginPlayer(player);
+                String playerOrigin = originPlayer.getOrigin();
                 Location location = player.getLocation();
                 double y = location.getY();
                 Block block = location.getBlock();
@@ -371,6 +382,6 @@ public class Elytrian extends Origin implements Listener {
                 if (Objects.equals(playerOrigin, Origins.ELYTRIAN.toString())) {
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 20L);
+        }.runTaskTimerAsynchronously(getOriginListenerHandler().getListenerHandler().getPlugin(), 0L, 20L);
     }
 }

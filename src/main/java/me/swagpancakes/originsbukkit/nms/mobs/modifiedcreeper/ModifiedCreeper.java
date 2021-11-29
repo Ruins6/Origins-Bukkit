@@ -17,7 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.nms.mobs.modifiedcreeper;
 
-import me.swagpancakes.originsbukkit.nms.mobs.NMSMobs;
+import me.swagpancakes.originsbukkit.nms.mobs.NMSMobHandler;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
@@ -28,16 +28,16 @@ import org.bukkit.entity.Entity;
  */
 public class ModifiedCreeper {
 
-    private final NMSMobs nmsMobs;
+    private final NMSMobHandler nmsMobHandler;
     private ModifiedCreeperInterface modifiedCreeperInterface;
 
     /**
      * Instantiates a new Modified creeper.
      *
-     * @param nmsMobs the nms mobs
+     * @param nmsMobHandler the nms mob handler
      */
-    public ModifiedCreeper(NMSMobs nmsMobs) {
-        this.nmsMobs = nmsMobs;
+    public ModifiedCreeper(NMSMobHandler nmsMobHandler) {
+        this.nmsMobHandler = nmsMobHandler;
     }
 
     /**
@@ -46,7 +46,7 @@ public class ModifiedCreeper {
      * @param location the location
      */
     public void summonModifiedCreeper(Location location) {
-        String serverVersion = nmsMobs.getNMSHandler().getNMSServerVersion();
+        String serverVersion = nmsMobHandler.getNMSHandler().getNMSServerVersion();
 
         if (serverVersion != null) {
             switch (serverVersion) {
@@ -67,7 +67,7 @@ public class ModifiedCreeper {
      * @return the boolean
      */
     public boolean isModifiedCreeper(Location location, Entity entity) {
-        String serverVersion = nmsMobs.getNMSHandler().getNMSServerVersion();
+        String serverVersion = nmsMobHandler.getNMSHandler().getNMSServerVersion();
 
         if (serverVersion != null) {
             switch (serverVersion) {

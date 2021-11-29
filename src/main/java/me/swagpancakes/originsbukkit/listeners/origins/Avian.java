@@ -17,9 +17,9 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
+import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
@@ -47,7 +47,6 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * The type Avian.
@@ -56,16 +55,25 @@ import java.util.UUID;
  */
 public class Avian extends Origin implements Listener {
 
-    private final OriginsBukkit plugin;
+    private final OriginListenerHandler originListenerHandler;
+
+    /**
+     * Gets origin listener handler.
+     *
+     * @return the origin listener handler
+     */
+    public OriginListenerHandler getOriginListenerHandler() {
+        return originListenerHandler;
+    }
 
     /**
      * Instantiates a new Avian.
      *
-     * @param plugin the plugin
+     * @param originListenerHandler the origin listener handler
      */
-    public Avian(OriginsBukkit plugin) {
+    public Avian(OriginListenerHandler originListenerHandler) {
         super(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble(), 0.25f, 0.1f);
-        this.plugin = plugin;
+        this.originListenerHandler = originListenerHandler;
         init();
     }
 
@@ -133,8 +141,8 @@ public class Avian extends Origin implements Listener {
      * Init.
      */
     private void init() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        registerOrigin(getOriginIdentifier());
+        getOriginListenerHandler().getListenerHandler().getPlugin().getServer().getPluginManager().registerEvents(this, getOriginListenerHandler().getListenerHandler().getPlugin());
+        registerOrigin(this);
     }
 
     /**
@@ -163,8 +171,8 @@ public class Avian extends Origin implements Listener {
      * @param player the player
      */
     private void avianSlowFalling(Player player) {
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
 
         if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             player.addPotionEffect(new PotionEffect(
@@ -184,8 +192,8 @@ public class Avian extends Origin implements Listener {
     @EventHandler
     private void onAvianSlowFallingToggle(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
 
         if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
             if (player.isGliding()) {
@@ -227,8 +235,8 @@ public class Avian extends Origin implements Listener {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
 
             if (Objects.equals(playerOrigin, Origins.AVIAN.toString())) {
                 if (!player.isGliding()) {
@@ -268,8 +276,8 @@ public class Avian extends Origin implements Listener {
     @EventHandler
     private void onAvianSleep(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         Block bed = event.getBed();
         Location bedLocation = bed.getLocation();
         double bedLocationY = bedLocation.getY();
@@ -289,8 +297,8 @@ public class Avian extends Origin implements Listener {
     @EventHandler
     private void onAvianBedRespawnPointSet(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         Action action = event.getAction();
         Block clickedBlock = event.getClickedBlock();
 
@@ -313,8 +321,8 @@ public class Avian extends Origin implements Listener {
         Player player = event.getPlayer();
         Location location = player.getLocation();
         PlayerInventory playerInventory = player.getInventory();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         World world = player.getWorld();
         long getWorldTime = world.getTime();
 
@@ -342,8 +350,8 @@ public class Avian extends Origin implements Listener {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
             PotionEffect oldEffect = event.getOldEffect();
             EntityPotionEffectEvent.Cause cause = event.getCause();
 
@@ -365,8 +373,8 @@ public class Avian extends Origin implements Listener {
     @EventHandler
     private void avianEatingDisabilities(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         Material material = event.getItem().getType();
         List<Material> materials = Arrays.asList(
                 Material.COOKED_BEEF,

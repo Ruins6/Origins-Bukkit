@@ -26,9 +26,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -88,48 +88,56 @@ public abstract class Origin implements OriginInterface {
      *
      * @param origin the origin
      */
-    public void registerOrigin(String origin) {
-        if (origin != null && !origin.isEmpty()) {
-            if (!containsSpecialChars(origin)) {
-                if (Objects.equals(origin, getOriginIdentifier())) {
-                    if (getAuthor() != null && !getAuthor().isEmpty()) {
-                        if (!containsSpecialChars(getAuthor())) {
-                            if (getOriginIcon() != null) {
-                                if (getOriginIcon() != Material.AIR) {
-                                    if (!OriginsBukkit.getPlugin().getOrigins().contains(origin)) {
-                                        OriginsBukkit.getPlugin().getOrigins().add(origin);
-                                        Inventory inventory = Bukkit.createInventory(null, 54, ChatUtils.format("&0Choose your Origin."));
-                                        inventory.setItem(22, createGuiItem(getOriginIcon(), 1,
-                                                getOriginTitle(),
-                                                getOriginDescription()));
-                                        OriginsBukkit.getPlugin().getOriginsInventoryGUI().add(inventory);
-                                        if (OriginsBukkit.getPlugin().getPlayerOriginChecker() != null) {
-                                            OriginsBukkit.getPlugin().getPlayerOriginChecker().originPickerGui();
+    public void registerOrigin(Origin origin) {
+        String originIdentifier = getOriginIdentifier();
+        String originAuthor = getAuthor();
+        String originTitle = getOriginTitle();
+        String[] originDescription = getOriginDescription();
+        Material originIcon = getOriginIcon();
+
+        if (originIdentifier != null && !originIdentifier.isEmpty()) {
+            if (!containsSpecialChars(originIdentifier)) {
+                if (originAuthor != null && !originAuthor.isEmpty()) {
+                    if (!containsSpecialChars(originAuthor)) {
+                        if (originIcon != null) {
+                            if (originIcon != Material.AIR) {
+                                if (!OriginsBukkit.getPlugin().getOrigins().contains(originIdentifier)) {
+                                    OriginsBukkit.getPlugin().getOrigins().add(originIdentifier);
+                                    Inventory inventory = Bukkit.createInventory(null, 54, ChatUtils.format("&0Choose your Origin."));
+                                    inventory.setItem(22, createGuiItem(originIcon, 1,
+                                            originTitle,
+                                            originDescription));
+                                    OriginsBukkit.getPlugin().getOriginsInventoryGUI().add(inventory);
+                                    new BukkitRunnable() {
+
+                                        @Override
+                                        public void run() {
+                                            if (OriginsBukkit.getPlugin().getListenerHandler().getPlayerOriginChecker() != null) {
+                                                OriginsBukkit.getPlugin().getListenerHandler().getPlayerOriginChecker().originPickerGui();
+                                            }
                                         }
-                                        ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully registered &6" + origin + "&a origin by &e" + getAuthor());
-                                    } else {
-                                        ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The origin &e\"" + origin + "\"&c has already been registered. Ignoring it... Please restart the server if you've updated or made changes to the extension for changes to take full effect.");
-                                    }
+                                    }.runTaskAsynchronously(OriginsBukkit.getPlugin());
+                                    ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Successfully registered &6" + originIdentifier + "&a origin by &e" + originAuthor);
                                 } else {
-                                    ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The icon of the origin &e\"" + origin + "\"&c cannot be set to air. Please contact the author (" + getAuthor() + ") of this origin.");
+                                    ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The origin &e\"" + originIdentifier + "\"&c has already been registered. Ignoring it... Please restart the server if you've updated or made changes to the extension for changes to take full effect.");
                                 }
                             } else {
-                                ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The icon of the origin &e\"" + origin + "\"&c cannot be null. Please contact the author (" + getAuthor() + ") of this origin.");
+                                ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The icon of the origin &e\"" + originIdentifier + "\"&c cannot be set to air. Please contact the author (" + originAuthor + ") of this origin.");
                             }
                         } else {
-                            ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The author of the origin &e\"" + origin + "\"&c contains character(s) that are not allowed.");
+                            ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The icon of the origin &e\"" + originIdentifier + "\"&c cannot be null. Please contact the author (" + originAuthor + ") of this origin.");
                         }
                     } else {
-                        ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The author of the origin &e\"" + origin + "\"&c cannot be null.");
+                        ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The author of the origin &e\"" + originIdentifier + "\"&c contains character(s) that are not allowed.");
                     }
                 } else {
-                    ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The unique identifier of the origin &e\"" + origin + "\"&c does not match the registered identifier. Please contact the author (" + getAuthor() + ") of this origin.");
+                    ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The author of the origin &e\"" + originIdentifier + "\"&c cannot be null.");
                 }
             } else {
-                ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The unique identifier of the origin &e\"" + origin + "\"&c contains character(s) that are not allowed. Please contact the author (" + getAuthor() + ") of this origin.");
+                ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The unique identifier of the origin &e\"" + originIdentifier + "\"&c contains character(s) that are not allowed. Please contact the author (" + originAuthor + ") of this origin.");
             }
         } else {
-            ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The unique identifier of the origin &e\"" + origin + "\"&c cannot be null. Please contact the author (" + getAuthor() + ") of this origin.");
+            ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] Error registering origin. The unique identifier of the origin &e\"" + originIdentifier + "\"&c cannot be null. Please contact the author (" + originAuthor + ") of this origin.");
         }
     }
 

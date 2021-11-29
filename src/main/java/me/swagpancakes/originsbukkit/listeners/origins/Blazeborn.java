@@ -17,17 +17,15 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
+import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -38,6 +36,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -50,18 +49,27 @@ import java.util.*;
  */
 public class Blazeborn extends Origin implements Listener {
 
-    private final OriginsBukkit plugin;
+    private final OriginListenerHandler originListenerHandler;
     private final List<Player> blazebornPlayersInWater = new ArrayList<>();
     private final List<Player> blazebornPlayersInAir = new ArrayList<>();
 
     /**
+     * Gets origin listener handler.
+     *
+     * @return the origin listener handler
+     */
+    public OriginListenerHandler getOriginListenerHandler() {
+        return originListenerHandler;
+    }
+
+    /**
      * Instantiates a new Blazeborn.
      *
-     * @param plugin the plugin
+     * @param originListenerHandler the origin listener handler
      */
-    public Blazeborn(OriginsBukkit plugin) {
+    public Blazeborn(OriginListenerHandler originListenerHandler) {
         super(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
-        this.plugin = plugin;
+        this.originListenerHandler = originListenerHandler;
         init();
     }
 
@@ -129,8 +137,8 @@ public class Blazeborn extends Origin implements Listener {
      * Init.
      */
     private void init() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        registerOrigin(getOriginIdentifier());
+        getOriginListenerHandler().getListenerHandler().getPlugin().getServer().getPluginManager().registerEvents(this, getOriginListenerHandler().getListenerHandler().getPlugin());
+        registerOrigin(this);
         registerBlazebornWaterDamageListener();
         registerBlazebornAirEnterListener();
     }
@@ -144,12 +152,17 @@ public class Blazeborn extends Origin implements Listener {
     private void blazebornJoin(PlayerOriginInitiateEvent event) {
         Player player = event.getPlayer();
         String origin = event.getOrigin();
+        OriginPlayer originPlayer = new OriginPlayer(player);
 
         if (Objects.equals(origin, Origins.BLAZEBORN.toString())) {
             player.setHealthScale(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble());
             blazebornPlayersInWater.add(player);
-            blazebornNetherSpawn(player);
             blazebornFlameParticles(player);
+
+            if (originPlayer.findBlazebornNetherSpawnData() == null) {
+                originPlayer.createBlazebornNetherSpawnData(true);
+                blazebornNetherSpawn(player);
+            }
         }
     }
 
@@ -165,8 +178,8 @@ public class Blazeborn extends Origin implements Listener {
                 if (!blazebornPlayersInWater.isEmpty()) {
                     for (int i = 0; i < blazebornPlayersInWater.size(); i++) {
                         Player player = blazebornPlayersInWater.get(i);
-                        UUID playerUUID = player.getUniqueId();
-                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                        OriginPlayer originPlayer = new OriginPlayer(player);
+                        String playerOrigin = originPlayer.getOrigin();
                         Location location = player.getLocation();
                         Block block = location.getBlock();
                         Material material = block.getType();
@@ -199,7 +212,7 @@ public class Blazeborn extends Origin implements Listener {
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
+        }.runTaskTimerAsynchronously(getOriginListenerHandler().getListenerHandler().getPlugin(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
     }
 
     /**
@@ -216,7 +229,7 @@ public class Blazeborn extends Origin implements Listener {
             public void run() {
                 player.damage(amount);
             }
-        }.runTask(plugin);
+        }.runTask(getOriginListenerHandler().getListenerHandler().getPlugin());
      }
 
     /**
@@ -231,8 +244,8 @@ public class Blazeborn extends Origin implements Listener {
                 if (!blazebornPlayersInAir.isEmpty()) {
                     for (int i = 0; i < blazebornPlayersInAir.size(); i++) {
                         Player player = blazebornPlayersInAir.get(i);
-                        UUID playerUUID = player.getUniqueId();
-                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                        OriginPlayer originPlayer = new OriginPlayer(player);
+                        String playerOrigin = originPlayer.getOrigin();
                         Location location = player.getLocation();
                         Block block = location.getBlock();
                         Material material = block.getType();
@@ -262,7 +275,7 @@ public class Blazeborn extends Origin implements Listener {
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 5L);
+        }.runTaskTimerAsynchronously(getOriginListenerHandler().getListenerHandler().getPlugin(), 0L, 5L);
     }
 
     /**
@@ -276,8 +289,8 @@ public class Blazeborn extends Origin implements Listener {
 
             @Override
             public void run() {
-                UUID playerUUID = player.getUniqueId();
-                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                OriginPlayer originPlayer = new OriginPlayer(player);
+                String playerOrigin = originPlayer.getOrigin();
                 World world = player.getWorld();
                 Location location = player.getLocation();
 
@@ -285,13 +298,13 @@ public class Blazeborn extends Origin implements Listener {
                     if (player.isOnline()) {
                         world.spawnParticle(Particle.SMALL_FLAME, location.add(0, 1, 0), 5);
                     } else {
-                        this.cancel();
+                        cancel();
                     }
                 } else {
-                    this.cancel();
+                    cancel();
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 20L);
+        }.runTaskTimerAsynchronously(getOriginListenerHandler().getListenerHandler().getPlugin(), 0L, 20L);
     }
 
     /**
@@ -306,8 +319,8 @@ public class Blazeborn extends Origin implements Listener {
 
         if (damager instanceof Player) {
             Player player = (Player) damager;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
 
             if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                 if (player.getFireTicks() > 0) {
@@ -330,8 +343,8 @@ public class Blazeborn extends Origin implements Listener {
 
         if (target instanceof Player && damager instanceof Snowball) {
             Player targetPlayer = (Player) target;
-            UUID targetPlayerUUID = targetPlayer.getUniqueId();
-            String targetPlayerOrigin = plugin.getStorageUtils().getPlayerOrigin(targetPlayerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(targetPlayer);
+            String targetPlayerOrigin = originPlayer.getOrigin();
 
             if (Objects.equals(targetPlayerOrigin, Origins.BLAZEBORN.toString())) {
                 event.setDamage(baseDamage + 1.5);
@@ -353,8 +366,8 @@ public class Blazeborn extends Origin implements Listener {
             Player player = ((Player) entity).getPlayer();
 
             if (player != null) {
-                UUID playerUUID = player.getUniqueId();
-                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                OriginPlayer originPlayer = new OriginPlayer(player);
+                String playerOrigin = originPlayer.getOrigin();
 
                 if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                     if (damageCause == EntityDamageEvent.DamageCause.LAVA || damageCause == EntityDamageEvent.DamageCause.FIRE || damageCause == EntityDamageEvent.DamageCause.FIRE_TICK || damageCause == EntityDamageEvent.DamageCause.HOT_FLOOR || damageCause == EntityDamageEvent.DamageCause.POISON || damageCause == EntityDamageEvent.DamageCause.STARVATION) {
@@ -373,8 +386,8 @@ public class Blazeborn extends Origin implements Listener {
     @EventHandler
     private void blazebornPotionDrinkingDamage(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         ItemStack itemStack = event.getItem();
         Material material = itemStack.getType();
 
@@ -397,12 +410,33 @@ public class Blazeborn extends Origin implements Listener {
         for (LivingEntity livingEntity : livingEntities) {
             if (livingEntity instanceof Player) {
                 Player player = (Player) livingEntity;
-                UUID playerUUID = player.getUniqueId();
-                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                OriginPlayer originPlayer = new OriginPlayer(player);
+                String playerOrigin = originPlayer.getOrigin();
 
                 if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
                     player.damage(2);
                 }
+            }
+        }
+    }
+
+    /**
+     * Blazeborn respawn.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void blazebornRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
+
+        if (Objects.equals(playerOrigin, Origins.BLAZEBORN.toString())) {
+            if (player.getBedSpawnLocation() == null) {
+                Location playerLocation = player.getLocation();
+                Location randomLocation = randomNetherCoordinatesGenerator(playerLocation);
+
+                findSafeLocation(randomLocation, event);
             }
         }
     }
@@ -413,8 +447,93 @@ public class Blazeborn extends Origin implements Listener {
      * @param player the player
      */
     private void blazebornNetherSpawn(Player player) {
-        World world = player.getWorld();
-        Location location = new Location(world, -77, 72, 238);
-        player.teleport(location);
+        Location playerLocation = player.getLocation();
+        Location location = randomNetherCoordinatesGenerator(playerLocation);
+
+        teleportPlayer(location, player);
+    }
+
+    /**
+     * Teleport player.
+     *
+     * @param location the location
+     * @param player   the player
+     */
+    private void teleportPlayer(Location location, Player player) {
+        if (isSafeLocation(location)) {
+            player.teleport(location);
+        } else {
+            Location newLocation = location.subtract(0, 1, 0);
+            if (newLocation.getY() != 0) {
+                teleportPlayer(newLocation, player);
+            } else {
+                Location generateNewLocation = randomNetherCoordinatesGenerator(location);
+                teleportPlayer(generateNewLocation, player);
+            }
+        }
+    }
+
+    /**
+     * Find safe location.
+     *
+     * @param location the location
+     * @param event    the event
+     */
+    private void findSafeLocation(Location location, PlayerRespawnEvent event) {
+        if (isSafeLocation(location)) {
+            event.setRespawnLocation(location);
+        } else {
+            Location newLocation = location.subtract(0, 1, 0);
+            if (newLocation.getY() != 0) {
+                findSafeLocation(newLocation, event);
+            } else {
+                Location generateNewLocation = randomNetherCoordinatesGenerator(location);
+                findSafeLocation(generateNewLocation, event);
+            }
+        }
+    }
+
+    /**
+     * Random nether coordinates generator location.
+     *
+     * @param location the location
+     *
+     * @return the location
+     */
+    private Location randomNetherCoordinatesGenerator(Location location) {
+        Location randomLocation = new Location(Bukkit.getWorld(Config.WORLDS_NETHER.toString()), location.getX(), location.getY(), location.getZ());
+        Random random = new Random();
+        int x = random.nextInt(250);
+        int z = random.nextInt(250);
+
+        randomLocation.setX(x);
+        randomLocation.setY(90);
+        randomLocation.setZ(z);
+
+        return randomLocation;
+    }
+
+    /**
+     * Is safe location boolean.
+     *
+     * @param location the location
+     *
+     * @return the boolean
+     */
+    private boolean isSafeLocation(Location location) {
+        Block ground = location.getBlock().getRelative(BlockFace.DOWN);
+        Block head = location.getBlock().getRelative(BlockFace.UP);
+
+        if (head.getType().isSolid()) {
+            return false;
+        }
+        if (ground.getType().isAir()) {
+            return false;
+        }
+        if (ground.isLiquid() || head.isLiquid()) {
+            return false;
+        }
+
+        return ground.getType().isSolid();
     }
 }

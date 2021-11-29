@@ -17,19 +17,15 @@
  */
 package me.swagpancakes.originsbukkit.util;
 
-import me.swagpancakes.originsbukkit.OriginsBukkit;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -39,28 +35,28 @@ import java.util.Set;
  */
 public class GhostFactory {
 
-    private final OriginsBukkit plugin;
+    private final UtilHandler utilHandler;
     private static final String GHOST_TEAM_NAME = "Ghosts";
-    private static final long UPDATE_DELAY = 20L;
-
-    // No players in the ghost factory
     private static final OfflinePlayer[] EMPTY_PLAYERS = new OfflinePlayer[0];
     private Team ghostTeam;
+    private final Set<String> ghosts = new HashSet<String>();
 
-    // Task that must be cleaned up
-    private BukkitTask task;
-    private boolean closed;
-
-    // Players that are actually ghosts
-    private Set<String> ghosts = new HashSet<String>();
+    /**
+     * Gets util handler.
+     *
+     * @return the util handler
+     */
+    public UtilHandler getUtilHandler() {
+        return utilHandler;
+    }
 
     /**
      * Instantiates a new Ghost factory.
      *
-     * @param plugin the plugin
+     * @param utilHandler the util handler
      */
-    public GhostFactory(OriginsBukkit plugin) {
-        this.plugin = plugin;
+    public GhostFactory(UtilHandler utilHandler) {
+        this.utilHandler = utilHandler;
         init();
     }
 
@@ -75,18 +71,16 @@ public class GhostFactory {
      * Create get team.
      */
     private void createGetTeam() {
-        ScoreboardManager scoreboardManager = Bukkit.getScoreboardManager();
+        ScoreboardManager scoreboardManager = getUtilHandler().getPlugin().getServer().getScoreboardManager();
 
         if (scoreboardManager != null) {
             Scoreboard board = scoreboardManager.getMainScoreboard();
 
             ghostTeam = board.getTeam(GHOST_TEAM_NAME);
 
-            // Create a new ghost team if needed
             if (ghostTeam == null) {
                 ghostTeam = board.registerNewTeam(GHOST_TEAM_NAME);
             }
-            // Thanks to Rprrr for noticing a bug here
             ghostTeam.setCanSeeFriendlyInvisibles(true);
         }
     }
@@ -108,7 +102,6 @@ public class GhostFactory {
      * @param player the player
      */
     public void addPlayer(Player player) {
-        validateState();
         if (!ghostTeam.hasPlayer(player)) {
             ghostTeam.addPlayer(player);
         }
@@ -133,7 +126,6 @@ public class GhostFactory {
      * @return the boolean
      */
     public boolean hasPlayer(Player player) {
-        validateState();
         return ghostTeam.hasPlayer(player);
     }
 
@@ -144,7 +136,6 @@ public class GhostFactory {
      * @param isGhost the is ghost
      */
     public void setGhost(Player player, boolean isGhost) {
-        // Make sure the player is tracked by this manager
         if (!hasPlayer(player))
             addPlayer(player);
 
@@ -163,7 +154,6 @@ public class GhostFactory {
      * @param player the player
      */
     public void removePlayer(Player player) {
-        validateState();
         ghostTeam.removePlayer(player);
     }
 
@@ -173,15 +163,9 @@ public class GhostFactory {
      * @return the offline player [ ]
      */
     public OfflinePlayer[] getGhosts() {
-        validateState();
         Set<OfflinePlayer> players = new HashSet<OfflinePlayer>(ghostTeam.getPlayers());
 
-        // Remove all non-ghost players
-        for (Iterator<OfflinePlayer> it = players.iterator(); it.hasNext(); ) {
-            if (!ghosts.contains(it.next().getName())) {
-                it.remove();
-            }
-        }
+        players.removeIf(offlinePlayer -> !ghosts.contains(offlinePlayer.getName()));
         return toArray(players);
     }
 
@@ -191,7 +175,6 @@ public class GhostFactory {
      * @return the offline player [ ]
      */
     public OfflinePlayer[] getMembers() {
-        validateState();
         return toArray(ghostTeam.getPlayers());
     }
 
@@ -207,35 +190,6 @@ public class GhostFactory {
             return players.toArray(new OfflinePlayer[0]);
         } else {
             return EMPTY_PLAYERS;
-        }
-    }
-
-    /**
-     * Close.
-     */
-    public void close() {
-        if (!closed) {
-            task.cancel();
-            ghostTeam.unregister();
-            closed = true;
-        }
-    }
-
-    /**
-     * Is closed boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isClosed() {
-        return closed;
-    }
-
-    /**
-     * Validate state.
-     */
-    private void validateState() {
-        if (closed) {
-            throw new IllegalStateException("Ghost factory has closed. Cannot reuse instances.");
         }
     }
 }

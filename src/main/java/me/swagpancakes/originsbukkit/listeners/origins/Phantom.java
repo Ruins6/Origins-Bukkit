@@ -22,14 +22,14 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
+import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.storage.PhantomAbilityToggleData;
+import me.swagpancakes.originsbukkit.storage.wrappers.PhantomAbilityToggleDataWrapper;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -58,17 +58,26 @@ import java.util.UUID;
  */
 public class Phantom extends Origin implements Listener {
 
-    private final OriginsBukkit plugin;
+    private final OriginListenerHandler originListenerHandler;
     private final List<Player> phantomPlayers = new ArrayList<>();
+
+    /**
+     * Gets origin listener handler.
+     *
+     * @return the origin listener handler
+     */
+    public OriginListenerHandler getOriginListenerHandler() {
+        return originListenerHandler;
+    }
 
     /**
      * Instantiates a new Phantom.
      *
-     * @param plugin the plugin
+     * @param originListenerHandler the origin listener handler
      */
-    public Phantom(OriginsBukkit plugin) {
+    public Phantom(OriginListenerHandler originListenerHandler) {
         super(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
-        this.plugin = plugin;
+        this.originListenerHandler = originListenerHandler;
         init();
     }
 
@@ -136,8 +145,8 @@ public class Phantom extends Origin implements Listener {
      * Init.
      */
     private void init() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        registerOrigin(getOriginIdentifier());
+        getOriginListenerHandler().getListenerHandler().getPlugin().getServer().getPluginManager().registerEvents(this, getOriginListenerHandler().getListenerHandler().getPlugin());
+        registerOrigin(this);
         registerPhantomSunlightDamageListener();
         registerPhantomInvisibilityPotionPacketListener();
     }
@@ -152,12 +161,12 @@ public class Phantom extends Origin implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
         String origin = event.getOrigin();
-        boolean isToggled = plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID);
+        boolean isToggled = getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().getPhantomAbilityToggleData(playerUUID);
 
         if (Objects.equals(origin, Origins.PHANTOM.toString())) {
             player.setHealthScale(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble());
             if (!isToggled) {
-                plugin.getGhostFactory().setGhost(player, true);
+                getOriginListenerHandler().getListenerHandler().getPlugin().getUtilHandler().getGhostFactory().setGhost(player, true);
             }
             player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 255, false, false));
             phantomPlayers.add(player);
@@ -195,8 +204,9 @@ public class Phantom extends Origin implements Listener {
                     for (int i = 0; i < phantomPlayers.size(); i++) {
                         Player player = phantomPlayers.get(i);
                         UUID playerUUID = player.getUniqueId();
-                        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
-                        boolean isToggled = plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID);
+                        OriginPlayer originPlayer = new OriginPlayer(player);
+                        String playerOrigin = originPlayer.getOrigin();
+                        boolean isToggled = getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().getPhantomAbilityToggleData(playerUUID);
                         World world = player.getWorld();
                         Location location = player.getLocation();
 
@@ -214,7 +224,7 @@ public class Phantom extends Origin implements Listener {
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
+        }.runTaskTimerAsynchronously(getOriginListenerHandler().getListenerHandler().getPlugin(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_DELAY.toLong(), Config.ORIGINS_BLAZEBORN_WATER_DAMAGE_PERIOD_DELAY.toLong());
     }
 
     /**
@@ -225,27 +235,27 @@ public class Phantom extends Origin implements Listener {
     private void phantomSwitchToggleAbility(Player player) {
         UUID playerUUID = player.getUniqueId();
 
-        if (plugin.getStorageUtils().findPhantomAbilityToggleData(playerUUID) == null) {
+        if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().findPhantomAbilityToggleData(playerUUID) == null) {
             if (!(player.getFoodLevel() < 4)) {
-                plugin.getStorageUtils().createPhantomAbilityToggleData(playerUUID, true);
+                getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().createPhantomAbilityToggleData(playerUUID, true);
                 ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &aON");
-                plugin.getGhostFactory().removePlayer(player);
+                getOriginListenerHandler().getListenerHandler().getPlugin().getUtilHandler().getGhostFactory().removePlayer(player);
                 player.setAllowFlight(true);
                 player.setFlying(true);
                 player.setFlySpeed(0.05f);
             }
         } else {
-            if (plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID)) {
-                plugin.getStorageUtils().updatePhantomAbilityToggleData(playerUUID, new PhantomAbilityToggleData(playerUUID, false));
+            if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().getPhantomAbilityToggleData(playerUUID)) {
+                getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().updatePhantomAbilityToggleData(playerUUID, new PhantomAbilityToggleDataWrapper(playerUUID, false));
                 ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &cOFF");
-                plugin.getGhostFactory().addPlayer(player);
+                getOriginListenerHandler().getListenerHandler().getPlugin().getUtilHandler().getGhostFactory().addPlayer(player);
                 player.setAllowFlight(false);
                 player.setFlying(false);
                 player.setFlySpeed(0.1f);
             } else {
                 if (!(player.getFoodLevel() < 4)) {
-                    plugin.getStorageUtils().updatePhantomAbilityToggleData(playerUUID, new PhantomAbilityToggleData(playerUUID, true));
-                    plugin.getGhostFactory().removePlayer(player);
+                    getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().updatePhantomAbilityToggleData(playerUUID, new PhantomAbilityToggleDataWrapper(playerUUID, true));
+                    getOriginListenerHandler().getListenerHandler().getPlugin().getUtilHandler().getGhostFactory().removePlayer(player);
                     player.setAllowFlight(true);
                     player.setFlying(true);
                     player.setFlySpeed(0.05f);
@@ -267,8 +277,9 @@ public class Phantom extends Origin implements Listener {
         HumanEntity humanEntity = event.getEntity();
         Player player = (Player) humanEntity;
         UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
-        boolean isToggled = plugin.getStorageUtils().getPhantomAbilityToggleData(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
+        boolean isToggled = getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getPhantomAbilityToggleData().getPhantomAbilityToggleData(playerUUID);
 
         if (Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
             if (isToggled) {
@@ -289,11 +300,11 @@ public class Phantom extends Origin implements Listener {
     @EventHandler
     private void onNonPhantomJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
 
         if (!Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
-            plugin.getGhostFactory().addPlayer(player);
+            getOriginListenerHandler().getListenerHandler().getPlugin().getUtilHandler().getGhostFactory().addPlayer(player);
         }
     }
 
@@ -308,8 +319,8 @@ public class Phantom extends Origin implements Listener {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
             PotionEffect oldEffect = event.getOldEffect();
             EntityPotionEffectEvent.Cause cause = event.getCause();
 
@@ -334,8 +345,8 @@ public class Phantom extends Origin implements Listener {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
             PotionEffect newEffect = event.getNewEffect();
 
             if (!Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {
@@ -352,15 +363,15 @@ public class Phantom extends Origin implements Listener {
      * Register phantom invisibility potion packet listener.
      */
     private void registerPhantomInvisibilityPotionPacketListener() {
-        plugin.getProtocolManager().addPacketListener(
-                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EFFECT) {
+        getOriginListenerHandler().getListenerHandler().getPlugin().getProtocolManager().addPacketListener(
+                new PacketAdapter(getOriginListenerHandler().getListenerHandler().getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_EFFECT) {
 
                     @Override
                     public void onPacketSending(PacketEvent event) {
                         PacketContainer packet = event.getPacket();
                         Player player = event.getPlayer();
-                        UUID playerUUID = player.getUniqueId();
-                        String playerOrigin = Phantom.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                        OriginPlayer originPlayer = new OriginPlayer(player);
+                        String playerOrigin = originPlayer.getOrigin();
                         byte effectType = packet.getBytes().read(0);
 
                         if (Objects.equals(playerOrigin, Origins.PHANTOM.toString())) {

@@ -10,6 +10,13 @@
 # Version 1
 ##
 Config:
+  Notifications:
+    Updates: true
+  Worlds:
+    Overworld: world
+    Nether: world_nether
+    The-End: world_the_end
+
   ############################################################
   # +------------------------------------------------------+ #
   # |            BUILT-IN ORIGINS CONFIGURATION            | #

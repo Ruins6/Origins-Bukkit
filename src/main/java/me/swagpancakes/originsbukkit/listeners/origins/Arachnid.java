@@ -22,14 +22,14 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
+import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
-import me.swagpancakes.originsbukkit.storage.ArachnidAbilityToggleData;
+import me.swagpancakes.originsbukkit.storage.wrappers.ArachnidAbilityToggleDataWrapper;
 import me.swagpancakes.originsbukkit.util.ChatUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -59,18 +59,27 @@ import java.util.*;
  */
 public class Arachnid extends Origin implements Listener {
 
-    private final OriginsBukkit plugin;
+    private final OriginListenerHandler originListenerHandler;
     private final HashMap<UUID, Long> COOLDOWN = new HashMap<>();
     private final int COOLDOWNTIME = Config.ORIGINS_ARACHNID_ABILITY_SPIDER_WEB_COOLDOWN.toInt();
 
     /**
+     * Gets origin listener handler.
+     *
+     * @return the origin listener handler
+     */
+    public OriginListenerHandler getOriginListenerHandler() {
+        return originListenerHandler;
+    }
+
+    /**
      * Instantiates a new Arachnid.
      *
-     * @param plugin the plugin
+     * @param originListenerHandler the origin listener handler
      */
-    public Arachnid(OriginsBukkit plugin) {
+    public Arachnid(OriginListenerHandler originListenerHandler) {
         super(Config.ORIGINS_ARACHNID_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
-        this.plugin = plugin;
+        this.originListenerHandler = originListenerHandler;
         init();
     }
 
@@ -138,8 +147,8 @@ public class Arachnid extends Origin implements Listener {
      * Init.
      */
     private void init() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        registerOrigin(getOriginIdentifier());
+        getOriginListenerHandler().getListenerHandler().getPlugin().getServer().getPluginManager().registerEvents(this, getOriginListenerHandler().getListenerHandler().getPlugin());
+        registerOrigin(this);
         registerArachnidCobwebMovePacketListener();
     }
 
@@ -191,13 +200,14 @@ public class Arachnid extends Origin implements Listener {
     private void onArachnidClimbToggle(PlayerToggleSneakEvent event) {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
 
         if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
-            if (plugin.getStorageUtils().findArachnidAbilityToggleData(playerUUID) == null) {
-                plugin.getStorageUtils().createArachnidAbilityToggleData(playerUUID, false);
+            if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().findArachnidAbilityToggleData(playerUUID) == null) {
+                getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().createArachnidAbilityToggleData(playerUUID, false);
             }
-            if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
+            if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().getArachnidAbilityToggleData(playerUUID)) {
                 if (!player.isSneaking()) {
                     arachnidClimb(player);
                 }
@@ -219,7 +229,8 @@ public class Arachnid extends Origin implements Listener {
         if (damager instanceof Player) {
             Player player = (Player) event.getDamager();
             UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
 
             if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
                 Location location1 = location.add(0, 1, 0);
@@ -240,7 +251,7 @@ public class Arachnid extends Origin implements Listener {
                             COOLDOWN.put(playerUUID, System.currentTimeMillis());
                             ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                                     .toString()
-                                    .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
+                                    .replace("%player_current_origin%", playerOrigin));
                         }
                     } else {
                         removeArachnidCobwebs(material1, block1);
@@ -248,7 +259,7 @@ public class Arachnid extends Origin implements Listener {
                         COOLDOWN.put(playerUUID, System.currentTimeMillis());
                         ChatUtils.sendPlayerMessage(player, Lang.PLAYER_ORIGIN_ABILITY_USE
                                 .toString()
-                                .replace("%player_current_origin%", String.valueOf(plugin.getStorageUtils().getPlayerOrigin(playerUUID))));
+                                .replace("%player_current_origin%", playerOrigin));
                     }
                 }
             }
@@ -269,8 +280,8 @@ public class Arachnid extends Origin implements Listener {
         if (target instanceof Player && damager instanceof LivingEntity) {
             Player targetPlayer = (Player) target;
             LivingEntity livingDamager = (LivingEntity) damager;
-            UUID targetPlayerUUID = targetPlayer.getUniqueId();
-            String targetPlayerOrigin = plugin.getStorageUtils().getPlayerOrigin(targetPlayerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(targetPlayer);
+            String targetPlayerOrigin = originPlayer.getOrigin();
             EntityEquipment entityEquipment = livingDamager.getEquipment();
 
             if (entityEquipment != null) {
@@ -300,31 +311,32 @@ public class Arachnid extends Origin implements Listener {
             @Override
             public void run() {
                 UUID playerUUID = player.getUniqueId();
-                String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                OriginPlayer originPlayer = new OriginPlayer(player);
+                String playerOrigin = originPlayer.getOrigin();
                 Location location = player.getLocation();
                 Block block = location.getBlock();
 
                 if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
                     if (player.isOnline()) {
-                        if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
+                        if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().getArachnidAbilityToggleData(playerUUID)) {
                             if (player.isSneaking() && !player.isGliding()) {
                                 if (nextToWall(player) && !block.isLiquid()) {
                                     player.setVelocity(player.getVelocity().setY(Config.ORIGINS_ARACHNID_ABILITY_CLIMBING_Y_VELOCITY.toDouble()));
                                 }
                             } else {
-                                this.cancel();
+                                cancel();
                             }
                         } else {
-                            this.cancel();
+                            cancel();
                         }
                     } else {
-                        this.cancel();
+                        cancel();
                     }
                 } else {
-                    this.cancel();
+                    cancel();
                 }
             }
-        }.runTaskTimerAsynchronously(plugin, 0L, 1L);
+        }.runTaskTimerAsynchronously(getOriginListenerHandler().getListenerHandler().getPlugin(), 0L, 1L);
     }
 
     /**
@@ -337,15 +349,15 @@ public class Arachnid extends Origin implements Listener {
         Location location = player.getLocation();
         Block block = location.getBlock();
 
-        if (plugin.getStorageUtils().findArachnidAbilityToggleData(playerUUID) == null) {
-            plugin.getStorageUtils().createArachnidAbilityToggleData(playerUUID, false);
+        if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().findArachnidAbilityToggleData(playerUUID) == null) {
+            getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().createArachnidAbilityToggleData(playerUUID, false);
             ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &cOFF");
         } else {
-            if (plugin.getStorageUtils().getArachnidAbilityToggleData(playerUUID)) {
-                plugin.getStorageUtils().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, false));
+            if (getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().getArachnidAbilityToggleData(playerUUID)) {
+                getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleDataWrapper(playerUUID, false));
                 ChatUtils.sendPlayerMessage(player, "&7Ability Toggled &cOFF");
             } else {
-                plugin.getStorageUtils().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleData(playerUUID, true));
+                getOriginListenerHandler().getListenerHandler().getPlugin().getStorageHandler().getArachnidAbilityToggleData().updateArachnidAbilityToggleData(playerUUID, new ArachnidAbilityToggleDataWrapper(playerUUID, true));
                 if (nextToWall(player) && !block.isLiquid()) {
                     arachnidClimb(player);
                 }
@@ -358,16 +370,16 @@ public class Arachnid extends Origin implements Listener {
      * Register arachnid cobweb move packet listener.
      */
     private void registerArachnidCobwebMovePacketListener() {
-        plugin.getProtocolManager().addPacketListener(
-                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
+        getOriginListenerHandler().getListenerHandler().getPlugin().getProtocolManager().addPacketListener(
+                new PacketAdapter(getOriginListenerHandler().getListenerHandler().getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
 
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
                 Player player = event.getPlayer();
                 Location playerLocation = player.getLocation();
-                UUID playerUUID = player.getUniqueId();
-                String playerOrigin = Arachnid.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                OriginPlayer originPlayer = new OriginPlayer(player);
+                String playerOrigin = originPlayer.getOrigin();
                 double x = packet.getDoubles().read(0);
                 double y = packet.getDoubles().read(1);
                 double z = packet.getDoubles().read(2);
@@ -482,7 +494,7 @@ public class Arachnid extends Origin implements Listener {
             public void run() {
                 block.setType(material);
             }
-        }.runTaskLater(plugin, 20L * 10);
+        }.runTaskLater(getOriginListenerHandler().getListenerHandler().getPlugin(), 20L * 10);
     }
 
     /**
@@ -493,8 +505,8 @@ public class Arachnid extends Origin implements Listener {
     @EventHandler
     private void arachnidEatingDisabilities(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         Material material = event.getItem().getType();
         List<Material> materials = Arrays.asList(
                 Material.COOKED_BEEF,

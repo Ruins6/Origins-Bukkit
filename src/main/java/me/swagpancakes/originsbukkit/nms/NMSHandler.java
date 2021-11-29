@@ -18,7 +18,7 @@
 package me.swagpancakes.originsbukkit.nms;
 
 import me.swagpancakes.originsbukkit.OriginsBukkit;
-import me.swagpancakes.originsbukkit.nms.mobs.NMSMobs;
+import me.swagpancakes.originsbukkit.nms.mobs.NMSMobHandler;
 import org.bukkit.Bukkit;
 
 /**
@@ -29,15 +29,24 @@ import org.bukkit.Bukkit;
 public class NMSHandler {
 
     private final OriginsBukkit plugin;
-    private NMSMobs nmsMobs;
+    private NMSMobHandler nmsMobHandler;
 
     /**
-     * Gets nms mobs.
+     * Gets plugin.
      *
-     * @return the nms mobs
+     * @return the plugin
      */
-    public NMSMobs getNMSMobs() {
-        return this.nmsMobs;
+    public OriginsBukkit getPlugin() {
+        return plugin;
+    }
+
+    /**
+     * Gets nms mob handler.
+     *
+     * @return the nms mob handler
+     */
+    public NMSMobHandler getNMSMobHandler() {
+        return nmsMobHandler;
     }
 
     /**
@@ -63,6 +72,6 @@ public class NMSHandler {
      * Init.
      */
     private void init() {
-        nmsMobs = new NMSMobs(this);
+        nmsMobHandler = new NMSMobHandler(this);
     }
 }

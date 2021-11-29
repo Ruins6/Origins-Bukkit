@@ -21,9 +21,9 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import me.swagpancakes.originsbukkit.OriginsBukkit;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
+import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
 import me.swagpancakes.originsbukkit.enums.Lang;
 import me.swagpancakes.originsbukkit.enums.Origins;
@@ -47,7 +47,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * The type Feline.
@@ -56,16 +55,25 @@ import java.util.UUID;
  */
 public class Feline extends Origin implements Listener {
 
-    private final OriginsBukkit plugin;
+    private final OriginListenerHandler originListenerHandler;
+
+    /**
+     * Gets origin listener handler.
+     *
+     * @return the origin listener handler
+     */
+    public OriginListenerHandler getOriginListenerHandler() {
+        return originListenerHandler;
+    }
 
     /**
      * Instantiates a new Feline.
      *
-     * @param plugin the plugin
+     * @param originListenerHandler the origin listener handler
      */
-    public Feline(OriginsBukkit plugin) {
+    public Feline(OriginListenerHandler originListenerHandler) {
         super(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
-        this.plugin = plugin;
+        this.originListenerHandler = originListenerHandler;
         init();
     }
 
@@ -133,8 +141,8 @@ public class Feline extends Origin implements Listener {
      * Init.
      */
     private void init() {
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        registerOrigin(getOriginIdentifier());
+        getOriginListenerHandler().getListenerHandler().getPlugin().getServer().getPluginManager().registerEvents(this, getOriginListenerHandler().getListenerHandler().getPlugin());
+        registerOrigin(this);
         registerFelineMovePacketListener();
     }
 
@@ -167,8 +175,8 @@ public class Feline extends Origin implements Listener {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            UUID playerUUID = player.getUniqueId();
-            String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+            OriginPlayer originPlayer = new OriginPlayer(player);
+            String playerOrigin = originPlayer.getOrigin();
             EntityDamageEvent.DamageCause damageCause = event.getCause();
 
             if (Objects.equals(playerOrigin, Origins.FELINE.toString())) {
@@ -187,8 +195,8 @@ public class Feline extends Origin implements Listener {
     @EventHandler
     private void felineBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
         Block block = event.getBlock();
 
         if (Objects.equals(playerOrigin, Origins.FELINE.toString())) {
@@ -249,8 +257,8 @@ public class Feline extends Origin implements Listener {
     @EventHandler
     private void felineSprintJump(PlayerToggleSprintEvent event) {
         Player player = event.getPlayer();
-        UUID playerUUID = player.getUniqueId();
-        String playerOrigin = plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+        OriginPlayer originPlayer = new OriginPlayer(player);
+        String playerOrigin = originPlayer.getOrigin();
 
         if (Objects.equals(playerOrigin, Origins.FELINE.toString())) {
             if (!player.isSprinting()) {
@@ -273,8 +281,8 @@ public class Feline extends Origin implements Listener {
         if (entity instanceof Creeper) {
             Location location = entity.getLocation();
 
-            if (!(plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().isModifiedCreeper(location, entity))) {
-                plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().summonModifiedCreeper(location);
+            if (!(getOriginListenerHandler().getListenerHandler().getPlugin().getNMSHandler().getNMSMobHandler().getModifiedCreeper().isModifiedCreeper(location, entity))) {
+                getOriginListenerHandler().getListenerHandler().getPlugin().getNMSHandler().getNMSMobHandler().getModifiedCreeper().summonModifiedCreeper(location);
                 entity.remove();
             }
         }
@@ -292,8 +300,8 @@ public class Feline extends Origin implements Listener {
         if (entity instanceof Creeper) {
             Location location = entity.getLocation();
 
-            if (!(plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().isModifiedCreeper(location, entity))) {
-                plugin.getNMSHandler().getNMSMobs().getModifiedCreeper().summonModifiedCreeper(location);
+            if (!(getOriginListenerHandler().getListenerHandler().getPlugin().getNMSHandler().getNMSMobHandler().getModifiedCreeper().isModifiedCreeper(location, entity))) {
+                getOriginListenerHandler().getListenerHandler().getPlugin().getNMSHandler().getNMSMobHandler().getModifiedCreeper().summonModifiedCreeper(location);
                 entity.remove();
             }
         }
@@ -303,14 +311,14 @@ public class Feline extends Origin implements Listener {
      * Register feline move packet listener.
      */
     private void registerFelineMovePacketListener() {
-        plugin.getProtocolManager().addPacketListener(
-                new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
+        getOriginListenerHandler().getListenerHandler().getPlugin().getProtocolManager().addPacketListener(
+                new PacketAdapter(getOriginListenerHandler().getListenerHandler().getPlugin(), ListenerPriority.NORMAL, PacketType.Play.Client.POSITION) {
 
                     @Override
                     public void onPacketReceiving(PacketEvent event) {
                         Player player = event.getPlayer();
-                        UUID playerUUID = player.getUniqueId();
-                        String playerOrigin = Feline.this.plugin.getStorageUtils().getPlayerOrigin(playerUUID);
+                        OriginPlayer originPlayer = new OriginPlayer(player);
+                        String playerOrigin = originPlayer.getOrigin();
 
                         if (Objects.equals(playerOrigin, Origins.FELINE.toString())) {
                             if (!player.isInWater()) {

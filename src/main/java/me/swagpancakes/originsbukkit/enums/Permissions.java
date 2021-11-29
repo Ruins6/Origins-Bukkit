@@ -25,7 +25,8 @@ public enum Permissions {
     USER("origins.user"),
     UPDATE("origins.commands.update"),
     PRUNE("origins.commands.prune"),
-    RELOAD("origins.commands.reload");
+    RELOAD("origins.commands.reload"),
+    GIVE("origins.commands.give");
 
     private final Object value;
 

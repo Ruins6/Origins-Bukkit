@@ -26,6 +26,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * The enum Config.
  */
 public enum Config {
+    NOTIFICATIONS_UPDATES("Config.Notifications.Updates", true),
+    WORLDS_OVERWORLD("Config.Worlds.Overworld", "world"),
+    WORLDS_NETHER("Config.Worlds.Nether", "world_nether"),
+    WORLDS_THE_END("Config.Worlds.The-End", "world_the_end"),
     ORIGINS_ENDERIAN_MAX_HEALTH("Config.Origins.Enderian.Max-Health", 20),
     ORIGINS_ENDERIAN_WATER_DAMAGE_AMOUNT("Config.Origins.Enderian.Water-Damage.Amount", 1),
     ORIGINS_ENDERIAN_WATER_DAMAGE_DELAY("Config.Origins.Enderian.Water-Damage.Delay", 0L),
