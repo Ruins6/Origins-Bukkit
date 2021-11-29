@@ -97,7 +97,7 @@
 
 ### Installation
 
-1. Download the latest .jar at [https://www.spigotmc.org/resources/COMING_SOON](https://www.spigotmc.org/resources/COMING_SOON)
+1. Download the latest .jar at [https://www.spigotmc.org/resources/origins-bukkit-1-17-1-17-1.97926/](https://www.spigotmc.org/resources/origins-bukkit-1-17-1-17-1.97926/)
 2. Drag and drop the .jar into your plugins folder
 3. Start the server
 
