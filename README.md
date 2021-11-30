@@ -124,7 +124,7 @@
 
 ##### Gradle
 
-````xml
+````gradle
 repositories {
     maven { url 'https://jitpack.io' }
 }
@@ -136,7 +136,7 @@ dependencies {
 
 ##### Sbt
 
-````xml
+````sbt
 resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies += "com.github.SwagPancakes" % "Origins-Bukkit" % "Build-1-BETA"
@@ -144,7 +144,7 @@ libraryDependencies += "com.github.SwagPancakes" % "Origins-Bukkit" % "Build-1-B
 
 ##### Leiningen
 
-````xml
+````clj
 :repositories [["jitpack" "https://jitpack.io"]]
 
 :dependencies [[com.github.SwagPancakes/Origins-Bukkit "Build-1-BETA"]]
