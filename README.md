@@ -203,17 +203,6 @@ Distributed under the GPL-3.0 License. See `LICENSE.txt` for more information.
 
 
 
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@SwagPannekaker](https://twitter.com/SwagPannekaker) - JiboyJUNE@gmail.com
-
-Project Link: [https://github.com/SwagPancakes/Origins-Bukkit](https://github.com/SwagPancakes/Origins-Bukkit)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
