@@ -97,9 +97,58 @@
 
 ### Installation
 
-1. Download the latest .jar at [https://www.spigotmc.org/resources/COMING_SOON](https://www.spigotmc.org/resources/COMING_SOON)
+1. Download the latest .jar at [https://www.spigotmc.org/resources/origins-bukkit-1-17-1-17-1.97926/](https://www.spigotmc.org/resources/origins-bukkit-1-17-1-17-1.97926/)
 2. Drag and drop the .jar into your plugins folder
 3. Start the server
+
+### Developer API
+
+##### Maven
+
+````xml
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>com.github.SwagPancakes</groupId>
+    <artifactId>Origins-Bukkit</artifactId>
+    <version>Build-1-BETA</version>
+  </dependency>
+</dependencies>
+````
+
+##### Gradle
+
+````gradle
+repositories {
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.SwagPancakes:Origins-Bukkit:Build-1-BETA'
+}
+````
+
+##### Sbt
+
+````sbt
+resolvers += "jitpack" at "https://jitpack.io"
+
+libraryDependencies += "com.github.SwagPancakes" % "Origins-Bukkit" % "Build-1-BETA"
+````
+
+##### Leiningen
+
+````clj
+:repositories [["jitpack" "https://jitpack.io"]]
+
+:dependencies [[com.github.SwagPancakes/Origins-Bukkit "Build-1-BETA"]]
+````
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -149,17 +198,6 @@ Don't forget to give the project a star! Thanks again!
 ## License
 
 Distributed under the GPL-3.0 License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@SwagPannekaker](https://twitter.com/SwagPannekaker) - JiboyJUNE@gmail.com
-
-Project Link: [https://github.com/SwagPancakes/Origins-Bukkit](https://github.com/SwagPancakes/Origins-Bukkit)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
