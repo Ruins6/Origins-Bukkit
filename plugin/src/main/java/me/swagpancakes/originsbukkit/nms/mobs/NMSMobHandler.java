@@ -19,7 +19,6 @@ package me.swagpancakes.originsbukkit.nms.mobs;
 
 import me.swagpancakes.originsbukkit.api.internal.ModifiedCreeper;
 import me.swagpancakes.originsbukkit.nms.NMSHandler;
-import me.swagpancakes.originsbukkit.util.ChatUtils;
 
 /**
  * The type Nms mob handler.
@@ -62,15 +61,13 @@ public class NMSMobHandler {
         String version = packageName.substring(packageName.lastIndexOf('.') + 1);
 
         try {
-            final Class<?> clazz = Class.forName("me.swagpancakes.originsbukkit.nms." + version + ".mobs.modifiedcreeper.EntityModifiedCreeper");
+            final Class<?> clazz = Class.forName("me.swagpancakes.originsbukkit.nms." + version + ".mobs.modifiedcreeper.EntityModifiedCreeperImpl");
 
             if (ModifiedCreeper.class.isAssignableFrom(clazz)) {
                 this.modifiedCreeper = (ModifiedCreeper) clazz.getConstructor().newInstance();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            ChatUtils.sendConsoleMessage("&cCould not find support for this CraftBukkit version.");
-            ChatUtils.sendConsoleMessage("&eCheck for updates at URL HERE");
         }
     }
 }

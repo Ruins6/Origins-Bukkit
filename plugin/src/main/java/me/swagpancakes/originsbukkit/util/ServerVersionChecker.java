@@ -20,6 +20,10 @@ package me.swagpancakes.originsbukkit.util;
 import me.swagpancakes.originsbukkit.OriginsBukkit;
 import org.bukkit.Bukkit;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * The type Server version checker.
  *
@@ -28,6 +32,8 @@ import org.bukkit.Bukkit;
 public class ServerVersionChecker {
 
     private final OriginsBukkit plugin;
+    private final List<String> SUPPORTED_VERSIONS = new ArrayList<>(
+            Arrays.asList("1.17", "1.17.1", "1.18"));
 
     /**
      * Instantiates a new Server version checker.
@@ -106,7 +112,7 @@ public class ServerVersionChecker {
      * Check server version compatibility.
      */
     public void checkServerVersionCompatibility() {
-        if (getServerVersion().equals("1.17") || getServerVersion().equals("1.17.1")) {
+        if (SUPPORTED_VERSIONS.contains(getServerVersion())) {
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit]");
             ChatUtils.sendConsoleMessage("&3[Origins-Bukkit] &dSupported Server Version Detected. Initializing!");
         } else {

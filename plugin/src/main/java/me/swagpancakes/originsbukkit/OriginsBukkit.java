@@ -349,42 +349,44 @@ public final class OriginsBukkit extends JavaPlugin {
      * Close all player inventory.
      */
     private void closeAllPlayerInventory() {
-        getListenerHandler().getPlayerOriginChecker().closeAllOriginPickerGui();
+        if (getListenerHandler() != null) {
+            getListenerHandler().getPlayerOriginChecker().closeAllOriginPickerGui();
 
-        for (Player player : getListenerHandler().getOriginListenerHandler().getShulk().getShulkInventoryViewers()) {
-            UUID playerUUID = player.getUniqueId();
+            for (Player player : getListenerHandler().getOriginListenerHandler().getShulk().getShulkInventoryViewers()) {
+                UUID playerUUID = player.getUniqueId();
 
-            if (player.getOpenInventory().getTitle().equals(player.getName() + "'s Vault")) {
-                Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
+                if (player.getOpenInventory().getTitle().equals(player.getName() + "'s Vault")) {
+                    Map<UUID, ItemStack[]> shulkPlayerStorageData = new HashMap<>();
 
-                shulkPlayerStorageData.put(playerUUID, player.getOpenInventory().getTopInventory().getContents());
-                String s = File.separator;
-                File shulkPlayerStorageDataFile = new File(getDataFolder(), s + "cache" + s + "shulkdata" + s + "inventoriesdata" + s + playerUUID + ".yml");
+                    shulkPlayerStorageData.put(playerUUID, player.getOpenInventory().getTopInventory().getContents());
+                    String s = File.separator;
+                    File shulkPlayerStorageDataFile = new File(getDataFolder(), s + "cache" + s + "shulkdata" + s + "inventoriesdata" + s + playerUUID + ".yml");
 
-                if (!shulkPlayerStorageDataFile.getParentFile().exists()) {
-                    shulkPlayerStorageDataFile.getParentFile().mkdirs();
-                }
-                if (!shulkPlayerStorageDataFile.exists()) {
+                    if (!shulkPlayerStorageDataFile.getParentFile().exists()) {
+                        shulkPlayerStorageDataFile.getParentFile().mkdirs();
+                    }
+                    if (!shulkPlayerStorageDataFile.exists()) {
+                        try {
+                            shulkPlayerStorageDataFile.createNewFile();
+                        } catch (IOException event) {
+                            event.printStackTrace();
+                        }
+                    }
+                    FileConfiguration shulkPlayerStorageDataConf = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
+
+                    for (Map.Entry<UUID, ItemStack[]> entry : shulkPlayerStorageData.entrySet()) {
+                        if (entry.getKey().equals(playerUUID)) {
+                            shulkPlayerStorageDataConf.set("data." + entry.getKey(), entry.getValue());
+                        }
+                    }
                     try {
-                        shulkPlayerStorageDataFile.createNewFile();
+                        shulkPlayerStorageDataConf.save(shulkPlayerStorageDataFile);
                     } catch (IOException event) {
                         event.printStackTrace();
                     }
                 }
-                FileConfiguration shulkPlayerStorageDataConf = YamlConfiguration.loadConfiguration(shulkPlayerStorageDataFile);
-
-                for (Map.Entry<UUID, ItemStack[]> entry : shulkPlayerStorageData.entrySet()) {
-                    if (entry.getKey().equals(playerUUID)) {
-                        shulkPlayerStorageDataConf.set("data." + entry.getKey(), entry.getValue());
-                    }
-                }
-                try {
-                    shulkPlayerStorageDataConf.save(shulkPlayerStorageDataFile);
-                } catch (IOException event) {
-                    event.printStackTrace();
-                }
+                player.closeInventory();
             }
-            player.closeInventory();
         }
     }
 
