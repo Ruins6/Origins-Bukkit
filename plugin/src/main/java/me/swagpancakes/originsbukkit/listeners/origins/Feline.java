@@ -305,7 +305,7 @@ public class Feline extends Origin implements Listener {
                     .getNMSHandler()
                     .getNMSMobHandler()
                     .getModifiedCreeper()
-                    .isModifiedCreeper(location, entity))) {
+                    .isModifiedCreeper(entity))) {
                 getOriginListenerHandler()
                         .getListenerHandler()
                         .getPlugin()
@@ -336,7 +336,7 @@ public class Feline extends Origin implements Listener {
                     .getNMSHandler()
                     .getNMSMobHandler()
                     .getModifiedCreeper()
-                    .isModifiedCreeper(location, entity))) {
+                    .isModifiedCreeper(entity))) {
                 getOriginListenerHandler()
                         .getListenerHandler()
                         .getPlugin()

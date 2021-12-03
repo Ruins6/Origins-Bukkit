@@ -66,7 +66,19 @@ public class NMSHandler {
      * @return the nms server version
      */
     public String getNMSServerVersion() {
-        return Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+        return Bukkit.getServer()
+                .getClass()
+                .getPackage()
+                .getName()
+                .replace(".", ",")
+                .split(",")[3];
+    }
+
+    public String getNMSPackageName() {
+        return Bukkit.getServer()
+                .getClass()
+                .getPackage()
+                .getName();
     }
 
     /**

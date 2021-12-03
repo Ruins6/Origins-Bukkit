@@ -17,8 +17,9 @@
  */
 package me.swagpancakes.originsbukkit.nms.mobs;
 
+import me.swagpancakes.originsbukkit.api.internal.ModifiedCreeper;
 import me.swagpancakes.originsbukkit.nms.NMSHandler;
-import me.swagpancakes.originsbukkit.nms.mobs.modifiedcreeper.ModifiedCreeperHandler;
+import me.swagpancakes.originsbukkit.util.ChatUtils;
 
 /**
  * The type Nms mob handler.
@@ -28,7 +29,7 @@ import me.swagpancakes.originsbukkit.nms.mobs.modifiedcreeper.ModifiedCreeperHan
 public class NMSMobHandler {
 
     private final NMSHandler nmsHandler;
-    private ModifiedCreeperHandler modifiedCreeperHandler;
+    private ModifiedCreeper modifiedCreeper;
 
     /**
      * Gets nms handler.
@@ -39,13 +40,8 @@ public class NMSMobHandler {
         return nmsHandler;
     }
 
-    /**
-     * Gets modified creeper.
-     *
-     * @return the modified creeper
-     */
-    public ModifiedCreeperHandler getModifiedCreeper() {
-        return modifiedCreeperHandler;
+    public ModifiedCreeper getModifiedCreeper() {
+        return modifiedCreeper;
     }
 
     /**
@@ -62,6 +58,19 @@ public class NMSMobHandler {
      * Init.
      */
     private void init() {
-        modifiedCreeperHandler = new ModifiedCreeperHandler(this);
+        String packageName = getNMSHandler().getNMSPackageName();
+        String version = packageName.substring(packageName.lastIndexOf('.') + 1);
+
+        try {
+            final Class<?> clazz = Class.forName("me.swagpancakes.originsbukkit.nms." + version + ".mobs.modifiedcreeper.EntityModifiedCreeper");
+
+            if (ModifiedCreeper.class.isAssignableFrom(clazz)) {
+                this.modifiedCreeper = (ModifiedCreeper) clazz.getConstructor().newInstance();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            ChatUtils.sendConsoleMessage("&cCould not find support for this CraftBukkit version.");
+            ChatUtils.sendConsoleMessage("&eCheck for updates at URL HERE");
+        }
     }
 }

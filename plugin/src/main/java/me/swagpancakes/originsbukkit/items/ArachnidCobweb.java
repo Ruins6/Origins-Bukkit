@@ -43,18 +43,18 @@ public class ArachnidCobweb {
     }
 
     /**
-     * Gets cobweb.
+     * Gets item stack.
      *
-     * @return the cobweb
+     * @return the item stack
      */
     public ItemStack getItemStack() {
         return cobweb;
     }
 
     /**
-     * Gets cobweb recipe.
+     * Gets recipe.
      *
-     * @return the cobweb recipe
+     * @return the recipe
      */
     public ShapelessRecipe getRecipe() {
         return cobwebRecipe;

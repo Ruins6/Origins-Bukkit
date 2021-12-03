@@ -21,8 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import javax.annotation.Nullable;
-
 /**
  * The type Origin change event.
  *
@@ -42,7 +40,7 @@ public class OriginChangeEvent extends Event {
      * @param oldOrigin the old origin
      * @param newOrigin the new origin
      */
-    public OriginChangeEvent(Player player, @Nullable String oldOrigin, @Nullable String newOrigin) {
+    public OriginChangeEvent(Player player, String oldOrigin, String newOrigin) {
         this.player = player;
         this.oldOrigin = oldOrigin;
         this.newOrigin = newOrigin;

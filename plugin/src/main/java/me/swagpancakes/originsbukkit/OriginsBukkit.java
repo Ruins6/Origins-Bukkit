@@ -132,6 +132,11 @@ public final class OriginsBukkit extends JavaPlugin {
         return utilHandler;
     }
 
+    /**
+     * Gets nms handler.
+     *
+     * @return the nms handler
+     */
     public NMSHandler getNMSHandler() {
         return nmsHandler;
     }
@@ -197,6 +202,9 @@ public final class OriginsBukkit extends JavaPlugin {
 
             ChatUtils.sendConsoleMessage("&a[Origins-Bukkit] Plugin has been enabled!");
         }
+        /////////////////////////////////
+
+
     }
 
     /**
