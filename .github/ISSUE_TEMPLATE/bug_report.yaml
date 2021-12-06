@@ -17,7 +17,7 @@ body:
       label: 'Minecraft Server''s Version and Software'
       description: |
         The minecraft server's version and software. 
-        Type the command "/version (aliases: /ver, /icanhasbukkit)"
+        Use the command "/version (aliases: /ver, /icanhasbukkit)"
         to find which version and software you use.
       placeholder: |
         [Insert minecraft version and server software.]
@@ -30,7 +30,7 @@ body:
       label: 'Plugin''s Version'
       description: |
         The plugin's version.
-        Type the command "/version Origins-Bukkit" and find out which version.
+        Use the command "/version Origins-Bukkit" to find out which version
         of the plugin you used. (Make sure to always keep it up to date)
       placeholder: |
         [Insert plugin version and if it is a pre-release]
