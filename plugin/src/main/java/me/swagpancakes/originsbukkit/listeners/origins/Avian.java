@@ -17,6 +17,7 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
@@ -73,7 +74,9 @@ public class Avian extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Avian(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble(), 0.25f, 0.1f);
+        super(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_AVIAN_WALK_SPEED.toFloat(),
+                Config.ORIGINS_AVIAN_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -174,12 +177,22 @@ public class Avian extends Origin implements Listener {
         String origin = event.getOrigin();
 
         if (Objects.equals(origin, Origins.AVIAN.toString())) {
-            player.setHealthScale(Config.ORIGINS_AVIAN_MAX_HEALTH.toDouble());
-            player.setWalkSpeed(0.3F);
             avianSlowFalling(player);
-        } else {
+        }
+    }
+
+    /**
+     * On origin change.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void onOriginChange(OriginChangeEvent event) {
+        Player player = event.getPlayer();
+        String oldOrigin = event.getOldOrigin();
+
+        if (Objects.equals(oldOrigin, Origins.AVIAN.toString())) {
             player.removePotionEffect(PotionEffectType.SLOW_FALLING);
-            player.setWalkSpeed(0.2F);
         }
     }
 

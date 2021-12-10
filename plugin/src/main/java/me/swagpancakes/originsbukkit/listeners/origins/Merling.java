@@ -23,6 +23,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
@@ -78,7 +79,9 @@ public class Merling extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Merling(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_MERLING_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_MERLING_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_MERLING_WALK_SPEED.toFloat(),
+                Config.ORIGINS_MERLING_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -181,8 +184,22 @@ public class Merling extends Origin implements Listener {
         String origin = event.getOrigin();
 
         if (Objects.equals(origin, Origins.MERLING.toString())) {
-            player.setHealthScale(Config.ORIGINS_MERLING_MAX_HEALTH.toDouble());
             merlingWaterBreathing(player);
+        }
+    }
+
+    /**
+     * On origin change.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void onOriginChange(OriginChangeEvent event) {
+        Player player = event.getPlayer();
+        String oldOrigin = event.getOldOrigin();
+
+        if (Objects.equals(oldOrigin, Origins.MERLING.toString())) {
+            player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         }
     }
 

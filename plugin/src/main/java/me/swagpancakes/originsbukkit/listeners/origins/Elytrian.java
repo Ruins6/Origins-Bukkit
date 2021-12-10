@@ -80,7 +80,9 @@ public class Elytrian extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Elytrian(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_ELYTRIAN_WALK_SPEED.toFloat(),
+                Config.ORIGINS_ELYTRIAN_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -182,7 +184,6 @@ public class Elytrian extends Origin implements Listener {
         String origin = event.getOrigin();
 
         if (Objects.equals(origin, Origins.ELYTRIAN.toString())) {
-            player.setHealthScale(Config.ORIGINS_ELYTRIAN_MAX_HEALTH.toDouble());
             elytrianElytra(player);
             elytrianClaustrophobiaTimer(player);
         } else {

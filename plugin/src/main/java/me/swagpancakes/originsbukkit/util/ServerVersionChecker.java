@@ -33,7 +33,7 @@ public class ServerVersionChecker {
 
     private final OriginsBukkit plugin;
     private final List<String> SUPPORTED_VERSIONS = new ArrayList<>(
-            Arrays.asList("1.17", "1.17.1", "1.18"));
+            Arrays.asList("1.17", "1.17.1", "1.18", "1.18.1"));
 
     /**
      * Instantiates a new Server version checker.

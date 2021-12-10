@@ -72,7 +72,9 @@ public class Enderian extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Enderian(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_ENDERIAN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_ENDERIAN_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_ENDERIAN_WALK_SPEED.toFloat(),
+                Config.ORIGINS_ENDERIAN_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -175,7 +177,6 @@ public class Enderian extends Origin implements Listener {
         String origin = event.getOrigin();
 
         if (Objects.equals(origin, Origins.ENDERIAN.toString())) {
-            player.setHealthScale(Config.ORIGINS_ENDERIAN_MAX_HEALTH.toDouble());
             enderianPlayersInWater.add(player);
             enderianEnderParticles(player);
         }

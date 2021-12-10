@@ -79,14 +79,14 @@ public class KeyListener implements Listener {
         String playerOrigin = originPlayer.getOrigin();
 
         if (player.isSneaking()) {
-            if (getListenerHandler().getPlugin().getOrigins().contains(playerOrigin)) {
-                for (String origin : getListenerHandler().getPlugin().getOrigins()) {
-                    if (Objects.equals(origin, playerOrigin)) {
-                        PlayerOriginAbilityUseEvent playerOriginAbilityUseEvent = new PlayerOriginAbilityUseEvent(player, origin);
+            if (getListenerHandler().getPlugin().getOrigins().containsKey(playerOrigin)) {
+                getListenerHandler().getPlugin().getOrigins().forEach((key, value) -> {
+                    if (Objects.equals(key, playerOrigin)) {
+                        PlayerOriginAbilityUseEvent playerOriginAbilityUseEvent = new PlayerOriginAbilityUseEvent(player, key);
                         Bukkit.getPluginManager().callEvent(playerOriginAbilityUseEvent);
                         event.setCancelled(true);
                     }
-                }
+                });
             }
         }
     }

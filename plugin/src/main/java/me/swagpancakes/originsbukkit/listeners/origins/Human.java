@@ -17,17 +17,11 @@
  */
 package me.swagpancakes.originsbukkit.listeners.origins;
 
-import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.enums.Impact;
 import me.swagpancakes.originsbukkit.enums.Lang;
-import me.swagpancakes.originsbukkit.enums.Origins;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.Objects;
 
 /**
  * The type Human.
@@ -141,20 +135,5 @@ public class Human extends Origin implements Listener {
                         .getListenerHandler()
                         .getPlugin());
         registerOrigin(this);
-    }
-
-    /**
-     * Human join.
-     *
-     * @param event the event
-     */
-    @EventHandler
-    private void humanJoin(PlayerOriginInitiateEvent event) {
-        Player player = event.getPlayer();
-        String origin = event.getOrigin();
-
-        if (Objects.equals(origin, Origins.HUMAN.toString())) {
-            player.setHealthScale((10) * 2);
-        }
     }
 }

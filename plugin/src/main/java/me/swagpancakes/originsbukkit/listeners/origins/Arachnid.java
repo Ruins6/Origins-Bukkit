@@ -22,8 +22,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
-import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
@@ -82,7 +82,9 @@ public class Arachnid extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Arachnid(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_ARACHNID_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_ARACHNID_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_ARACHNID_WALK_SPEED.toFloat(),
+                Config.ORIGINS_ARACHNID_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -174,25 +176,32 @@ public class Arachnid extends Origin implements Listener {
     }
 
     /**
-     * Arachnid join.
+     * On origin change.
      *
      * @param event the event
      */
     @EventHandler
-    private void arachnidJoin(PlayerOriginInitiateEvent event) {
+    private void onOriginChange(OriginChangeEvent event) {
         Player player = event.getPlayer();
-        String origin = event.getOrigin();
+        Location location = player.getLocation();
+        Block block = location.getBlock();
+        Block block1 = location.add(0, 1, 0).getBlock();
+        Material material = block.getType();
+        Material material1 = block1.getType();
+        String oldOrigin = event.getOldOrigin();
+        String newOrigin = event.getNewOrigin();
 
-        if (Objects.equals(origin, Origins.ARACHNID.toString())) {
-            player.setHealthScale(getMaxHealth());
-        } else {
-            if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
-                player.setFlySpeed(0.1F);
-                player.setAllowFlight(false);
-                player.setFlying(false);
-            } else {
-                player.setFlySpeed(0.1F);
-                player.setAllowFlight(true);
+        if (Objects.equals(oldOrigin, Origins.ARACHNID.toString())) {
+            if (player.getAllowFlight()) {
+                if (material == Material.COBWEB || material1 == Material.COBWEB) {
+                    if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
+                        player.setFlying(false);
+                        player.setAllowFlight(false);
+                    }
+                    if (newOrigin == null) {
+                        player.setFlySpeed(0.1f);
+                    }
+                }
             }
         }
     }
@@ -412,13 +421,11 @@ public class Arachnid extends Origin implements Listener {
                 Location location = new Location(world, x, y, z);
                 Block block = location.getBlock();
                 Block block1 = location.add(0, 1, 0).getBlock();
-                Block block2 = location.subtract(0, 1, 0).getBlock();
                 Material material = block.getType();
                 Material material1 = block1.getType();
-                Material material2 = block2.getType();
 
                 if (Objects.equals(playerOrigin, Origins.ARACHNID.toString())) {
-                    if (material == Material.COBWEB || material1 == Material.COBWEB || material2 == Material.COBWEB || nextToCobweb(player)) {
+                    if (material == Material.COBWEB || material1 == Material.COBWEB || nextToCobweb(player)) {
                         if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
                             if (!player.isFlying()) {
                                 new BukkitRunnable() {

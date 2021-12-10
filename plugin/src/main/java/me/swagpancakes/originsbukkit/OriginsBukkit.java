@@ -19,6 +19,7 @@ package me.swagpancakes.originsbukkit;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.commands.CommandHandler;
 import me.swagpancakes.originsbukkit.config.ConfigHandler;
@@ -57,7 +58,8 @@ import java.util.*;
 public final class OriginsBukkit extends JavaPlugin {
 
     private static OriginsBukkit plugin;
-    private final List<String> origins = new ArrayList<>();
+    private final Map<String, Origin> origins = new HashMap<>();
+    private final List<String> originsList = new ArrayList<>();
     private final List<Inventory> originsInventoryGUI = new ArrayList<>();
     private ServerVersionChecker serverVersionChecker;
     private ItemHandler itemHandler;
@@ -83,8 +85,17 @@ public final class OriginsBukkit extends JavaPlugin {
      *
      * @return the origins
      */
-    public List<String> getOrigins() {
+    public Map<String, Origin> getOrigins() {
         return origins;
+    }
+
+    /**
+     * Gets origins list.
+     *
+     * @return the origins list
+     */
+    public List<String> getOriginsList() {
+        return originsList;
     }
 
     /**

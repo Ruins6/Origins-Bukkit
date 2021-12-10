@@ -76,7 +76,7 @@ public class Update {
                 } else if (args.length == 3) {
                     Player target = Bukkit.getPlayer(args[1]);
                     String origin = args[2];
-                    List<String> origins = getMainCommand().getCommandHandler().getPlugin().getOrigins();
+                    List<String> origins = getMainCommand().getCommandHandler().getPlugin().getOriginsList();
 
                     if (target != null) {
                         UUID playerUUID = target.getUniqueId();
@@ -114,7 +114,7 @@ public class Update {
             } else if (args.length == 3) {
                 Player target = Bukkit.getPlayer(args[1]);
                 String origin = args[2];
-                List<String> origins = getMainCommand().getCommandHandler().getPlugin().getOrigins();
+                List<String> origins = getMainCommand().getCommandHandler().getPlugin().getOriginsList();
 
                 if (target != null) {
                     UUID playerUUID = target.getUniqueId();
@@ -178,7 +178,7 @@ public class Update {
                 } else if (args.length == 3) {
                     if (args[0].equalsIgnoreCase("update")) {
                         List<String> originsList = new ArrayList<>();
-                        for (String origins : getMainCommand().getCommandHandler().getPlugin().getOrigins()) {
+                        for (String origins : getMainCommand().getCommandHandler().getPlugin().getOriginsList()) {
                             if (origins.startsWith(args[2])) {
                                 originsList.add(origins);
                             }
@@ -208,7 +208,7 @@ public class Update {
             } else if (args.length == 3) {
                 if (args[0].equalsIgnoreCase("update")) {
                     List<String> originsList = new ArrayList<>();
-                    for (String origins : getMainCommand().getCommandHandler().getPlugin().getOrigins()) {
+                    for (String origins : getMainCommand().getCommandHandler().getPlugin().getOriginsList()) {
                         if (origins.startsWith(args[2])) {
                             originsList.add(origins);
                         }

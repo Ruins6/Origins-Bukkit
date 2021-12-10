@@ -77,7 +77,9 @@ public class Phantom extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Phantom(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_PHANTOM_WALK_SPEED.toFloat(),
+                Config.ORIGINS_PHANTOM_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -182,7 +184,6 @@ public class Phantom extends Origin implements Listener {
         boolean isToggled = originPlayer.getPhantomAbilityToggleData();
 
         if (Objects.equals(origin, Origins.PHANTOM.toString())) {
-            player.setHealthScale(Config.ORIGINS_PHANTOM_MAX_HEALTH.toDouble());
             if (!isToggled) {
                 getOriginListenerHandler()
                         .getListenerHandler()

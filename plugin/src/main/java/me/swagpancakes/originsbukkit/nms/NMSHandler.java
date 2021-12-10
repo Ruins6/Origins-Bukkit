@@ -74,6 +74,11 @@ public class NMSHandler {
                 .split(",")[3];
     }
 
+    /**
+     * Gets nms package name.
+     *
+     * @return the nms package name
+     */
     public String getNMSPackageName() {
         return Bukkit.getServer()
                 .getClass()

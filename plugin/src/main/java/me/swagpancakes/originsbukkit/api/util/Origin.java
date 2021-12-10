@@ -104,8 +104,9 @@ public abstract class Origin implements OriginInterface {
                         if (originIcon != null) {
                             if (originIcon != Material.AIR) {
                                 if (originImpact != null) {
-                                    if (!OriginsBukkit.getPlugin().getOrigins().contains(originIdentifier)) {
-                                        OriginsBukkit.getPlugin().getOrigins().add(originIdentifier);
+                                    if (!OriginsBukkit.getPlugin().getOrigins().containsKey(originIdentifier)) {
+                                        OriginsBukkit.getPlugin().getOrigins().put(originIdentifier, origin);
+                                        OriginsBukkit.getPlugin().getOriginsList().add(originIdentifier);
                                         Inventory inventory = Bukkit.createInventory(null, 54, ChatUtils.format("&0Choose your Origin."));
                                         inventory.setItem(22, createGuiItem(originIcon, 1,
                                                 originTitle,

@@ -39,6 +39,11 @@ public class NMSMobHandler {
         return nmsHandler;
     }
 
+    /**
+     * Gets modified creeper.
+     *
+     * @return the modified creeper
+     */
     public ModifiedCreeper getModifiedCreeper() {
         return modifiedCreeper;
     }

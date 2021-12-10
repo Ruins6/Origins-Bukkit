@@ -69,7 +69,9 @@ public class Blazeborn extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Blazeborn(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_BLAZEBORN_WALK_SPEED.toFloat(),
+                Config.ORIGINS_BLAZEBORN_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -173,7 +175,6 @@ public class Blazeborn extends Origin implements Listener {
         OriginPlayer originPlayer = new OriginPlayer(player);
 
         if (Objects.equals(origin, Origins.BLAZEBORN.toString())) {
-            player.setHealthScale(Config.ORIGINS_BLAZEBORN_MAX_HEALTH.toDouble());
             blazebornPlayersInWater.add(player);
             blazebornFlameParticles(player);
 

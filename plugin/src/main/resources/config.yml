@@ -70,6 +70,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 20 (For this origin)
       Max-Health: 20
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
       Water-Damage:
         # The amount of damage dealt when they're in water.
         # 1 = 0.5 hearts
@@ -98,6 +105,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 20 (For this origin)
       Max-Health: 20
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
       Air-Breathing:
         # The maximum amount of time the player can breathe when not in water.
         # In seconds, increment/decrement = 1 second
@@ -139,6 +153,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 14 (For this origin)
       Max-Health: 14
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
 
     ############################################################
     # +------------------------------------------------------+ #
@@ -150,6 +171,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 20 (For this origin)
       Max-Health: 20
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
       Ability:
         Y-Velocity: 2.1
         # Determines how long the player can perform this ability again.
@@ -167,6 +195,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 20 (For this origin)
       Max-Health: 20
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
       Water-Damage:
         # The amount of damage dealt when they're in water.
         # 1 = 0.5 hearts
@@ -190,6 +225,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 20 (For this origin)
       Max-Health: 20
+      # The walk speed for this origin.
+      # Default: 0.275 (For this origin)
+      Walk-Speed: 0.275
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
 
     ############################################################
     # +------------------------------------------------------+ #
@@ -201,6 +243,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 14 (For this origin)
       Max-Health: 14
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
       Ability:
         Climbing:
           # Determines how fast the player can climb walls.
@@ -221,6 +270,13 @@ Config:
       # 1 = 0.5 hearts
       # Default: 20 (For this origin)
       Max-Health: 20
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1
       Ability:
         # The speed when player breaks stone or netherrack without tools.
         # Max Speed: 127 (Tested)
@@ -237,3 +293,10 @@ Config:
       # 1 = 0.5 hearts
       # Default: 18 (For this origin)
       Max-Health: 18
+      # The walk speed for this origin.
+      # Default: 0.2 (For this origin)
+      Walk-Speed: 0.2
+      # The fly speed for this origin.
+      # Ignored if origin is not a flying-type origin.
+      # Default: 0.1
+      Fly-Speed: 0.1

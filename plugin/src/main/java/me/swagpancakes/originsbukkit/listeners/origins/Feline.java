@@ -21,7 +21,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
 import me.swagpancakes.originsbukkit.api.wrappers.OriginPlayer;
 import me.swagpancakes.originsbukkit.enums.Config;
@@ -73,7 +73,9 @@ public class Feline extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Feline(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_FELINE_WALK_SPEED.toFloat(),
+                Config.ORIGINS_FELINE_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -165,18 +167,16 @@ public class Feline extends Origin implements Listener {
     }
 
     /**
-     * Feline join.
+     * On origin change.
      *
      * @param event the event
      */
     @EventHandler
-    private void felineJoin(PlayerOriginInitiateEvent event) {
+    private void onOriginChange(OriginChangeEvent event) {
         Player player = event.getPlayer();
-        String origin = event.getOrigin();
+        String oldOrigin = event.getOldOrigin();
 
-        if (Objects.equals(origin, Origins.FELINE.toString())) {
-            player.setHealthScale(Config.ORIGINS_FELINE_MAX_HEALTH.toDouble());
-        } else {
+        if (Objects.equals(oldOrigin, Origins.FELINE.toString())) {
             player.removePotionEffect(PotionEffectType.JUMP);
             player.removePotionEffect(PotionEffectType.NIGHT_VISION);
         }

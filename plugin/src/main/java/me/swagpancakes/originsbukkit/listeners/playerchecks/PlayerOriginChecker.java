@@ -159,13 +159,16 @@ public class PlayerOriginChecker implements Listener {
 
         resetPlayer(player);
         if (originsPlayerDataWrapper != null) {
-            if (getListenerHandler().getPlugin().getOrigins().contains(playerOrigin)) {
-                for (String origin : getListenerHandler().getPlugin().getOrigins()) {
-                    if (Objects.equals(origin, playerOrigin)) {
-                        PlayerOriginInitiateEvent playerOriginInitiateEvent = new PlayerOriginInitiateEvent(player, origin);
+            if (getListenerHandler().getPlugin().getOrigins().containsKey(playerOrigin)) {
+                getListenerHandler().getPlugin().getOrigins().forEach((key, value) -> {
+                    if (Objects.equals(key, playerOrigin)) {
+                        player.setHealthScale(value.getMaxHealth());
+                        player.setWalkSpeed(value.getWalkSpeed());
+                        player.setFlySpeed(value.getFlySpeed());
+                        PlayerOriginInitiateEvent playerOriginInitiateEvent = new PlayerOriginInitiateEvent(player, key);
                         Bukkit.getPluginManager().callEvent(playerOriginInitiateEvent);
                     }
-                }
+                });
             } else {
                 ChatUtils.sendPlayerMessage(player, "&cYour origin (" + playerOrigin + ") doesn't exist so we pruned your player data.");
                 getListenerHandler().getPlugin().getStorageHandler().getOriginsPlayerData().deleteOriginsPlayerData(playerUUID);
@@ -259,13 +262,13 @@ public class PlayerOriginChecker implements Listener {
                         }
                     }
                     if (event.getRawSlot() == 22){
-                        for (String origin : getListenerHandler().getPlugin().getOrigins()) {
-                            if (clickedItem.getItemMeta() != null) {
-                                if (origin.equals(clickedItem.getItemMeta().getLocalizedName())) {
-                                    executeOriginPickerGuiOriginOption(player, origin);
+                        if (clickedItem.getItemMeta() != null) {
+                            getListenerHandler().getPlugin().getOrigins().forEach((key, value) -> {
+                                if (key.equals(clickedItem.getItemMeta().getLocalizedName())) {
+                                    executeOriginPickerGuiOriginOption(player, key);
                                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_HARP, 1f, 1f);
                                 }
-                            }
+                            });
                         }
                     }
                 }

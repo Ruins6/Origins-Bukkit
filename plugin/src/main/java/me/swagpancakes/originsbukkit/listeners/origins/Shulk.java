@@ -24,6 +24,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
+import me.swagpancakes.originsbukkit.api.events.OriginChangeEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginAbilityUseEvent;
 import me.swagpancakes.originsbukkit.api.events.PlayerOriginInitiateEvent;
 import me.swagpancakes.originsbukkit.api.util.Origin;
@@ -94,7 +95,9 @@ public class Shulk extends Origin implements Listener {
      * @param originListenerHandler the origin listener handler
      */
     public Shulk(OriginListenerHandler originListenerHandler) {
-        super(Config.ORIGINS_SHULK_MAX_HEALTH.toDouble(), 0.2f, 0.1f);
+        super(Config.ORIGINS_SHULK_MAX_HEALTH.toDouble(),
+                Config.ORIGINS_SHULK_WALK_SPEED.toFloat(),
+                Config.ORIGINS_SHULK_FLY_SPEED.toFloat());
         this.originListenerHandler = originListenerHandler;
         init();
     }
@@ -204,7 +207,6 @@ public class Shulk extends Origin implements Listener {
                 if (!(defaultBaseValue >= 8))
                 genericArmorAttribute.setBaseValue(defaultBaseValue + 8);
             }
-            player.setHealthScale(Config.ORIGINS_SHULK_MAX_HEALTH.toDouble());
             if (!getOriginListenerHandler()
                     .getListenerHandler()
                     .getPlugin()
@@ -223,7 +225,21 @@ public class Shulk extends Origin implements Listener {
                     e.printStackTrace();
                 }
             }
-        } else {
+        }
+    }
+
+    /**
+     * On origin change.
+     *
+     * @param event the event
+     */
+    @EventHandler
+    private void onOriginChange(OriginChangeEvent event) {
+        Player player = event.getPlayer();
+        AttributeInstance genericArmorAttribute = player.getAttribute(Attribute.GENERIC_ARMOR);
+        String oldOrigin = event.getOldOrigin();
+
+        if (Objects.equals(oldOrigin, Origins.SHULK.toString())) {
             if (genericArmorAttribute != null) {
                 double modifiedBaseValue = genericArmorAttribute.getBaseValue();
 
