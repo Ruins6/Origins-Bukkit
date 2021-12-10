@@ -133,6 +133,9 @@ public class Help {
         if (player.hasPermission(Permissions.RELOAD.toString())) {
             ChatUtils.sendCommandSenderMessage(player, "&e/origins &creload &b- Reloads the files");
         }
+        if (player.hasPermission(Permissions.GIVE.toString())) {
+            ChatUtils.sendCommandSenderMessage(player, "&e/origins &cgive &6<player> <item> &a[amount] &b- Gives the player origins items");
+        }
     }
 
     /**
@@ -147,5 +150,6 @@ public class Help {
         ChatUtils.sendCommandSenderMessage(commandSender, "&e/origins &cupdate &6<player> <new origin>&r &b- Updates player origin");
         ChatUtils.sendCommandSenderMessage(commandSender, "&e/origins &cprune &6<player>&r &b- Deletes the player's origin data");
         ChatUtils.sendCommandSenderMessage(commandSender, "&e/origins &creload &b- Reloads the files");
+        ChatUtils.sendCommandSenderMessage(commandSender, "&e/origins &cgive &6<player> <item> &a[amount] &b- Gives the player origins items");
     }
 }

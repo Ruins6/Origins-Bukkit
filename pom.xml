@@ -6,11 +6,12 @@
 
     <groupId>me.swagpancakes</groupId>
     <artifactId>originsbukkit</artifactId>
-    <version>Build 1-RELEASE</version>
+    <version>Build 2-ALPHA</version>
     <modules>
         <module>v1_17_R1</module>
         <module>v1_18_R1</module>
         <module>plugin</module>
+        <module>compile</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -32,6 +33,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
         </plugins>
 
     </build>

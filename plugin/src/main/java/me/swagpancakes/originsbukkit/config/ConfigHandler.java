@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * The type Config handler.
@@ -137,7 +138,7 @@ public class ConfigHandler {
                     YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream));
                     defaultConfig.save(configFile);
                     try {
-                        ConfigUpdater.update(getPlugin(), "config.yml", configFile, null);
+                        ConfigUpdater.update(getPlugin(), "config.yml", configFile, (List<String>) null);
                     } catch (IOException event) {
                         event.printStackTrace();
                     }
@@ -189,7 +190,7 @@ public class ConfigHandler {
                     YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultConfigStream));
                     defaultConfig.save(langFile);
                     try {
-                        ConfigUpdater.update(getPlugin(), "lang.yml", langFile, null);
+                        ConfigUpdater.update(getPlugin(), "lang.yml", langFile, (List<String>) null);
                     } catch (IOException event) {
                         event.printStackTrace();
                     }
@@ -220,7 +221,7 @@ public class ConfigHandler {
             ChatUtils.sendConsoleMessage("&c[Origins-Bukkit] this stack trace to <your name>.");
         }
         try {
-            ConfigUpdater.update(getPlugin(), "lang.yml", langFile, null);
+            ConfigUpdater.update(getPlugin(), "lang.yml", langFile, (List<String>) null);
         } catch (IOException event) {
             event.printStackTrace();
         }
