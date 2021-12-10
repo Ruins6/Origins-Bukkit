@@ -103,56 +103,6 @@
 
 ### Developer API
 
-##### Maven
-
-````xml
-<repositories>
-  <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-  </repository>
-</repositories>
-
-<dependencies>
-  <dependency>
-    <groupId>com.github.SwagPancakes</groupId>
-    <artifactId>Origins-Bukkit</artifactId>
-    <version>Build-1-BETA</version>
-  </dependency>
-</dependencies>
-````
-
-##### Gradle
-
-````gradle
-repositories {
-    maven { url 'https://jitpack.io' }
-}
-
-dependencies {
-    implementation 'com.github.SwagPancakes:Origins-Bukkit:Build-1-BETA'
-}
-````
-
-##### Sbt
-
-````sbt
-resolvers += "jitpack" at "https://jitpack.io"
-
-libraryDependencies += "com.github.SwagPancakes" % "Origins-Bukkit" % "Build-1-BETA"
-````
-
-##### Leiningen
-
-````clj
-:repositories [["jitpack" "https://jitpack.io"]]
-
-:dependencies [[com.github.SwagPancakes/Origins-Bukkit "Build-1-BETA"]]
-````
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
