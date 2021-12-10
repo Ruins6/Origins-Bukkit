@@ -1,0 +1,67 @@
+name: Bug Report
+description: Report a Bug or an Issue in the plugin.
+labels: [ 'bug', 'pending' ]
+assignees: SwagPancakes
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Origins-Bukkit Bug Report
+
+  - id: minecraft
+    type: textarea
+    validations:
+      required: true
+    attributes:
+      label: 'Minecraft Server''s Version and Software'
+      description: |
+        The minecraft server's version and software. 
+        Use the command "/version (aliases: /ver, /icanhasbukkit)"
+        to find which version and software you use.
+      placeholder: |
+        [Insert minecraft version and server software.]
+
+  - id: plugin
+    type: textarea
+    validations:
+      required: true
+    attributes:
+      label: 'Plugin''s Version'
+      description: |
+        The plugin's version.
+        Use the command "/version Origins-Bukkit" to find out which version
+        of the plugin you used. (Make sure to always keep it up to date)
+      placeholder: |
+        [Insert plugin version and if it is a pre-release]
+
+  - id: description
+    type: textarea
+    validations:
+      required: true
+    attributes:
+      label: 'Bug Description'
+      description: |
+        A clear and concise description of what the bug is.
+      placeholder: |
+        [Insert what exactly the problem is.]
+
+  - id: reproduction
+    type: textarea
+    validations:
+      required: true
+    attributes:
+      label: 'To Reproduce'
+      description: |
+        Steps to reproduce the bug.
+      placeholder: |
+        [Insert what exactly happened and the steps to reproduce the issue.]
+
+  - id: extra
+    type: textarea
+    attributes:
+      label: 'Additional Information'
+      description: |
+        Additional information that could help on fixing the issue.
+      placeholder: |
+        Drag and drop an image or video onto this field to upload it. Otherwise please use pastebin for configuration files.
