@@ -39,12 +39,6 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <artifactSet>
-                                <includes>
-                                    <include>me.swagpancakes.originsbukkit:v_1_17_R1</include>
-                                    <include>me.swagpancakes.originsbukkit:v_1_18_R1</include>
-                                </includes>
-                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
