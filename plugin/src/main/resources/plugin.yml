@@ -1,11 +1,11 @@
 name: Origins-Bukkit
 version: '${project.version}'
-main: me.swagpancakes.originsbukkit.OriginsBukkit
+main: me.lemonypancakes.originsbukkit.OriginsBukkit
 softdepend:
   - ProtocolLib
   - PancakeLibCore
 api-version: 1.17
-authors: [ SwagPannekaker ]
+authors: [ LemonyPancakes ]
 description: Origins for Bukkit and forks of Bukkit.
 commands:
   origins:

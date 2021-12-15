@@ -5,7 +5,7 @@
 # | |_| | |  | | (_| | | | | \__ \_____| |_) | |_| |   <|   <| | |_
 #  \___/|_|  |_|\__, |_|_| |_|___/     |____/ \__,_|_|\_\_|\_\_|\__|
 #               |___/
-# Origins-Bukkit by SwagPancakes/SwagPannekaker
+# Origins-Bukkit by LemonyPancakes
 # Config File (config.yml)
 # Version 1
 ##
@@ -178,6 +178,14 @@ Config:
       # Ignored if origin is not a flying-type origin.
       # Default: 0.1
       Fly-Speed: 0.1
+      # Gives Weakness 1 and Slowness 1 to players
+      # who stays in a place with a low ceiling for too long.
+      Claustrophobia:
+        # The max duration of claustrophobia for this origin.
+        # In ticks, 1 tick = 0.05 second
+        # 20 ticks = 1 second
+        # Default: 3600 (3600 = 3 minutes) (For this origin)
+        Max-Duration: 3600
       Ability:
         Y-Velocity: 2.1
         # Determines how long the player can perform this ability again.
@@ -278,10 +286,16 @@ Config:
       # Default: 0.1
       Fly-Speed: 0.1
       Ability:
-        # The speed when player breaks stone or netherrack without tools.
+        # The speed when player breaks the blocks listed below.
         # Max Speed: 127 (Tested)
         # Default: 27 (Almost Equivalent to Wooden Pickaxe)
         Digging-Speed: 27
+        # The list of blocks affected.
+        # Default: [STONE, NETHERRACK]
+        # You can add more here...
+        Block-List:
+          - STONE
+          - NETHERRACK
 
     ############################################################
     # +------------------------------------------------------+ #
@@ -300,3 +314,14 @@ Config:
       # Ignored if origin is not a flying-type origin.
       # Default: 0.1
       Fly-Speed: 0.1
+      # Prevents breaking blocks depending on the amount adjacent blocks.
+      # Ignored if player has strength potion active.
+      Weak-Arms:
+        # Minimum Adjacent Blocks to prevent block breaking.
+        # Default: 2
+        Min-Adjacent-Blocks: 2
+        # The list of blocks to prevent breaking if conditions are met.
+        # Default: STONE
+        # You can add more here...
+        Block-List:
+          - STONE
