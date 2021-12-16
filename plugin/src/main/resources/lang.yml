@@ -14,47 +14,45 @@ Lang:
     Messages:
       Error:
         Commands:
-          No-Permission: '&cI''m sorry, but you do not have permission to perform this
-            command. Please contact the server administrators if you believe that
-            this is in error.'
-        Player-Origin-Already-Selected: '&cYou have already chosen this origin! &e(%player_current_origin%)'
-        Player-Origin-Ability-Cooldown: '&cThis ability is on cool-down (%seconds_left% seconds).'
+          No-Permission: '&cEs tut mir leid, aber Sie sind nicht berechtigt, diesen Befehl auszuführen. Bitte wenden Sie sich an die Serveradministratoren, wenn Sie der Meinung sind, dass dies ein Fehler ist'
+        Player-Origin-Already-Selected: '&cDu hast diese Origin bereits gewählt! &e(%player_current_origin%)'
+        Player-Origin-Ability-Cooldown: '&cDiese Fähigkeit ist in der Abklingzeit (%seconds_left% Sekunden).'
       Info:
-        Player-Origin-Update: '&aYou updated your origin into &e(%player_selected_origin%)'
-        Player-Origin-Ability-Use: '&aYou used your %player_current_origin% ability.'
+        Player-Origin-Update: '&aDu hast deinen Origin aktualisiert in &e(%player_selected_origin%)'
+        Player-Origin-Ability-Use: '&aDu hast deine Fähigkeit %player_current_origin% benutzt.'
   Origins:
     Human:
-      Title: '&fHuman'
+      Title: '&fMensch'
       Description:
         - ''
-        - '&7A regular human. Your'
-        - '&7ordinary Minecraft'
-        - '&7experience awaits.'
+        - '&7Ein Normaler Mensch. Deine'
+        - '&7standard Minecraft'
+        - '&7Erfahrung.'
     Enderian:
       Title: '&fEnderian'
       Description:
         - ''
-        - '&7Born as sons and daughters of the Ender Dragon,'
-        - '&7Enderians are capable of teleporting but are'
-        - '&7vulnerable to water.'
+        - '&7Geboren als Söhne und Töchter des Enderdrachen,'
+        - '&7Enderianer können sich teleportieren,'
+        - '&7sind aber anfällig für Wasser.'
         - ''
         - '&f&nTeleportation&r &8(LShift + F)'
-        - '&7Whenever you want, you may throw an ender pearl'
-        - '&7which deals no damage, allowing you to teleport.'
+        - '&7Wann immer du möchtest, kannst Du eine Enderperle werfen'
+        - '&7die keinen Schaden verursacht, sodass du sich teleportieren kannst.'
         - ''
         - '&f&nHydrophobia'
-        - '&7You receive damage over time while in contact'
-        - '&7with water.'
+        - '&7Du erleidest im Laufe der Zeit Schaden,'
+        - '&7wenn du mit Wasser in Kontakt kommst.'
         - ''
-        - '&f&nScared of Gourds'
-        - '&7You are afraid of pumpkins.'
+        - '&f&nAngst vor Kürbissen'
+        - '&7Du hast Angst vor Kürbissen.'
         - ''
     Merling:
       Title: '&fMerling'
       Description:
         - ''
-        - '&7These natural inhabitants of the ocean are not'
-        - '&7used to being out of the water for too long.'
+        - '&7Diese natürlichen Meeresbewohner sind es nicht'
+        - '&7daran gewöhnt, zu lange nicht im Wasser zu sein.'
         - ''
         - '&f&nGills'
         - '&7You can breathe underwater, but not on land.'
